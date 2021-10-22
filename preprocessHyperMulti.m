@@ -96,24 +96,28 @@ for i=1:length(currdir)
                 stimmarks=0;
                 if k==1
                     begintime=round(table2array(trimTimes(i,2))*samprate);
-                    endtalk=begintime + round(table2array(trimTimes(i,3))*samprate);
+                    endScan=begintime + round(table2array(trimTimes(i,3))*samprate);
                 elseif k==2
                     begintime=round(table2array(trimTimes(i,4))*samprate);
-                    endtalk=begintime + round(table2array(trimTimes(i,5))*samprate);
+                    endScan=begintime + round(table2array(trimTimes(i,5))*samprate);
                 else
                     ssum = sum(s,2);
                     stimmarks = find(ssum);
                     if length(stimmarks)>=1
                         begintime = stimmarks(1);
-                        endtalk = stimmarks(1) + (length(d)-round(10*samprate));
+                        endScan = length(d)-round(10*samprate); %trims off last 10secs
+                        % if you have end of scan trigger uncomment below
+                        %endtalk = stimmarks(2);
                     else
                         begintime = 1;
-                        endtalk = begintime + (length(d)-round(10*samprate));
+                        endScan = length(d)-round(10*samprate);
+                        % if you have end of scan trigger uncomment below
+                        %endtalk = stimmarks(2);
                     end
                 end
 
-                d = d(begintime:endtalk,:);
-                s = s(begintime:endtalk,:);
+                d = d(begintime:endScan,:);
+                s = s(begintime:endScan,:);
             end
             
             %3) identify noisy channels
@@ -130,8 +134,8 @@ for i=1:length(currdir)
             if device ~= 1
                 if length(stimmarks)>=1
                     if begintime>0
-                        aux = aux(begintime:endtalk,:);
-                        t = t(begintime:endtalk);
+                        aux = aux(begintime:endScan,:);
+                        t = t(begintime:endScan);
                     end
                 end
             end
