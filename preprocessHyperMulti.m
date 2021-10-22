@@ -75,43 +75,46 @@ for i=1:length(currdir)
                 mni_ch_table = getMNIcoords(digfile, SD);
             end
 
-            %2) Trim beginning of data to 10s before onset, if there is
-            %a lot of dead time before that 
-%             ssum = sum(s,2);
-%             stimmarks = find(ssum);
-%             if length(stimmarks)>=1
-%                 begintime = stimmarks(1) - round(samprate*10);
-%                 if begintime>0
-%                     d = d(begintime:end,:);
-%                     s = s(begintime:end,:);
-%                     stimmarks = stimmarks-begintime;
-%                 end
-%             end
-            
-            %Trim nirs scan according to when the conversation began and
-            %when it ended + when it began (for SS use j, for conflict
-            %change loop to use K)
-            stimmarks=0;
-            if j==1
-                begintime=round(table2array(trimTimes(i,3))*samprate);
-                endtalk=begintime + round(table2array(trimTimes(i,2))*samprate);
-            elseif j==2
-                begintime=round(table2array(trimTimes(i,5))*samprate);
-                endtalk=begintime + round(table2array(trimTimes(i,4))*samprate);
-            else
+            % 2) Trim scans. WIll choose based on whether you are using a
+            % prespecified trim .csv
+            if trim==0
+                    % 2a) Trim beginning of data to 10s before onset, if there is
+                    % a lot of dead time before that 
                 ssum = sum(s,2);
                 stimmarks = find(ssum);
                 if length(stimmarks)>=1
-                    begintime = stimmarks(1);
-                    endtalk = stimmarks(1) + (length(d)-round(10*samprate));
-                else
-                    begintime = 1;
-                    endtalk = begintime + (length(d)-round(10*samprate));
+                    begintime = stimmarks(1) - round(samprate*10);
+                    if begintime>0
+                        d = d(begintime:end,:);
+                        s = s(begintime:end,:);
+                        stimmarks = stimmarks-begintime;
+                    end
                 end
-            end
+            else
+                    % 2b) Trim nirs scan according to when specified begin
+                    % and end point. Best used for conversational data.
+                stimmarks=0;
+                if k==1
+                    begintime=round(table2array(trimTimes(i,2))*samprate);
+                    endtalk=begintime + round(table2array(trimTimes(i,3))*samprate);
+                elseif k==2
+                    begintime=round(table2array(trimTimes(i,4))*samprate);
+                    endtalk=begintime + round(table2array(trimTimes(i,5))*samprate);
+                else
+                    ssum = sum(s,2);
+                    stimmarks = find(ssum);
+                    if length(stimmarks)>=1
+                        begintime = stimmarks(1);
+                        endtalk = stimmarks(1) + (length(d)-round(10*samprate));
+                    else
+                        begintime = 1;
+                        endtalk = begintime + (length(d)-round(10*samprate));
+                    end
+                end
 
-            d = d(begintime:endtalk,:);
-            s = s(begintime:endtalk,:);
+                d = d(begintime:endtalk,:);
+                s = s(begintime:endtalk,:);
+            end
             
             %3) identify noisy channels
             satlength = 2; %in seconds
