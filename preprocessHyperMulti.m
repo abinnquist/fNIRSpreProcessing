@@ -1,17 +1,12 @@
-function preprocessHyperMulti(dataprefix, currdir, rawdir)
+function preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
 
-supported_devices = {'NIRx-NirScout','NIRx-NirSport1','NIRx-NirSport2','TechEn'};
+supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
 [device,~] = listdlg('PromptString', 'Select acquisition device:',...
     'SelectionMode', 'single', 'ListString', supported_devices);
-if device <= 2
-    device=1;
-elseif device >= 3
-    device=2;
-end
 
 if device==1
     [probefile,probepath] = uigetfile('*_probeInfo.mat','Choose probeInfo File');
@@ -69,6 +64,10 @@ for i=1:length(currdir)
                 end
             elseif device==2
                 [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
+            elseif device==3
+                nirsfile = dir(strcat(scanfolder,'/*.snirf'));
+                snirf = SnirfLoad(strcat(scanfolder,'/',nirsfile(1).name)); % Homer3
+                samprate = 1/mean(diff(snirf.data.time(:)));
             end
             digfile = strcat(scanfolder,filesep,'digpts.txt');
             if device==2 && exist(digfile,'file')
@@ -94,10 +93,10 @@ for i=1:length(currdir)
                     % 2b) Trim nirs scan according to when specified begin
                     % and end point. Best used for conversational data.
                 stimmarks=0;
-                if k==1
+                if j==1
                     begintime=round(table2array(trimTimes(i,2))*samprate);
                     endScan=begintime + round(table2array(trimTimes(i,3))*samprate);
-                elseif k==2
+                elseif j==2
                     begintime=round(table2array(trimTimes(i,4))*samprate);
                     endScan=begintime + round(table2array(trimTimes(i,5))*samprate);
                 else
@@ -116,24 +115,40 @@ for i=1:length(currdir)
                     end
                 end
 
-                d = d(begintime:endScan,:);
-                s = s(begintime:endScan,:);
+                if device==3
+                    snirf.data.dataTimeSeries = snirf.data.dataTimeSeries(begintime:endScan,:);
+                    snirf.data.time = snirf.data.time(begintime:endScan,:);
+                else
+                    d = d(begintime:endScan,:);
+                    s = s(begintime:endScan,:);
+                end
             end
             
-            %3) identify noisy channels
+            %3) identify noisy channels (SNR channel rejection)
             satlength = 2; %in seconds
             QCoDthresh = 0.6 - 0.03*samprate;
-            [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
+            if device <= 2
+                [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
+            else
+                [snirf.data.dataTimeSeries, channelmask] = removeBadChannels(snirf.data.dataTimeSeries, samprate, satlength, QCoDthresh);
+            end
+            
             if device==1
                 [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo, channelmask);
             elseif device==2
                 SD.MeasListAct = [channelmask'; channelmask'];
                 SD.MeasListVis = SD.MeasListAct;
+            elseif device ==3
+                MeasListAct = [channelmask'; channelmask'];
+                MeasListVis = MeasListAct;
             end
             
             if device ~= 1
-                if length(stimmarks)>=1
-                    if begintime>0
+                if begintime>0
+                    if device==3
+                        snirf.aux.dataTimeSeries = snirf.aux.dataTimeSeries(begintime:endScan,:);
+                        snirf.aux.time = snirf.aux.time(begintime:endScan,:);
+                    else
                         aux = aux(begintime:endScan,:);
                         t = t(begintime:endScan);
                     end
@@ -141,7 +156,7 @@ for i=1:length(currdir)
             end
 
             %4) motion filter, convert to hemodynamic changes
-            [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate);
+            [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr);
 
             %5) final data quality assessment, remove uncertain channels
             % default is to use Pearson's correlation to check how impactful
