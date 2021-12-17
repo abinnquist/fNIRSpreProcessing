@@ -13,6 +13,7 @@ src_det_pair = SD.MeasList(1:numchannels,1:2);
 digpts = readtable(digfile);
 digpts = [table2array(digpts(:,2:4)), ones(size(digpts,1),1)];
 digpts_refs = digpts(end-3:end,:);
+%digpts_refs = digpts(1:5,:);
 
 trsfm = mni_refs' * pinv(digpts_refs)';
 mni_pts = trsfm * digpts';
@@ -20,7 +21,7 @@ mni_pts = mni_pts';
 mni_pts = mni_pts(:,1:3);
 
 mni_srcPos = mni_pts(1:nSrc,:);
-mni_detPos = mni_pts(nSrc+1:end-5,:);
+mni_detPos = mni_pts(nSrc+1:end-4,:);
 
 mni_ch = nan(numchannels,3);
 for i=1:numchannels
