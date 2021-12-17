@@ -1,4 +1,4 @@
-function preprocessSoloMulti(dataprefix, currdir, rawdir)
+function preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
