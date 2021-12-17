@@ -2,25 +2,29 @@
 %path must be in brain_data folder (where your raw data folders are)
 %required inpaint_nans, homer2 scripts 
 
-function preprocessingfNIRS(dataprefix, hyperscan, multiscan)
+function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr)
 %inputs: 
 %       dataprefix: string. Prefix of every folder name that should be considered a
-%       data folder. E.g., ST for ST_101, ST_102, etc.  
+%       data folder. E.g., 'ST' for ST_101, ST_102, etc.  
 %       hyperscan: 0 or 1. 1 if hyperscanning, 0 if single subject.
 %       multiscan: 0 or 1. 1 if multiple scans per person, 0 if single
 %       scan.
+%       motionCorr: 0 = baseline volatility
+%                   1 = PCA
+%                   2 = baseline volatility & CBSI
+%                   3 = PCA & CBSI
 %
 %outputs: preprocessed and .nirs files in a new folder in rawdir called
 %           'PreProcessedFiles', sorted by subject
+
+%If you have a supplemental csv for when to trim the scans when the command window
+%promt asks: trim=1, if no csv: trim=0
 
 %if you get 'WARNING: Some data points in d are zero...' this is ok.
 %this would normally indicate noise in our data, but since we're doing
 %motion correction before filtering, our motion correction algorithm might
 %force the data into negative numbers while still being good data. you can
 %ignore this.
-
-%If you have a supplemental csv for when to trim the scans trim=1, if not
-%trim=0
 
 %DEBUGGING TIPS:
 %Note that this function is, well, funcitonal, but not 100% optimized for
@@ -49,15 +53,15 @@ end
 
 if hyperscan
     if multiscan
-        preprocessHyperMulti(dataprefix, currdir, rawdir);
+        preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr);
     else
-        preprocessHyperSingle(dataprefix, currdir, rawdir);
+        preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr);
     end
 else
     if multiscan
-        preprocessSoloMulti(dataprefix, currdir, rawdir);
+        preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr);
     else
-        preprocessSoloSingle(dataprefix, currdir, rawdir);
+        preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr);
     end
 end
 
