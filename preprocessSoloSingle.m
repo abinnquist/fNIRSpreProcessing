@@ -1,4 +1,4 @@
-function preprocessSoloSingle(dataprefix, currdir, rawdir)
+function preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
