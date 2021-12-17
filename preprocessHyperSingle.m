@@ -1,4 +1,4 @@
-function preprocessHyperSingle(dataprefix, currdir, rawdir)
+function preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
