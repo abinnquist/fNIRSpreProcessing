@@ -41,13 +41,13 @@ check if the currently selected QCoD threshold for bad channel marking is what y
 - To download: clone or pull repo to your desired local directory. Then add folder and subfolders to your Matlab path via: 
 addpath(genpath('[YOUR DIRECTORY]'));
 
-- preprocessingfNIRS arguments: the function takes 4 arguments: 
+- the function preprocessingfNIRS takes 4 arguments: 
 1. Dataprefix string; prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
 2. Hyperscanning marker, boolean (1 if hyperscanning, 0 if single subject) 
 3. Multiscan marker (1 if multiple scans per participant, 0 if single scan)
 4. Preferred Motion correction (0 = baseline volatility, 1 = PCA, 2 = baseline & CBSI, 3 = PCA & CBSI) 
 
--No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
+- No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
 *There is one command line prompt if you want to use a trim.csv which would be a premade csv based on trim times for data (i.e., start and stop time). Will overide any existing triggers. This was added for use in studies that may not have triggers or for studies where you want to trim accordingly to synch with videos.
