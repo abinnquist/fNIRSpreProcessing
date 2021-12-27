@@ -46,6 +46,7 @@ addpath(genpath('[YOUR DIRECTORY]'));
 2. Hyperscanning marker, boolean (1 if hyperscanning, 0 if single subject) 
 3. Multiscan marker (1 if multiple scans per participant, 0 if single scan)
 4. Preferred Motion correction (0 = baseline volatility, 1 = PCA, 2 = baseline & CBSI, 3 = PCA & CBSI) 
+
 No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
