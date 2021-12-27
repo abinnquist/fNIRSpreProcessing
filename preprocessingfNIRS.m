@@ -11,7 +11,7 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr)
 %       scan.
 %       motionCorr: 0 = baseline volatility
 %                   1 = PCA
-%                   2 = baseline volatility & CBSI
+%                   2 = baseline volatility & CBSI 
 %                   3 = PCA & CBSI
 %
 %outputs: preprocessed and .nirs files in a new folder in rawdir called
