@@ -47,7 +47,7 @@ addpath(genpath('[YOUR DIRECTORY]'));
 3. Multiscan marker (1 if multiple scans per participant, 0 if single scan)
 4. Preferred Motion correction (0 = baseline volatility, 1 = PCA, 2 = baseline & CBSI, 3 = PCA & CBSI) 
 
-No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
+-No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
 *There is one command line prompt if you want to use a trim.csv which would be a premade csv based on trim times for data (i.e., start and stop time). Will overide any existing triggers. This was added for use in studies that may not have triggers or for studies where you want to trim accordingly to synch with videos.
