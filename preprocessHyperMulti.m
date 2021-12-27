@@ -36,23 +36,23 @@ for i=1:length(currdir)
         subjname = groupdir(j).name;
         subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));
             
-            for k=1:length(subjdir)
-                scanname = subjdir(k).name;
-                
-                msg = sprintf('\n\t group %d/%d, subj %d/%d, scan %d/%d ...',i,length(currdir),...
-                    j,length(groupdir),k,length(subjdir));
-                fprintf([reverseStr,msg]);
-                reverseStr = repmat(sprintf('\b'),1,length(msg)); 
-                
-                subscanname = scanname(length(subjname)+1:end);
-                subscanname = regexprep(subscanname,'_','');
-                if ~any(strcmp(scannames,subscanname))
-                    scannames = [scannames,subscanname];
-                end
-                scanfolder = strcat(rawdir,filesep,group,filesep,subjname,filesep,scanname);
-                outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,filesep,subjname,filesep,scanname);
+        for k=1:length(subjdir)
+            scanname = subjdir(k).name;
 
-                if ~exist(outpath,'dir')
+            msg = sprintf('\n\t group %d/%d, subj %d/%d, scan %d/%d ...',i,length(currdir),...
+                j,length(groupdir),k,length(subjdir));
+            fprintf([reverseStr,msg]);
+            reverseStr = repmat(sprintf('\b'),1,length(msg)); 
+
+            subscanname = scanname(length(subjname)+1:end);
+            subscanname = regexprep(subscanname,'_','');
+            if ~any(strcmp(scannames,subscanname))
+                scannames = [scannames,subscanname];
+            end
+            scanfolder = strcat(rawdir,filesep,group,filesep,subjname,filesep,scanname);
+            outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,filesep,subjname,filesep,scanname);
+
+            if ~exist(outpath,'dir')
 
                 %1) extract data values
             if device==1
@@ -74,7 +74,7 @@ for i=1:length(currdir)
                 mni_ch_table = getMNIcoords(digfile, SD);
             end
 
-            % 2) Trim scans. WIll choose based on whether you are using a
+            % 2) Trim scans. Will choose based on whether you are using a
             % prespecified trim .csv
             if trim==0
                     % 2a) Trim beginning of data to 10s before onset, if there is
@@ -90,13 +90,13 @@ for i=1:length(currdir)
                     end
                 end
             else
-                    % 2b) Trim nirs scan according to when specified begin
+                    % 2b) Trim nirs scan according to a specified begin
                     % and end point. Best used for conversational data.
                 stimmarks=0;
-                if j==1
+                if k==1
                     begintime=round(table2array(trimTimes(i,2))*samprate);
                     endScan=begintime + round(table2array(trimTimes(i,3))*samprate);
-                elseif j==2
+                elseif k==2
                     begintime=round(table2array(trimTimes(i,4))*samprate);
                     endScan=begintime + round(table2array(trimTimes(i,5))*samprate);
                 else
@@ -126,7 +126,7 @@ for i=1:length(currdir)
             
             %3) identify noisy channels (SNR channel rejection)
             satlength = 2; %in seconds
-            QCoDthresh = 0.6 - 0.03*samprate;
+            QCoDthresh = 0.6 - 0.03*samprate; % >0.6 more stringency
             if device <= 2
                 [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
             else
@@ -135,12 +135,9 @@ for i=1:length(currdir)
             
             if device==1
                 [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo, channelmask);
-            elseif device==2
+            elseif device==2 || device==3
                 SD.MeasListAct = [channelmask'; channelmask'];
                 SD.MeasListVis = SD.MeasListAct;
-            elseif device ==3
-                MeasListAct = [channelmask'; channelmask'];
-                MeasListVis = MeasListAct;
             end
             
             if device ~= 1
@@ -224,7 +221,7 @@ for i=1:length(currdir)
 end
 
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
-%qualityReport(dataprefix,1,1,scannames,numchannels,preprocdir);
+qualityReport(dataprefix,1,1,scannames,numchannels,preprocdir);
 
     
 Elapsedtime = toc(Elapsedtime);
