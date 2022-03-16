@@ -10,10 +10,14 @@ numchannels = size(SD.MeasList,1)/2;
 nSrc = SD.nSrcs;
 nDet = SD.nDets;
 src_det_pair = SD.MeasList(1:numchannels,1:2);
-digpts = readtable(digfile);
-digpts = [table2array(digpts(:,2:4)), ones(size(digpts,1),1)];
-digpts_refs = digpts(end-3:end,:);
-%digpts_refs = digpts(1:5,:);
+digptsInfo = readtable(digfile);
+dgLabels = table2array(digptsInfo(:,1));
+digpts = [table2array(digptsInfo(:,2:4)),ones(length(dgLabels),1)];
+digpts_refs(1,1:4) = digpts(find(strcmp(dgLabels,'nz:')),:);
+digpts_refs(2,1:4) = digpts(find(strcmp(dgLabels,'cz:')),:);
+digpts_refs(3,1:4) = digpts(find(strcmp(dgLabels,'al:')),:);
+digpts_refs(4,1:4) = digpts(find(strcmp(dgLabels,'iz:')),:);
+digpts = digpts(find(strcmp(dgLabels,'s1:')):find(strcmp(dgLabels,'s1:'))+nSrc+nDet-1,:);
 
 trsfm = mni_refs' * pinv(digpts_refs)';
 mni_pts = trsfm * digpts';
@@ -21,7 +25,7 @@ mni_pts = mni_pts';
 mni_pts = mni_pts(:,1:3);
 
 mni_srcPos = mni_pts(1:nSrc,:);
-mni_detPos = mni_pts(nSrc+1:end-4,:);
+mni_detPos = mni_pts(nSrc+1:end,:);
 
 mni_ch = nan(numchannels,3);
 for i=1:numchannels
