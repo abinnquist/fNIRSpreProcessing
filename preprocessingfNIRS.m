@@ -2,7 +2,7 @@
 %path must be in brain_data folder (where your raw data folders are)
 %required inpaint_nans, homer2 scripts 
 
-function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr)
+function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
 %inputs: 
 %       dataprefix: string. Prefix of every folder name that should be considered a
 %       data folder. E.g., 'ST' for ST_101, ST_102, etc.  
@@ -13,6 +13,8 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr)
 %                   1 = PCA
 %                   2 = baseline volatility & CBSI 
 %                   3 = PCA & CBSI
+%       numaux: Number of aux inputs. Currently ONLY works for accelerometers.
+%               Other auxiliary inputs: eeg, pulse, etc.
 %
 %outputs: preprocessed and .nirs files in a new folder in rawdir called
 %           'PreProcessedFiles', sorted by subject
@@ -53,15 +55,15 @@ end
 
 if hyperscan
     if multiscan
-        preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr);
+        preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, numaux);
     else
-        preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr);
+        preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr, numaux);
     end
 else
     if multiscan
-        preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr);
+        preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, numaux);
     else
-        preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr);
+        preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr, numaux);
     end
 end
 
