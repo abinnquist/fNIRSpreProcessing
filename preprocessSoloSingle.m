@@ -1,4 +1,4 @@
-function preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr)
+function preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr, numaux)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
@@ -50,12 +50,13 @@ for i=1:length(currdir)
         elseif device==2
             [d, samprate, s, SD, aux, t] = extractTechEnData(subjfolder);
         elseif device==3
-            nirsfile = dir(strcat(subjfolder,'/*.snirf'));
-            snirf = SnirfLoad(strcat(subjfolder,'/',nirsfile(1).name)); % Homer3
-            samprate = 1/mean(diff(snirf.data.time(:)));
+            [d, samprate, t, SD, aux, trigInfo] = snirfExtract(subjfolder,numaux);
+            s = zeros(length(d),1);
+            onset = trigInfo.Onset;
+            s(find(t==onset(1)),1) = 1;
         end
         digfile = strcat(subjfolder,filesep,'digpts.txt');
-        if device==2 && exist(digfile,'file')
+        if device>=2 && exist(digfile,'file')
             mni_ch_table = getMNIcoords(digfile, SD);
         end
 
@@ -71,6 +72,12 @@ for i=1:length(currdir)
                 if begintime>0
                     d = d(begintime:end,:);
                     s = s(begintime:end,:);
+                    t = t(begintime:end,:);
+                    if device==3
+                        auxbegin = round(aux.samprate*begintime/samprate);
+                        aux.data = aux.data(auxbegin:end,:,:);
+                        aux.time = aux.time(auxbegin:end,:,:);
+                    end
                     stimmarks = stimmarks-begintime;
                 end
             end
@@ -81,41 +88,30 @@ for i=1:length(currdir)
             begintime=round(table2array(trimTimes(i,2))*samprate);
             endScan=begintime + round(table2array(trimTimes(i,3))*samprate);
 
-            if device==3
-                snirf.data.dataTimeSeries = snirf.data.dataTimeSeries(begintime:endScan,:);
-                snirf.data.time = snirf.data.time(begintime:endScan,:);
-            else
-                d = d(begintime:endScan,:);
-                s = s(begintime:endScan,:);
+            d = d(begintime:endScan,:);
+            s = s(begintime:endScan,:);
+            t = t(begintime:endScan);
+            
+            if device == 3
+                if begintime>0
+                    auxbegin = round(aux.samprate*begintime/samprate);
+                    auxend = round(aux.samprate*endScan/samprate);
+                    aux.data = aux.data(auxbegin:auxend,:,:);
+                    aux.time = aux.time(auxbegin:auxend,:,:);
+                end
             end
         end
 
         %3) identify noisy channels
         satlength = 2; %in seconds
         QCoDthresh = 0.6 - 0.03*samprate;
-        if device <= 2
-            [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
-        else
-            [snirf.data.dataTimeSeries, channelmask] = removeBadChannels(snirf.data.dataTimeSeries, samprate, satlength, QCoDthresh);
-        end
+        [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
 
         if device==1
             [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo, channelmask);
         elseif device==2 || device==3
             SD.MeasListAct = [channelmask'; channelmask'];
             SD.MeasListVis = SD.MeasListAct;
-        end
-
-        if device ~= 1
-            if begintime>0
-                if device==3
-                    snirf.aux.dataTimeSeries = snirf.aux.dataTimeSeries(begintime:endScan,:);
-                    snirf.aux.time = snirf.aux.time(begintime:endScan,:);
-                else
-                    aux = aux(begintime:endScan,:);
-                    t = t(begintime:endScan);
-                end
-            end
         end
 
         %4) motion filter, convert to hemodynamic changes
@@ -161,7 +157,7 @@ for i=1:length(currdir)
             new_d(:,(c*2)-1) = oxy(:,c);
             new_d(:,c*2) = deoxy(:,c);
         end
-        save(strcat(outpath,filesep,subjname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD');
+        save(strcat(outpath,filesep,subjname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
 
         oxy(:,~channelmask) = NaN;
         deoxy(:,~channelmask) = NaN;
@@ -169,7 +165,7 @@ for i=1:length(currdir)
         z_oxy(:,~channelmask) = NaN;
         z_deoxy(:,~channelmask) = NaN;
         z_totaloxy(:,~channelmask) = NaN;
-        save(strcat(outpath,filesep,subjname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD');
+        save(strcat(outpath,filesep,subjname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
 
         oxy(:,~totalmask) = NaN;
         deoxy(:,~totalmask) = NaN;
@@ -177,7 +173,7 @@ for i=1:length(currdir)
         z_oxy(:,~z_totalmask) = NaN;
         z_deoxy(:,~z_totalmask) = NaN;
         z_totaloxy(:,~z_totalmask) = NaN;
-        save(strcat(outpath,filesep,subjname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD');
+        save(strcat(outpath,filesep,subjname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
         if exist('mni_ch_table','var')
             writetable(mni_ch_table,strcat(outpath,filesep,'channel_mnicoords.csv'),'Delimiter',',');
         end
