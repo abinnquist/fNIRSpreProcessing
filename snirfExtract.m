@@ -44,8 +44,8 @@ for aCh = 1:lastAcc
 end
 
 function SD = getSD(snirfFile)
-MeasList = zeros(84,4);
 [~, chans] = size(snirfFile.data.dataTimeSeries);
+MeasList = zeros(chans,4);
 for ch=1:chans
     MeasList(ch,1) = snirfFile.data.measurementList(1,ch).sourceIndex;
     MeasList(ch,2) = snirfFile.data.measurementList(1,ch).detectorIndex;
@@ -63,20 +63,24 @@ SD.SpatialUnit = snirfFile.metaDataTags.tags.LengthUnit;
 
 function trigInfo = snirfTrigInfo(snirfFile)
 numTrigFiles = length(snirfFile.stim);
-trigNames={};
-triggerData=[];
-for f=1:numTrigFiles
-    tFolder=snirfFile.stim(f).data;
-    triggerData=[triggerData;tFolder];
-    
-    [numTs, ~]=size(snirfFile.stim(f).data);
-    tFolder=snirfFile.stim(f).name;
-    for nt=1:numTs
-        trigNames=[trigNames;{tFolder}];
-    end
-end
-dataLabels = snirfFile.stim(1).dataLabels;
-trigInfo = array2table(trigNames,'VariableNames',{'Condition'});
-trigInfo = [trigInfo,array2table(triggerData,'VariableNames',dataLabels)];
+if numTrigFiles>0
+    trigNames={};
+    triggerData=[];
+    for f=1:numTrigFiles
+        tFolder=snirfFile.stim(f).data;
+        triggerData=[triggerData;tFolder];
 
-trigInfo = sortrows(trigInfo,2);
+        [numTs, ~]=size(snirfFile.stim(f).data);
+        tFolder=snirfFile.stim(f).name;
+        for nt=1:numTs
+            trigNames=[trigNames;{tFolder}];
+        end
+    end
+    dataLabels = snirfFile.stim(1).dataLabels;
+    trigInfo = array2table(trigNames,'VariableNames',{'Condition'});
+    trigInfo = [trigInfo,array2table(triggerData,'VariableNames',dataLabels)];
+
+    trigInfo = sortrows(trigInfo,2);
+else
+    trigInfo = snirfFile.stim;
+end
