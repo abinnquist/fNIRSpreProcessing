@@ -13,11 +13,11 @@ src_det_pair = SD.MeasList(1:numchannels,1:2);
 digptsInfo = readtable(digfile);
 dgLabels = table2array(digptsInfo(:,1));
 digpts = [table2array(digptsInfo(:,2:4)),ones(length(dgLabels),1)];
-digpts_refs(1,1:4) = digpts(find(strcmp(dgLabels,'nz:')),:);
-digpts_refs(2,1:4) = digpts(find(strcmp(dgLabels,'cz:')),:);
-digpts_refs(3,1:4) = digpts(find(strcmp(dgLabels,'al:')),:);
-digpts_refs(4,1:4) = digpts(find(strcmp(dgLabels,'iz:')),:);
-digpts = digpts(find(strcmp(dgLabels,'s1:')):find(strcmp(dgLabels,'s1:'))+nSrc+nDet-1,:);
+digpts_refs(1,1:4) = digpts(find(strcmpi(dgLabels,'nz:')),:);
+digpts_refs(2,1:4) = digpts(find(strcmpi(dgLabels,'cz:')),:);
+digpts_refs(3,1:4) = digpts(find(contains(dgLabels,'l','IgnoreCase',true)),:); %LPA or al
+digpts_refs(4,1:4) = digpts(find(strcmpi(dgLabels,'iz:')),:);
+digpts = digpts(find(strcmpi(dgLabels,'s1:')):find(strcmpi(dgLabels,'s1:'))+nSrc+nDet-1,:);
 
 trsfm = mni_refs' * pinv(digpts_refs)';
 mni_pts = trsfm * digpts';
