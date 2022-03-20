@@ -9,18 +9,22 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %       hyperscan: 0 or 1. 1 if hyperscanning, 0 if single subject.
 %       multiscan: 0 or 1. 1 if multiple scans per person, 0 if single
 %       scan.
-%       motionCorr: 0 = baseline volatility
-%                   1 = PCA
-%                   2 = baseline volatility & CBSI 
-%                   3 = PCA & CBSI
+%       motionCorr: 0 = no motion correction (not reccommended)
+%                   1 = baseline volatility
+%                   2 = PCA
+%                   3 = baseline volatility & CBSI
+%                   4 = CBSI only
 %       numaux: Number of aux inputs. Currently ONLY works for accelerometers.
 %               Other auxiliary inputs: eeg, pulse, etc.
 %
 %outputs: preprocessed and .nirs files in a new folder in rawdir called
 %           'PreProcessedFiles', sorted by subject
 
-%If you have a supplemental csv for when to trim the scans when the command window
-%promt asks: trim=1, if no csv: trim=0
+%Supplemental csv for trim times of scans. In the command window after data
+%directory selection, trim=0 for no CSV, trim=1 for CSV. Follow csv structure below 
+% Column1=subject or dyad number; 
+% column2=1st scan to start trim; column3=1st scan length; 
+% column4=2nd scan start trim; column5=2nd scan length.
 
 %if you get 'WARNING: Some data points in d are zero...' this is ok.
 %this would normally indicate noise in our data, but since we're doing
@@ -40,8 +44,6 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %       also happens if the wrong montage was selected in recording, Simply copy-paste
 %       the correct SD Mask and ChannelDistance list into the .hdr file from a
 %       subject's .hdr file that had the correct montage.
-%   - Delete all false start files from the data directory, or will cause
-%   script to error out. 
 
 % added_path = [pwd,'/utils'];
 % addpath(added_path);
