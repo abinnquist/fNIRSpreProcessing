@@ -64,12 +64,11 @@ for i=1:length(currdir)
             %2) Trim beginning of data to 10s before onset, if there is
             %a lot of dead time before that  
             if trim==0
-                % 2a) Trim beginning of data to 10s before onset, if there is
-                % a lot of dead time before that
+                % 2a) Trim beginning of data based on first trigger
                 ssum = sum(s,2);
                 stimmarks = find(ssum);
                 if length(stimmarks)>=1
-                    begintime = stimmarks(1) - round(samprate*10);
+                    begintime = stimmarks(1);
                     if begintime>0
                         d = d(begintime:end,:);
                         s = s(begintime:end,:);
