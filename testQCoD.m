@@ -1,4 +1,4 @@
-function [channelmask, QCoDvector] = testQCoD(QCoDthresh, suppressPlot)   
+function [channelmask, QCoDvector] = testQCoD(QCoDthresh, suppressPlot, device)   
 %       plots the power spectral density graphs of the given test subject, 
 %       as well as the automatic bad channel detection to make sure your 
 %       chosen CoV threshold is performing as you want it to. Does NOT do any 
@@ -15,10 +15,18 @@ function [channelmask, QCoDvector] = testQCoD(QCoDthresh, suppressPlot)
 %OUTPUTS: the channelmask and vector of QCoD values
 
     testsubjectpath=uigetdir('','Choose A Scan Folder of Subject to Test');
-    [d, ~, samprate] = extractNIRxData(testsubjectpath);
+    if device ==1
+        [d, ~, samprate] = extractNIRxData(testsubjectpath);
+    elseif device ==2
+        [d, samprate, ~, ~, ~, ~] = extractTechEnData(testsubjectpath);
+    else
+        [d, samprate, ~, ~, ~, ~] = snirfExtract(testsubjectpath);
+    end
+
     numchannels = size(d,2)/2;
     channelmask = ones(1,numchannels);
     QCoDvector = nan(2,numchannels);
+    QCoDthresh = 0.6 - 0.03*samprate;
     
     %check CoV of each channel
     for c=1:numchannels
