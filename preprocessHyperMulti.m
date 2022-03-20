@@ -83,7 +83,7 @@ for i=1:length(currdir)
                 ssum = sum(s,2);
                 stimmarks = find(ssum);
                 if length(stimmarks)>=1
-                    begintime = stimmarks(1) - round(samprate*10);
+                    begintime = stimmarks(1);
                     if begintime>0
                         d = d(begintime:end,:);
                         s = s(begintime:end,:);
@@ -111,14 +111,14 @@ for i=1:length(currdir)
                     stimmarks = find(ssum);
                     if length(stimmarks)>=1
                         begintime = stimmarks(1);
-                        endScan = length(d)-round(10*samprate); %trims off last 10secs
+                        endScan = length(d)-round(5*samprate); %trims off last 5secs
                         % if you have end of scan trigger uncomment below
-                        %endtalk = stimmarks(2);
+                        %endScan = stimmarks(2);
                     else
                         begintime = 1;
-                        endScan = length(d)-round(10*samprate);
+                        endScan = length(d)-round(5*samprate);
                         % if you have end of scan trigger uncomment below
-                        %endtalk = stimmarks(2);
+                        %endScan = stimmarks(2);
                     end
                 end
 
