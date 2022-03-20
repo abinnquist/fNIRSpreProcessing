@@ -68,15 +68,13 @@ for i=1:length(currdir)
                 mni_ch_table = getMNIcoords(digfile, SD);
             end
 
-            %2) Trim beginning of data to 10s before onset, if there is
-            %a lot of dead time before that 
+            %2) Trim beginning of data or trim beginning and end off
             if trim==0
-                % 2a) Trim beginning of data to 10s before onset, if there is
-                % a lot of dead time before that 
+                % 2a) Trim beginning of data based on first trigger
                 ssum = sum(s,2);
                 stimmarks = find(ssum);
                 if length(stimmarks)>=1
-                    begintime = stimmarks(1) - round(samprate*10);
+                    begintime = stimmarks(1);
                     if begintime>0
                         d = d(begintime:end,:);
                         s = s(begintime:end,:);
@@ -104,14 +102,14 @@ for i=1:length(currdir)
                     stimmarks = find(ssum);
                     if length(stimmarks)>=1
                         begintime = stimmarks(1);
-                        endScan = length(d)-round(10*samprate); %trims off last 10secs
+                        endScan = length(d)-round(5*samprate); %trims off last 5secs
                         % if you have end of scan trigger uncomment below
-                        %endtalk = stimmarks(2);
+                        %endScan = stimmarks(2);
                     else
                         begintime = 1;
-                        endScan = length(d)-round(10*samprate);
+                        endScan = length(d)-round(5*samprate);
                         % if you have end of scan trigger uncomment below
-                        %endtalk = stimmarks(2);
+                        %endScan = stimmarks(2);
                     end
                 end
 
@@ -131,7 +129,6 @@ for i=1:length(currdir)
             %3) identify noisy channels
             satlength = 2; %in seconds
             QCoDthresh = 0.6 - 0.03*samprate;
-            
             [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
             
             if device==1
