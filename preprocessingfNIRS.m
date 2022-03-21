@@ -1,6 +1,6 @@
 
-%path must be in brain_data folder (where your raw data folders are)
-%required inpaint_nans, homer2 scripts 
+%If using snirf file path must be in folder that contains Homer3 
+%required inpaint_nans, homer2 scripts for non-snirf processing
 
 function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
 %inputs: 
@@ -11,7 +11,7 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %       scan.
 %       motionCorr: 0 = no motion correction (not reccommended)
 %                   1 = baseline volatility
-%                   2 = PCA
+%                   2 = PCFilter (requires mapping toolbox)
 %                   3 = baseline volatility & CBSI
 %                   4 = CBSI only
 %       numaux: Number of aux inputs. Currently ONLY works for accelerometers.
@@ -20,10 +20,10 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %outputs: preprocessed and .nirs files in a new folder in rawdir called
 %           'PreProcessedFiles', sorted by subject
 
-%Supplemental csv for trim times of scans. In the command window after data
-%directory selection, trim=0 for no CSV, trim=1 for CSV. Follow csv structure below 
+% Supplemental csv for trimming scans. In the command window after data
+% trim: 0 or 1. 0 for no CSV, 1 for CSV. Structure below 
 % Column1=subject or dyad number; 
-% column2=1st scan to start trim; column3=1st scan length; 
+% column2=1st scan where to start trim; column3=1st scan length; 
 % column4=2nd scan start trim; column5=2nd scan length.
 
 %if you get 'WARNING: Some data points in d are zero...' this is ok.
