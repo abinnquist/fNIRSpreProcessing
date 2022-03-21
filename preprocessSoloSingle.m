@@ -8,14 +8,6 @@ supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file'
 [device,~] = listdlg('PromptString', 'Select acquisition device:',...
     'SelectionMode', 'single', 'ListString', supported_devices);
 
-if device==1
-    [probefile,probepath] = uigetfile('*_probeInfo.mat','Choose probeInfo File');
-    load(fullfile(probepath,probefile));
-    if ~exist('probeInfo','var')
-        error('ERROR: Invalid probeInfo file (does not contain a probeInfo object');
-    end
-end
-
 scannames = {};
 
 trimQ = 'Would you like to use a csv to trim scans? If yes input 1 and if no input 0.\n';
@@ -40,6 +32,16 @@ for i=1:length(currdir)
     if ~exist(outpath,'dir')
 
     %1) extract data values
+        pp=dir(strcat(subjfolder,filesep,'*_probeInfo.mat'));
+        load(fullfile(pp.folder,filesep,pp.name));
+        if ~exist('probeInfo','var') && device==1
+            error('ERROR: Scan  does not contain a probeInfo object');
+        elseif ~exist('probeInfo','var') && device~=1
+            coords=[];
+        else
+            coords=probeInfo.probes.coords_c3;
+        end
+
         if device==1
             [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(subjfolder);
             probenumchannels = probeInfo.probes.nChannel0;
@@ -113,7 +115,7 @@ for i=1:length(currdir)
         end
 
         %4) motion filter, convert to hemodynamic changes
-        [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr);
+        [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
 
         %5) final data quality assessment, remove uncertain channels
         % default is to use Pearson's correlation to check how impactful
@@ -176,7 +178,6 @@ for i=1:length(currdir)
             writetable(mni_ch_table,strcat(outpath,filesep,'channel_mnicoords.csv'),'Delimiter',',');
         end
     end
-
 end
 
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
