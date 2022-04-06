@@ -72,7 +72,6 @@ for i=1:length(currdir)
                 if begintime>0
                     d = d(begintime:end,:);
                     s = s(begintime:end,:);
-                    t = t(begintime:end,:);
                     if device==3
                         auxbegin = round(aux.samprate*begintime/samprate);
                         aux.data = aux.data(auxbegin:end,:,:);
@@ -90,7 +89,6 @@ for i=1:length(currdir)
 
             d = d(begintime:endScan,:);
             s = s(begintime:endScan,:);
-            t = t(begintime:endScan);
             
             if device == 3
                 if begintime>0
@@ -113,7 +111,8 @@ for i=1:length(currdir)
             SD.MeasListAct = [channelmask'; channelmask'];
             SD.MeasListVis = SD.MeasListAct;
         end
-
+        t = t(begintime:end);
+        
         %4) motion filter, convert to hemodynamic changes
         [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
 
