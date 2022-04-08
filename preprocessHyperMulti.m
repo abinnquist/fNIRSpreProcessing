@@ -47,14 +47,16 @@ for i=1:length(currdir)
             if ~exist(outpath,'dir')
 
             %1) extract data values
-            pp=dir(strcat(scanfolder,filesep,'*_probeInfo.mat'));
-            load(fullfile(pp.folder,filesep,pp.name));
-            if ~exist('probeInfo','var') && device==1
-                error('ERROR: Scan  does not contain a probeInfo object');
-            elseif ~exist('probeInfo','var') && device~=1
-                coords=[];
-            else
-                coords=probeInfo.probes.coords_c3;
+            if k==1
+                pp=dir(strcat(scanfolder,filesep,'*_probeInfo.mat'));
+                if isempty(pp) && device==1
+                    error('ERROR: Scan  does not contain a probeInfo object');
+                elseif isempty(pp) && device~=1
+                    coords=[];
+                elseif ~isempty(pp) 
+                    load(fullfile(pp.folder,filesep,pp.name));
+                    coords=probeInfo.probes.coords_c3;
+                end
             end
 
             if device==1
