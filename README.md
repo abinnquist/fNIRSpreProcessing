@@ -5,7 +5,7 @@ SCN Lab current preprocessing pipeline (12/26/2021). For an older version see: h
 UCLA SCN lab preprocessing function for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Currently updating to preprocess SNIRF files.
 
 # About 
-This is a pretty simple function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
+This is a script you can run OR use as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
 It also only supports data formats collected with NIRx and TechEn, but new ones can be implemented if needed (SNIRF files in progress). 
 See below for more details on each step of the pipeline, and how to use this code yourself. 
 (Note: lightly maintained, so don't be surprised to find bugs right now. Please report any you see!)
@@ -38,16 +38,25 @@ Default threshold is set to 0.1 in preprocessingfNIRS. In testQCoD, change this 
 check if the currently selected QCoD threshold for bad channel marking is what you want. Can be run on raw data, but does not do any other preprocessing. 
 
 # How to Use
-- To download: clone or pull repo to your desired local directory. Then add folder and subfolders to your Matlab path via: 
+To download: clone or pull repo to your desired local directory. Then add folder and subfolders to your Matlab path via: 
 addpath(genpath('[YOUR DIRECTORY]'));
 
-- the function preprocessingfNIRS takes 4 arguments: 
+OPTION 1: as a script 
+-Change the inputs on runPreproc.m  
+-Ensure you are in the over arching folder that fNIRSpreProcessing is stored in
+-Hit the run button (play) on the runPreproc.m script
+
+OPTION 2: as a function
+- Run the function preprocessingfNIRS from the command window
+- takes 4 arguments: preprocessingfNIRS(dataprefix,  hyperscan, multiscan, motionCorr, numaux)
+- Example: preprocessingfNIRS('IPC', 1, 1, 2, 2) <- for a dyadic study with multiple scans and 2 accelerometers.
+
 1. Dataprefix string; prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
 2. Hyperscanning marker, boolean (1 if hyperscanning, 0 if single subject) 
 3. Multiscan marker (1 if multiple scans per participant, 0 if single scan)
 4. Preferred Motion correction (0 = baseline volatility, 1 = PCA, 2 = baseline & CBSI, 3 = PCA & CBSI) 
 
-- No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
+- No output arguments for either option, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
 *There is one command line prompt if you want to use a trim.csv which would be a premade csv based on trim times for data (i.e., start and stop time). Will overide any existing triggers. This was added for use in studies that may not have triggers or for studies where you want to trim accordingly to synch with videos.
