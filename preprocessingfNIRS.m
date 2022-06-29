@@ -1,5 +1,5 @@
 
-%If using snirf file path must be in folder that contains Homer3 
+%If using snirf file pwd must contain Homer3 
 %required inpaint_nans, homer2 scripts for non-snirf processing
 
 function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
@@ -17,8 +17,8 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %       numaux: Number of aux inputs. Currently ONLY works for accelerometers.
 %               Other auxiliary inputs: eeg, pulse, etc.
 %
-%outputs: preprocessed and .nirs files in a new folder in rawdir called
-%           'PreProcessedFiles', sorted by subject
+%outputs: three options of preprocessed files in a new folder in rawdir called
+%           'PreProcessedFiles', sorted by subject. 
 
 % Supplemental csv for trimming scans. In the command window after data
 % trim: 0 or 1. 0 for no CSV, 1 for CSV. Structure below 
@@ -45,8 +45,8 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %       the correct SD Mask and ChannelDistance list into the .hdr file from a
 %       subject's .hdr file that had the correct montage.
 
-% added_path = [pwd,'/utils'];
-% addpath(added_path);
+%If the code is not already active in your path
+addpath(genpath('fNIRSpreProcessing'));
 
 rawdir=uigetdir('','Choose Data Directory');
 
