@@ -82,8 +82,7 @@ for i=1:length(currdir)
             % 2) Trim scans. Will choose based on whether you are using a
             % prespecified trim .csv
             if trim==0
-                    % 2a) Trim beginning of data to 10s before onset, if there is
-                    % a lot of dead time before that 
+                    % 2a) Trim beginning of data based on first trigger
                 ssum = sum(s,2);
                 stimmarks = find(ssum);
                 if length(stimmarks)>=1
@@ -98,6 +97,8 @@ for i=1:length(currdir)
                         end
                         stimmarks = stimmarks-begintime;
                     end
+                else %No data trim if no trigger
+                    begintime=1;
                 end
             else
                     % 2b) Trim nirs scan according to a specified begin
