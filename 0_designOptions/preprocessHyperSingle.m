@@ -81,6 +81,8 @@ for i=1:length(currdir)
                         end
                         stimmarks = stimmarks-begintime;
                     end
+                else %No data trim if no trigger
+                    begintime=1;
                 end
             else
                 % 2b) Trim nirs scan according to a specified begin
