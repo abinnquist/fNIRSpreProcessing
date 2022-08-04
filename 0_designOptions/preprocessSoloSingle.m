@@ -78,6 +78,8 @@ for i=1:length(currdir)
                         aux.time = aux.time(auxbegin:end,:,:);
                     end
                     stimmarks = stimmarks-begintime;
+                else %No data trim if no trigger
+                    begintime=1;
                 end
             end
         else
