@@ -20,14 +20,13 @@ clc; clear
 %
 % OUTPUTS: three options of preprocessed files, based on quality in a new folder 
     % in rawdir called 'PreProcessedFiles', sorted by subject. 
-
 % To compare different correction pipeline use 'preprocessingVisualize' in
 % the 'imagingORcomparisons' folder
 
 %% INPUTS: 
 dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
 hyperscan=0;    % 0 or 1. 1 if hyperscanning, 0 if single subject.
-multiscan=0;    % 0 or 1. 1 if multiple scans per person, 0 if single scan
+multiscan=1;    % 0 or 1. 1 if multiple scans per person, 0 if single scan
 motionCorr=3;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
                 % 2 = PCFilter (requires mapping toolbox)
@@ -37,8 +36,7 @@ numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
 %% To make all folders active in your path
-addpath(genpath('fNIRSpreProcessing'));
-
+addpath(genpath('fNIRSpreProcessing'))
 preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
 
 %% DEBUGGING TIPS:
@@ -54,4 +52,4 @@ preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
 %       the wrong probeInfo file was chosen, this will throw the error.
 %       also happens if the wrong montage was selected in recording, Simply copy-paste
 %       the correct SD Mask and ChannelDistance list into the .hdr file from a
-%       subject's .hdr file that had the correct montage.
+%       subject's .hdr file that had the correct montage.+
