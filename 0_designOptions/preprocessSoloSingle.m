@@ -57,9 +57,14 @@ for i=1:length(currdir)
             onset = trigInfo.Onset;
             s(find(t==onset(1)),1) = 1;
         end
-        digfile = strcat(subjfolder,filesep,'digpts.txt');
-        if device>=2 && exist(digfile,'file')
-            mni_ch_table = getMNIcoords(digfile, SD);
+        if SD.SrcPos==0
+            load(strcat(rawdir,filesep,dataprefix,'SD_fix.mat'))
+            digfile = strcat(rawdir,filesep,'digpts.txt');
+        else
+            digfile = strcat(subjfolder,filesep,'digpts.txt');
+            if device>=2 && exist(digfile,'file')
+                mni_ch_table = getMNIcoords(digfile, SD);
+            end
         end
 
         %2) Trim beginning of data or trim beginning and end off 
