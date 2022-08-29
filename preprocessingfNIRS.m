@@ -44,9 +44,9 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %       also happens if the wrong montage was selected in recording, Simply copy-paste
 %       the correct SD Mask and ChannelDistance list into the .hdr file from a
 %       subject's .hdr file that had the correct montage.
-
-%If the code is not already active in your path
-addpath(genpath('fNIRSpreProcessing'));
+addpath(genpath("0_designOptions\")); addpath(genpath("1_extractFuncs\")); 
+addpath(genpath("3_removeNoisy\")); addpath(genpath("4_filtering\"));
+addpath(genpath("5_qualityControl\")); addpath(genpath("6_imagingORcomparisons\"));
 
 rawdir=uigetdir('','Choose Data Directory');
 
