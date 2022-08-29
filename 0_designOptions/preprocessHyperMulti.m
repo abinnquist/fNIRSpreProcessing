@@ -13,7 +13,7 @@ scannames = {};
 trimQ = 'Would you like to use a csv to trim scans? If yes input 1 and if no input 0.\n';
 trim = input(trimQ);
 
-if trim==1
+if trim
     [trimTs, trimPath] = uigetfile('*.csv','Choose trim time CSV');
     trimTimes = strcat(trimPath,trimTs);
     trimTimes = readtable(trimTimes);
@@ -74,9 +74,14 @@ for i=1:length(currdir)
                 onset = trigInfo.Onset;
                 s(find(t==onset(1)),1) = 1;
             end
-            digfile = strcat(scanfolder,filesep,'digpts.txt');
-            if device>=2 && exist(digfile,'file')
-                mni_ch_table = getMNIcoords(digfile, SD);
+            if SD.SrcPos==0
+                load(strcat(rawdir,filesep,'SD_fix.mat'))
+                digfile = strcat(rawdir,filesep,'digpts.txt');
+            else
+                digfile = strcat(scanfolder,filesep,'digpts.txt');
+                if device>=2 && exist(digfile,'file')
+                    mni_ch_table = getMNIcoords(digfile, SD);
+                end
             end
 
             % 2) Trim scans. Will choose based on whether you are using a
@@ -90,7 +95,7 @@ for i=1:length(currdir)
                     if begintime>0
                         d = d(begintime:end,:);
                         s = s(begintime:end,:);
-                        if device==3
+                        if device==3 && numaux > 0
                             auxbegin = round(aux.samprate*begintime/samprate);
                             aux.data = aux.data(auxbegin:end,:,:);
                             aux.time = aux.time(auxbegin:end,:,:);
