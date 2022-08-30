@@ -77,6 +77,7 @@ for i=1:length(currdir)
             if SD.SrcPos==0
                 load(strcat(rawdir,filesep,'SD_fix.mat'))
                 digfile = strcat(rawdir,filesep,'digpts.txt');
+                mni_ch_table = getMNIcoords(digfile, SD);
             else
                 digfile = strcat(scanfolder,filesep,'digpts.txt');
                 if device>=2 && exist(digfile,'file')
