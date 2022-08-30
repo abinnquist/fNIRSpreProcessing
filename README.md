@@ -41,6 +41,8 @@ check if the currently selected QCoD threshold for bad channel marking is what y
 To download: clone or pull repo to your desired local directory. Then add folder and subfolders to your Matlab path via: 
 addpath(genpath('[YOUR DIRECTORY]'));
 
+NOTE: practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
+
 OPTION 1: as a script 
 -Change the inputs on runPreproc.m  
 -Ensure you are in the over arching folder that fNIRSpreProcessing is stored in
