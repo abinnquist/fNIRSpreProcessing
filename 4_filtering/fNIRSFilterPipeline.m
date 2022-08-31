@@ -8,7 +8,7 @@ function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr,
     %see hmrMotionArtifact in Homer2 documentation for parameter description
     
     if any(or(motionCorr==1,motionCorr==3))
-        [tInc,tIncCh] = hmrMotionArtifactByChannel(d, samprate, SD, ones(length(d),1), 1, 1, 5, 2);
+        [~,tIncCh] = hmrMotionArtifactByChannel(d, samprate, SD, ones(length(d),1), 1, 1, 5, 2);
         dfiltered = BaselineVolatilityCorrection(d, samprate, SD, tIncCh);
         [dconverted, ~] = hmrIntensity2Conc(dfiltered, SD, samprate, 0.008, 0.2, [6, 6]);
     end
