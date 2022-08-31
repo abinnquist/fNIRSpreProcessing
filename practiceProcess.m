@@ -11,11 +11,12 @@ motionCorr=3;   % 0 = no motion correction (not reccommended unless comparing)
                 % 4 = CBSI only
 numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
-i=1; % dyad
-j=1; % subject
-k=1; % scan
+i=2; % dyad
+j=2; % subject
+k=3; % scan
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
+
 addpath(genpath("0_designOptions\")); addpath(genpath("1_extractFuncs\")); 
 addpath(genpath("3_removeNoisy\")); addpath(genpath("4_filtering\"));
 addpath(genpath("5_qualityControl\")); addpath(genpath("6_imagingORcomparisons\"));
@@ -30,6 +31,7 @@ end
 
 %% Select your device and trim choice
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
+
 [device,~] = listdlg('PromptString', 'Select acquisition device:',...
     'SelectionMode', 'single', 'ListString', supported_devices);
 
