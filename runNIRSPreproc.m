@@ -25,7 +25,7 @@ clc; clear
 
 %% INPUTS: 
 dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-hyperscan=0;    % 0 or 1. 1 if hyperscanning, 0 if single subject.
+hyperscan=1;    % 0 or 1. 1 if hyperscanning, 0 if single subject.
 multiscan=1;    % 0 or 1. 1 if multiple scans per person, 0 if single scan
 motionCorr=3;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
