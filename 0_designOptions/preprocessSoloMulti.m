@@ -10,14 +10,17 @@ supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file'
 
 scannames = {};
 
-trimQ = 'Would you like to use a csv to trim scans? If yes input 1 and if no input 0.\n';
-trim = input(trimQ);
+trim = questdlg('Would you like to use a csv to trim scans?', ...
+	'Trim csv','Yes','No','No');
 
-if trim==1
+if trim == "Yes"
+    trim=1;
     [trimTs, trimPath] = uigetfile('*.csv','Choose trim time CSV');
     trimTimes = strcat(trimPath,trimTs);
     trimTimes = readtable(trimTimes);
     clear trimPath trimTs
+else
+    trim=0;
 end
 
 for i=1:length(currdir)
@@ -213,7 +216,15 @@ end
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 qualityReport(dataprefix,0,1,scannames,numchannels,preprocdir);
 
-    
+if compInfo{1,1}=='1'
+    numScans=str2num(compInfo{2,1});
+    zdim=str2num(compInfo{3,1});
+    ch_reject=str2num(compInfo{4,1});
+    [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocdir,dataprefix,ch_reject,numScans,zdim);
+
+    save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
+end
+
 Elapsedtime = toc(Elapsedtime);
 fprintf('\n\t Elapsed time: %g seconds\n', Elapsedtime);
 
