@@ -11,9 +11,9 @@ motionCorr=3;   % 0 = no motion correction (not reccommended unless comparing)
                 % 4 = CBSI only
 numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
-i=2; % dyad
-j=2; % subject
-k=3; % scan
+i=1; % dyad
+j=1; % subject
+k=1; % scan
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
 
