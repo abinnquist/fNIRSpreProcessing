@@ -3,13 +3,13 @@ clc; clear
 % This script is for better understanding the pipeline and should not be
 % used for batch process
 %% INPUTS: 
-dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-motionCorr=3;   % 0 = no motion correction (not reccommended unless comparing)
+dataprefix='SS'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+motionCorr=0;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
-                % 2 = PCFilter (requires mapping toolbox)
+                % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
                 % 3 = baseline volatility & CBSI
                 % 4 = CBSI only
-numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 i=1; % dyad
 j=1; % subject
@@ -83,18 +83,6 @@ elseif device==3 %NIRSport & other brands
     s(find(t==onset(1)),1) = 1;
 end
 
-% This loop will create the correct MNI based on probe/digipts
-if SD.SrcPos==0
-    load(strcat(rawdir,filesep,'SD_fix.mat'))
-    digfile = strcat(rawdir,filesep,'digpts.txt');
-    mni_ch_table = getMNIcoords(digfile, SD);
-else
-    digfile = strcat(scanfolder,filesep,'digpts.txt');
-    if device>=2 && exist(digfile,'file')
-        mni_ch_table = getMNIcoords(digfile, SD);
-    end
-end
-
 %% 2) Trim scans
 % Trim beginning of data based on first trigger
 ssum = sum(s,2);
@@ -128,6 +116,19 @@ elseif device==2 || device==3
     SD.MeasListAct = [channelmask'; channelmask'];
     SD.MeasListVis = SD.MeasListAct;
 end
+
+% This loop will create the correct MNI based on probe/digipts
+if SD.SrcPos==0
+    load(strcat(rawdir,filesep,'SD_fix.mat'))
+    digfile = strcat(rawdir,filesep,'digpts.txt');
+    mni_ch_table = getMNIcoords(digfile, SD);
+else
+    digfile = strcat(scanfolder,filesep,'digpts.txt');
+    if device>=2 && exist(digfile,'file')
+        mni_ch_table = getMNIcoords(digfile, SD);
+    end
+end
+
 t = t(begintime:end); %This trims our frames to the same legnth as data
 
 %% 4) motion filter, convert to hemodynamic changes
