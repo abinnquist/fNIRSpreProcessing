@@ -19,10 +19,9 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 - FOLDER STRUCTURE
 	- 0_designOptions/
 	- 1_extractFuncs/
-     		- The inpain_nans dependency that interpolates missing values in a timecourse stored here. 
 	- 2_trimming/
 	- 3_removeNoisy/
-     		- motionCorrs/
+		- motionCorrs/
           			- wavelet/
      		- raw_OD_concentration/
 	- 4_filtering/
@@ -32,7 +31,8 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
      		- In development
 
 - Currently there are five options asked for by the input motionCorr: 
-	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. I'm leaning toward wavelet currently.
+	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. 
+	- I'm leaning toward wavelet currently.
 
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
 fNIRS channel. Doing so is our current approach to finding bad channels (good channels have a preponderance of signal in slow frequencies, pure noise has random amounts of signal at every frequency). 
