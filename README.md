@@ -12,6 +12,12 @@ See below for more details on each step of the pipeline, and how to use this cod
 The script depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
+# Requirements: 
+	- Dependencies mentioned above 
+	- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. Omit Group or Scan level if the data is not hyperscanning or not multiscan, respectively. All files must be together in each raw file folder. 
+		- ALL dyads, subjects, and scan folders must start with a study-specific prefix or they will be skipped
+	- If using Snirf file for preprocessing you MUST have Homer3
+
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
 
@@ -48,6 +54,37 @@ To download: clone or pull repo to your desired local directory.
 OPTION 1: With GUI pop-ups 
 - Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
 - Hit Run (big green triangle) on runNIRSPreproc.m script, the script will add the paths for you. 
+- You will get a series of pop-ups described below
+	- 1. Pop-up (4 inputs): 
+		- Dataprefix for all folders of interest: Letters or numbers (e.g., IPC, SS, 0)
+		- Hyperscan: 0=no, 1=yes 
+		- Multiple scans per subject/dyad: 0=no, 1=yes
+		- Number of auxiliaries: 0-n (n=however many you have)
+	- 2. Pop-up (select one): What type of motion correction do you want to use?
+	- 3. Pop-up (select one): What machine collected the data? 
+		- NIRScout 
+		- NIRSport 
+		- Snirf file (MUST have Homer3)
+	- 4. Pop-up: Select location of where the data folder that contains all your NIRS data is
+	- 5. Pop-up (select one): Do you want to trim the data before preproc, if so how? 
+		- No trim
+		- Trim from first trigger
+		- Trim begginning with supplemental .csv
+		- Trim begginning & end with supplemental .csv
+			- Structure of .csv below, handles 1-n scans per subject: 
+				- column_1 = subject or dyad number
+    				- column_2 = 1st scan where to start trim
+    				- column_3 = 1st scan length
+    				- column_4 = 2nd scan start trim
+    				- column_5 = 2nd scan length
+    				- column_n*2 = nth scan start trim
+    				- column_n*2+1 = nth scan length
+	- 6. Pop-up: If you want to compile the data into one .mat file. 
+		- Note: You MUST have the same number of scans for every subject.
+		- Compile data: 0=No, 1=Yes
+		- Number of scans: any number 1 to n. n=number of scans per subject
+    		- Z-scored: 0=oxy/deoxy, 1=z_oxy/z_deoxy
+    		- Channel rejection: 1=none, 2=noisy only, 3=noisy and uncertain 
 
 OPTION 2: as a function
 - In the command window: addpath(genpath('fNIRSpreProcessing')) 
@@ -56,17 +93,13 @@ OPTION 2: as a function
      - Example: preprocessingfNIRS('IPC', 1, 1, 3, 2) <- for a dyadic study, with multiple scans, PCA selected as motion correction, and 2 accelerometers.
 
 1. Dataprefix string: prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
-2. Hyperscanning marker: 1 = hyperscanning, 0 = single subject 
-3. Multiscan marker: 1 = multiple scans per participant, 0 = single scan
-4. Preferred Motion correction: 1 = baseline volatility, 1 = baseline volatility, 2 = PCFilter, 3 = PCA by channel, 4=CBSI, 5=Wavelet, 6=None 
-5. Number of Auxiliary: If you have 2 acceloromters or 1 pulse oximeter
+2. Hyperscanning marker: 1=hyperscanning, 0=single subject 
+3. Multiscan marker: 1=multiple scans per participant, 0=single scan
+4. Preferred Motion correction: 1=baseline volatility, 1=baseline volatility, 2=PCFilter, 3=PCA by channel, 4=CBSI, 5=Wavelet, 6=None 
+5. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
 
 - No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
-
-- Requirements: besides dependencies installed, data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
-Omit Group or Scan level if the data is not hyperscanning or not multiscan, respectively. All files must be together in each raw file folder. 
-***All subjects and scans must start with a study-specific prefix***
 
 # Known Difficulties
 1. Since this is still being worked on, here are some known issues that might pop up and how to fix them right now:
