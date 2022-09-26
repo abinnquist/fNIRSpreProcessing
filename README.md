@@ -17,7 +17,7 @@ If you want to use a Snirf file you must downloaded the full Homer3 toolbox at h
 	- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
 		- Omit Group or Scan level if the data is not hyperscan or multiscan, respectively. 
 		- All files must be together in each raw file folder. 
-		- ALL dyads, subjects, and scan folders must start with a study-specific prefix or they will be skipped
+		- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
 	- If using Snirf file for preprocessing you MUST have Homer3
 
 # Contents
