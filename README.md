@@ -13,26 +13,26 @@ The script depends on two publicly available Matlab packages - inpaint_nans and 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
 # Contents
-- preprocessingfNIRS is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
+preprocessingfNIRS is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
 Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify.
 
--FOLDER STRUCTURE
-	-0_designOptions/
-	-1_extractFuncs/
+- FOLDER STRUCTURE
+	- 0_designOptions/
+	- 1_extractFuncs/
      		- The inpain_nans dependency that interpolates missing values in a timecourse stored here. 
-	-2_trimming/
-	-3_removeNoisy/
-     		-motionCorrs/
-          			-wavelet/
-     		-raw_OD_concentration/
-	-4_filtering/
-	-5_qualityControl/
-	-6_compileData/
-	-helperScripts/
-     		-In development
+	- 2_trimming/
+	- 3_removeNoisy/
+     		- motionCorrs/
+          			- wavelet/
+     		- raw_OD_concentration/
+	- 4_filtering/
+	- 5_qualityControl/
+	- 6_compileData/
+	- helperScripts/
+     		- In development
 
 - Currently there are five options asked for by the input motionCorr: 
-	-Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. I'm leaning toward wavelet currently.
+	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. I'm leaning toward wavelet currently.
 
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
 fNIRS channel. Doing so is our current approach to finding bad channels (good channels have a preponderance of signal in slow frequencies, pure noise has random amounts of signal at every frequency). 
@@ -45,8 +45,8 @@ check if the currently selected QCoD threshold for bad channel marking is what y
 To download: clone or pull repo to your desired local directory. 
 
 OPTION 1: With GUI pop-ups 
--Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
--Hit Run (big green triangle) on runNIRSPreproc.m script, the script will add the paths for you. 
+- Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
+- Hit Run (big green triangle) on runNIRSPreproc.m script, the script will add the paths for you. 
 
 OPTION 2: as a function
 - In the command window: addpath(genpath('fNIRSpreProcessing')) 
@@ -68,14 +68,14 @@ Omit Group or Scan level if the data is not hyperscanning or not multiscan, resp
 
 # Known Difficulties
 1. Since this is still being worked on, here are some known issues that might pop up and how to fix them right now:
- - UPDATE: The problem below should be fixed. Please let me know if this problem is still occuring.
+ 	- UPDATE: The problem below should be fixed. Please let me know if this problem is still occuring.
  If you get an "Index exceeds matrix dimensions" error in hmrMotionArtifact for a subject that's not the first file: Check the SD Mask structure in the .hdr 
  of that subject to see if it matches the channel structure of the selected probeInfo file. If the wrong probeInfo file was chosen, this will throw the error. 
  also happens if the wrong montage was selected in recording, Simply copy-paste the correct SD Mask and ChannelDistance list into the .hdr file from a 
  subject's .hdr file that had the correct montage. 
  
  2. Delete all false start files from the data directory, or will cause script to error out. 
-- UPDATE: If the script errored out while preprocessing but what was processing was done correctly you should be able to start from that point. However, probably
+	- UPDATE: If the script errored out while preprocessing but what was processing was done correctly you should be able to start from that point. However, probably
 best to start fresh.
 
 3. The main folder should be 'fNIRSpreProcessing' NOT 'fNIRSpreProcessing-main' remove the '-main' if so.
