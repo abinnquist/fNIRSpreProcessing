@@ -1,42 +1,26 @@
-function preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, numaux)
+function preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
 
-supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
-[device,~] = listdlg('PromptString', 'Select acquisition device:',...
-    'SelectionMode', 'single', 'ListString', supported_devices);
-
-scannames = {};
-
-trim = questdlg('Would you like to use a csv to trim scans?', ...
-	'Trim csv','Yes','No','No');
-
-if trim == "Yes"
-    trim=1;
-    [trimTs, trimPath] = uigetfile('*.csv','Choose trim time CSV');
-    trimTimes = strcat(trimPath,trimTs);
-    trimTimes = readtable(trimTimes);
-    clear trimPath trimTs
-else
-    trim=0;
-end
+compInfo = inputdlg({'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)',...
+    'Compile Z-score? (0=no, 1=yes)','Which channel rejection? (1=none, 2=noisy, or 3=noisy and uncertain)'},...
+              'Compile data info', [1 35]); 
 
 for i=1:length(currdir)
     subjname=currdir(i).name;  
     subjdir=dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
+    scannames = {};
 
         for k=1:length(subjdir)
             scanname = subjdir(k).name;
+            scannames = [scannames,scanname];
+
             msg = sprintf('\n\t subj %d/%d, scan %d/%d ...',i,length(currdir),k,length(subjdir));
             fprintf([reverseStr,msg]);
-            reverseStr = repmat(sprintf('\b'),1,length(msg)); 
-            subscanname = scanname(length(subjname)+1:end);
-            subscanname = regexprep(subscanname,'_','');
-            if ~any(strcmp(scannames,subscanname))
-                scannames = [scannames,subscanname];
-            end
+            reverseStr = repmat(sprintf('\b'),1,length(msg));
+            
             scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
             outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,subjname,filesep,scanname);
 
@@ -56,6 +40,10 @@ for i=1:length(currdir)
 
             if device==1
                 [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+                if probenumchannels~=datanumchannels
+                    error('ERROR: number of data channels in hdr file does not match number of channels in probeInfo file.');
+                end
+                [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo);
             elseif device==2
                 [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
             elseif device==3
@@ -75,63 +63,9 @@ for i=1:length(currdir)
                 end
             end
 
-            %2) Trim beginning of data or trim beginning and end off
-            if trim==0
-                % 2a) Trim beginning of data based on first trigger
-                ssum = sum(s,2);
-                stimmarks = find(ssum);
-                if length(stimmarks)>=1
-                    begintime = stimmarks(1);
-                    if begintime>0
-                        d = d(begintime:end,:);
-                        s = s(begintime:end,:);
-                        if device==3
-                            auxbegin = round(aux.samprate*begintime/samprate);
-                            aux.data = aux.data(auxbegin:end,:,:);
-                            aux.time = aux.time(auxbegin:end,:,:);
-                        end
-                        stimmarks = stimmarks-begintime;
-                    else %No data trim if no trigger
-                        begintime=1;
-                    end
-                end
-            else
-                % 2b) Trim nirs scan according to when specified begin
-                % and end point. Best used for conversational data.
-                stimmarks=0;
-                if k==1
-                    begintime=round(table2array(trimTimes(i,2))*samprate);
-                    endScan=begintime + round(table2array(trimTimes(i,3))*samprate);
-                elseif k==2
-                    begintime=round(table2array(trimTimes(i,4))*samprate);
-                    endScan=begintime + round(table2array(trimTimes(i,5))*samprate);
-                else
-                    ssum = sum(s,2);
-                    stimmarks = find(ssum);
-                    if length(stimmarks)>=1
-                        begintime = stimmarks(1);
-                        endScan = length(d)-round(5*samprate); %trims off last 5secs
-                        % if you have end of scan trigger uncomment below
-                        %endScan = stimmarks(2);
-                    else
-                        begintime = 1;
-                        endScan = length(d)-round(5*samprate);
-                        % if you have end of scan trigger uncomment below
-                        %endScan = stimmarks(2);
-                    end
-                end
-
-                d = d(begintime:endScan,:);
-                s = s(begintime:endScan,:);
-                if device == 3
-                    if begintime>0
-                        auxbegin = round(aux.samprate*begintime/samprate);
-                        auxend = round(aux.samprate*endScan/samprate);
-                        aux.data = aux.data(auxbegin:auxend,:,:);
-                        aux.time = aux.time(auxbegin:auxend,:,:);
-                    end
-                end
-            end
+            % 2) Trim scans: no=0, trim beginnin=1, trim begin & end=2
+            scanNum=k; subj=i; numScans=length(subjdir);
+            [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, numaux, aux);
 
             %3) identify noisy channels
             satlength = 2; %in seconds
@@ -144,7 +78,6 @@ for i=1:length(currdir)
                 SD.MeasListAct = [channelmask'; channelmask'];
                 SD.MeasListVis = SD.MeasListAct;
             end
-            t = t(begintime:end);
             
             %4) motion filter, convert to hemodynamic changes
             [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
@@ -216,6 +149,7 @@ end
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 qualityReport(dataprefix,0,1,scannames,numchannels,preprocdir);
 
+%6) Compile data into one .mat file
 if compInfo{1,1}=='1'
     numScans=str2num(compInfo{2,1});
     zdim=str2num(compInfo{3,1});
