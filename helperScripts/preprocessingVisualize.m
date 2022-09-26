@@ -5,7 +5,7 @@ clear
 %% Parameters
 labelPlots = 0; % Set to 0 to remove channel labels (1-108) on graphs
 specificChannel = 0; % Set to 0 for all channels, 1-108 for specific channel
-currentCorrection= 'volatility correction'; %Name of correction used
+currentCorrection= 'Wave & CBSI'; %Name of correction used
 
 %% Main Code Body
 % Select data to plot 
