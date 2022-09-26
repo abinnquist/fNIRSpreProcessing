@@ -4,7 +4,7 @@ SCN Lab current preprocessing pipeline (09/25/2022). For an older/different vers
 # General
 UCLA SCN lab preprocessing pipeline for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Will preprocess Snirf files but only if you have Homer3 toolbox.
 
-# About: Gui-based or command line function
+# About Gui-based or function options
 runNIRSpreproc.mat is a script you can run with Gui pop-ups OR use prepreprocessingfNIRS.mat as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
 See below for more details on each step of the pipeline, and how to use this code yourself. 
 
@@ -12,7 +12,7 @@ See below for more details on each step of the pipeline, and how to use this cod
 The script depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
-# Requirements 
+# Other Requirements 
 	- Dependencies mentioned above 
 	- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. Omit Group or Scan level if the data is not hyperscanning or not multiscan, respectively. All files must be together in each raw file folder. 
 		- ALL dyads, subjects, and scan folders must start with a study-specific prefix or they will be skipped
