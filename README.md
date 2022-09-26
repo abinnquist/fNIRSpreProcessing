@@ -13,7 +13,6 @@ The script depends on two publicly available Matlab packages - inpaint_nans and 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
 # Other Requirements 
-	- Dependencies mentioned above 
 	- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
 		- Omit Group or Scan level if the data is not hyperscan or multiscan, respectively. 
 		- All files must be together in each raw file folder. 
