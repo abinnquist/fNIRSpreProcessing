@@ -1,39 +1,38 @@
 # fNIRSpreProcessing
-SCN Lab current preprocessing pipeline (09/25/2022). For an older version see: https://github.com/smburns47/preprocessingfNIRS
+SCN Lab current preprocessing pipeline (09/25/2022). For an older/different version see: https://github.com/smburns47/preprocessingfNIRS -- much of the credit is due to Shannon Burns for this pipeline as most of what has been done here was built upon her work. 
 
-# preprocessingfNIRS
-UCLA SCN lab preprocessing function for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Will preprocess Snirf files but only if you have Homer3 toolbox.
+# General
+UCLA SCN lab preprocessing pipeline for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Will preprocess Snirf files but only if you have Homer3 toolbox.
 
-# About 
-This is a script you can run with Gui pop-ups OR use as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
+# About: Gui-based or command line function
+runNIRSpreproc.mat is a script you can run with Gui pop-ups OR use prepreprocessingfNIRS.mat as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
 See below for more details on each step of the pipeline, and how to use this code yourself. 
 
 # Dependencies
-preprocessingfNIRS depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
+The script depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
 # Contents
-- preprocessingfNIRS is structured as 6-step pipeline: extracting raw data from files; trimming dead time; removing bad channels; creating auxillary variables used by the 
-Homer2.nirs data format; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
+- preprocessingfNIRS is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
 Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify.
 
-FOLDER STRUCTURE
--0_designOptions/
--1_extractFuncs/
-     - The inpain_nans dependency that interpolates missing values in a timecourse stored here. 
--2_trimming/
--3_removeNoisy/
-     -motionCorrs/
-          -wavelet/
-     -raw_OD_concentration/
--4_filtering/
--5_qualityControl/
--6_compileData/
--helperScripts/
-     -In development
+-FOLDER STRUCTURE
+	-0_designOptions/
+	-1_extractFuncs/
+     		- The inpain_nans dependency that interpolates missing values in a timecourse stored here. 
+	-2_trimming/
+	-3_removeNoisy/
+     		-motionCorrs/
+          			-wavelet/
+     		-raw_OD_concentration/
+	-4_filtering/
+	-5_qualityControl/
+	-6_compileData/
+	-helperScripts/
+     		-In development
 
 - Currently there are five options asked for by the input motionCorr: 
-      -Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. I'm leaning toward wavelet currently.
+	-Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. I'm leaning toward wavelet currently.
 
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
 fNIRS channel. Doing so is our current approach to finding bad channels (good channels have a preponderance of signal in slow frequencies, pure noise has random amounts of signal at every frequency). 
@@ -44,8 +43,6 @@ check if the currently selected QCoD threshold for bad channel marking is what y
 
 # How to Use
 To download: clone or pull repo to your desired local directory. 
-
-NOTE: In helperScripts/practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
 
 OPTION 1: With GUI pop-ups 
 -Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
@@ -84,4 +81,5 @@ best to start fresh.
 3. The main folder should be 'fNIRSpreProcessing' NOT 'fNIRSpreProcessing-main' remove the '-main' if so.
 
 # FAQ Not Covered Above
+- In helperScripts/practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
 - COMING SOON: I will have a video(s) with a walkthrough on how to use the script for different types of data.
