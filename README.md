@@ -22,13 +22,13 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 	- 2_trimming/
 	- 3_removeNoisy/
 		- motionCorrs/
-          			- wavelet/
+			- wavelet/
      		- raw_OD_concentration/
 	- 4_filtering/
 	- 5_qualityControl/
 	- 6_compileData/
 	- helperScripts/
-     		- In development
+		- In development
 
 - Currently there are five options asked for by the input motionCorr: 
 	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. 
