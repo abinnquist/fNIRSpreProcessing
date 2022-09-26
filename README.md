@@ -1,34 +1,39 @@
 # fNIRSpreProcessing
-SCN Lab current preprocessing pipeline (12/26/2021). For an older version see: https://github.com/smburns47/preprocessingfNIRS
+SCN Lab current preprocessing pipeline (09/25/2022). For an older version see: https://github.com/smburns47/preprocessingfNIRS
 
 # preprocessingfNIRS
-UCLA SCN lab preprocessing function for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Currently updating to preprocess SNIRF files.
+UCLA SCN lab preprocessing function for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Will preprocess Snirf files but only if you have Homer3 toolbox.
 
 # About 
-This is a script you can run OR use as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
-It also only supports data formats collected with NIRx and TechEn, but new ones can be implemented if needed (SNIRF files in progress). 
+This is a script you can run with Gui pop-ups OR use as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
 See below for more details on each step of the pipeline, and how to use this code yourself. 
-(Note: lightly maintained, so don't be surprised to find bugs right now. Please report any you see!)
 
 # Dependencies
-preprocessingfNIRS depends on two publicly available Matlab packages - inpaint_nans and Homer2. The first is small and included with the preprocessingfNIRS repo. 
-The second is a larger collection of various fNIRS processing functions and can be downloaded at https://www.nitrc.org/projects/homer2. I am currently looking into Homer3 but 
-for now we are still using Homer2.
+preprocessingfNIRS depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
+If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
 # Contents
-- preprocessingfNIRS is structured as 5-step pipeline: extracting raw data from files; trimming dead time; removing bad channels; creating auxillary variables used by the 
-Homer2.nirs data format; preprocessing the data with our chosen algorithms from Homer2. Please see comments in main.m file to read about specific functionality.  
+- preprocessingfNIRS is structured as 6-step pipeline: extracting raw data from files; trimming dead time; removing bad channels; creating auxillary variables used by the 
+Homer2.nirs data format; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
+Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify.
 
-- extractNIRxData/extractTechEnData do step 1, reading in raw nirs data.
+FOLDER STRUCTURE
+-0_designOptions/
+-1_extractFuncs/
+     - The inpain_nans dependency that interpolates missing values in a timecourse stored here. 
+-2_trimming/
+-3_removeNoisy/
+     -motionCorrs/
+          -wavelet/
+     -raw_OD_concentration/
+-4_filtering/
+-5_qualityControl/
+-6_compileData/
+-helperScripts/
+     -In development
 
-- removeBadChannels does step 3, creating a mask for which channels to keep or to mark as noise and remove (see below entry for testQCoD for removal method).
-
-- getMiscNirsVars does step 4, creating auxillary variables from data if it wasn't already in a .nirs format (the format Homer2 uses)
-
-- fNIRSFilterPipeline does the last step, our current default filtering pipeline. Add or remove methods from here to change up exactly how the data is 
-preprocessed (this is where the Homer2 dependency comes in). 
-
-- The inpain_nans dependency. A small helper function that interpolates missing values in a timecourse. 
+- Currently there are five options asked for by the input motionCorr: 
+      -Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. I'm leaning toward wavelet currently.
 
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
 fNIRS channel. Doing so is our current approach to finding bad channels (good channels have a preponderance of signal in slow frequencies, pure noise has random amounts of signal at every frequency). 
@@ -38,49 +43,45 @@ Default threshold is set to 0.1 in preprocessingfNIRS. In testQCoD, change this 
 check if the currently selected QCoD threshold for bad channel marking is what you want. Can be run on raw data, but does not do any other preprocessing. 
 
 # How to Use
-To download: clone or pull repo to your desired local directory. Then add folder and subfolders to your Matlab path via: 
-addpath(genpath('[YOUR DIRECTORY]'));
+To download: clone or pull repo to your desired local directory. 
 
-NOTE: practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
+NOTE: In helperScripts/practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
 
-OPTION 1: as a script 
--Change the inputs on runPreproc.m  
--Ensure you are in the over arching folder that fNIRSpreProcessing is stored in
--Hit the run button (play) on the runPreproc.m script
+OPTION 1: With GUI pop-ups 
+-Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
+-Hit Run (big green triangle) on runNIRSPreproc.m script, the script will add the paths for you. 
 
 OPTION 2: as a function
+- In the command window: addpath(genpath('fNIRSpreProcessing')) 
 - Run the function preprocessingfNIRS from the command window
-- takes 4 arguments: preprocessingfNIRS(dataprefix,  hyperscan, multiscan, motionCorr, numaux)
-- Example: preprocessingfNIRS('IPC', 1, 1, 2, 2) <- for a dyadic study with multiple scans and 2 accelerometers.
+- takes 4 arguments: preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
+     - Example: preprocessingfNIRS('IPC', 1, 1, 3, 2) <- for a dyadic study, with multiple scans, PCA selected as motion correction, and 2 accelerometers.
 
 1. Dataprefix string; prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
 2. Hyperscanning marker, boolean (1 if hyperscanning, 0 if single subject) 
 3. Multiscan marker (1 if multiple scans per participant, 0 if single scan)
-4. Preferred Motion correction (0 = baseline volatility, 1 = PCA, 2 = baseline & CBSI, 3 = PCA & CBSI) 
+4. Preferred Motion correction (1 = baseline volatility, 1 = baseline volatility, 2 = PCFilter, 3 = PCA by channel, 4=CBSI, 5=Wavelet, 6=None) 
 
-- No output arguments for either option, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
+- No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
-*There is one command line prompt if you want to use a trim.csv which would be a premade csv based on trim times for data (i.e., start and stop time). Will overide any existing triggers. This was added for use in studies that may not have triggers or for studies where you want to trim accordingly to synch with videos.
-
-- COMING SOON: I will have a video(s) with a walkthrough on how to use the script for different types of data.
-
-- preprocessingfNIRS requirements: besides dependencies installed, data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
+- Requirements: besides dependencies installed, data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
 Omit Group or Scan level if the data is not hyperscanning or not multiscan, respectively. All files must be together in each raw file folder. 
-**All subjects and scans must start with a study-specific prefix**
+***All subjects and scans must start with a study-specific prefix***
 
 # Known Difficulties
-Since this is still being worked on, here are some known issues that might pop up and how to fix them right now:
+1. Since this is still being worked on, here are some known issues that might pop up and how to fix them right now:
  - UPDATE: The problem below should be fixed. Please let me know if this problem is still occuring.
  If you get an "Index exceeds matrix dimensions" error in hmrMotionArtifact for a subject that's not the first file: Check the SD Mask structure in the .hdr 
  of that subject to see if it matches the channel structure of the selected probeInfo file. If the wrong probeInfo file was chosen, this will throw the error. 
  also happens if the wrong montage was selected in recording, Simply copy-paste the correct SD Mask and ChannelDistance list into the .hdr file from a 
  subject's .hdr file that had the correct montage. 
  
- Delete all false start files from the data directory, or will cause script to error out. 
-
+ 2. Delete all false start files from the data directory, or will cause script to error out. 
 - UPDATE: If the script errored out while preprocessing but what was processing was done correctly you should be able to start from that point. However, probably
 best to start fresh.
 
+3. The main folder should be 'fNIRSpreProcessing' NOT 'fNIRSpreProcessing-main' remove the '-main' if so.
+
 # FAQ Not Covered Above
-None yet, so ask me things if you're confused! 
+- COMING SOON: I will have a video(s) with a walkthrough on how to use the script for different types of data.
