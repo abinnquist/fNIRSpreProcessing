@@ -12,7 +12,7 @@ See below for more details on each step of the pipeline, and how to use this cod
 The script depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
-# Requirements: 
+# Requirements 
 	- Dependencies mentioned above 
 	- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. Omit Group or Scan level if the data is not hyperscanning or not multiscan, respectively. All files must be together in each raw file folder. 
 		- ALL dyads, subjects, and scan folders must start with a study-specific prefix or they will be skipped
@@ -55,18 +55,18 @@ OPTION 1: With GUI pop-ups
 - Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
 - Hit Run (big green triangle) on runNIRSPreproc.m script, the script will add the paths for you. 
 - You will get a series of pop-ups described below
-	- 1. Pop-up (4 inputs): 
+	1. Pop-up (4 inputs): 
 		- Dataprefix for all folders of interest: Letters or numbers (e.g., IPC, SS, 0)
 		- Hyperscan: 0=no, 1=yes 
 		- Multiple scans per subject/dyad: 0=no, 1=yes
 		- Number of auxiliaries: 0-n (n=however many you have)
-	- 2. Pop-up (select one): What type of motion correction do you want to use?
-	- 3. Pop-up (select one): What machine collected the data? 
+	2. Pop-up (select one): What type of motion correction do you want to use?
+	3. Pop-up (select one): What machine collected the data? 
 		- NIRScout 
 		- NIRSport 
 		- Snirf file (MUST have Homer3)
-	- 4. Pop-up: Select location of where the data folder that contains all your NIRS data is
-	- 5. Pop-up (select one): Do you want to trim the data before preproc, if so how? 
+	4. Pop-up: Select location of where the data folder that contains all your NIRS data is
+	5. Pop-up (select one): Do you want to trim the data before preproc, if so how? 
 		- No trim
 		- Trim from first trigger
 		- Trim begginning with supplemental .csv
@@ -79,7 +79,7 @@ OPTION 1: With GUI pop-ups
     				- column_5 = 2nd scan length
     				- column_n*2 = nth scan start trim
     				- column_n*2+1 = nth scan length
-	- 6. Pop-up: If you want to compile the data into one .mat file. 
+	6. Pop-up: If you want to compile the data into one .mat file. 
 		- Note: You MUST have the same number of scans for every subject.
 		- Compile data: 0=No, 1=Yes
 		- Number of scans: any number 1 to n. n=number of scans per subject
