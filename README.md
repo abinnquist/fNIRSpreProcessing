@@ -13,7 +13,8 @@ The script depends on two publicly available Matlab packages - inpaint_nans and 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
 # Contents
-preprocessingfNIRS is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
+Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
+
 Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify.
 
 - FOLDER STRUCTURE
@@ -28,7 +29,7 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 	- 5_qualityControl/
 	- 6_compileData/
 	- helperScripts/
-		- In development
+		- In development/
 
 - Currently there are five options asked for by the input motionCorr: 
 	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. 
