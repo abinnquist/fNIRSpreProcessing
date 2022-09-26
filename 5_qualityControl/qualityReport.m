@@ -3,7 +3,7 @@ function qualityReport(dataprefix,hyperscan,multiscan,scannames,channelnum,prepr
 %inputs: 
 %       dataprefix: string. Prefix of every folder name that should be considered a
 %           data folder. E.g., ST for ST_101, ST_102, etc.  
-%       dyads: 0 or 1. 1 if hyperscanning, 0 if single subject.
+%       hyperscan: 0 or 1. 1 if hyperscanning, 0 if single subject.
 %       multiscan: 0 or 1. If the experiment has multiple scans per person
 %       channelnum: integer. Number of channels in the montage
 %       samprate: double. Sampling rate in experiment
@@ -27,14 +27,27 @@ end
 
 fprintf('\n\t Generating data quality reports ...\n')
     reverseStr = '';
-  
-qatable1a = array2table(cell(1,1));
-qatable1a.Properties.VariableNames={'subjname'};
+
+if multiscan
+    snames = extract(string(scannames),lettersPattern);
+    if strcmp(dataprefix,snames(1,1,1))
+        scannames=snames(1,:,2);
+    end
+end
+
+if hyperscan
+    qatable1a = array2table(cell(1,2));
+    qatable1a.Properties.VariableNames={'Dyad','subjname'};
+else
+    qatable1a = array2table(cell(1,1));
+    qatable1a.Properties.VariableNames={'subjname'};
+end
 qatable1b = array2table(zeros(1,length(scannames)));
 qatable1b.Properties.VariableNames=scannames;
 qatable1 = [qatable1a qatable1b];
 qatable2 = qatable1;
 qatable_copy = qatable1;
+
 chtable1a = array2table([1:channelnum]');
 chtable1a.Properties.VariableNames={'channelnum'};
 chtable1b = array2table(zeros(channelnum,length(scannames)));
@@ -47,6 +60,7 @@ if hyperscan
         msg = sprintf('\n\t group number %d/%d ...',i,length(currdir));
         fprintf([reverseStr,msg]);
         reverseStr = repmat(sprintf('\b'),1,length(msg));
+
         group=currdir(i).name;
         groupdir=dir(strcat(preprocdir,filesep,group,filesep,dataprefix,'*'));
         
@@ -54,6 +68,7 @@ if hyperscan
             subjname = groupdir(j).name;
             subjnamelength = length(subjname);
             qatable_copy.subjname{1} = subjname;
+            qatable_copy.Dyad{1} = group;
             qatable1 = [qatable1; qatable_copy];
             qatable2 = [qatable2; qatable_copy];
             subjdir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));
@@ -61,23 +76,22 @@ if hyperscan
             if multiscan
                 for k=1:length(subjdir)
                     scanname = subjdir(k).name;
-                    subscanname = scanname(subjnamelength+1:end);
-                    subscanname = regexprep(subscanname,'_','');
+                    currscan = scannames(k);
                     scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,'*_nonoisych.mat'));
                     if exist(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
                         load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                         goodchannels = ~isnan(z_oxy(1,:));
                         sumgoodchannels = sum(goodchannels);
-                        qatable1.(subscanname)(end) = sumgoodchannels;
-                        chtable1.(subscanname)(:) = chtable1.(subscanname)(:) + goodchannels';
+                        qatable1.(currscan)(end) = sumgoodchannels;
+                        chtable1.(currscan)(:) = chtable1.(currscan)(:) + goodchannels';
                     end
                     scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,'*_nouncertainch.mat'));
                     if exist(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
                         load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                         goodchannels = ~isnan(z_oxy(1,:));
                         sumgoodchannels = sum(goodchannels);
-                        qatable2.(subscanname)(end) = sumgoodchannels;
-                        chtable2.(subscanname)(:) = chtable2.(subscanname)(:) + goodchannels';
+                        qatable2.(currscan)(end) = sumgoodchannels;
+                        chtable2.(currscan)(:) = chtable2.(currscan)(:) + goodchannels';
                     end
                 end
                        
@@ -117,23 +131,22 @@ else
         if multiscan
             for k=1:length(subjdir)
                 scanname = subjdir(k).name;
-                subscanname = scanname(subjnamelength+1:end);
-                subscanname = regexprep(subscanname,'_','');
+                currscan = scannames(k);
                 scandir = dir(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,'*_nonoisych.mat'));
                 if exist(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
                     load(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
-                    qatable1.(subscanname)(end) = sumgoodchannels;
-                    chtable1.(subscanname)(:) = chtable1.(subscanname)(:) + goodchannels';
+                    qatable1.(currscan)(end) = sumgoodchannels;
+                    chtable1.(currscan)(:) = chtable1.(currscan)(:) + goodchannels';
                 end
                 scandir = dir(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,'*_nouncertainch.mat'));
                 if exist(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
                     load(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
-                    qatable2.(subscanname)(end) = sumgoodchannels;
-                    chtable2.(subscanname)(:) = chtable2.(subscanname)(:) + goodchannels';
+                    qatable2.(currscan)(end) = sumgoodchannels;
+                    chtable2.(currscan)(:) = chtable2.(currscan)(:) + goodchannels';
                 end
             end
                        
