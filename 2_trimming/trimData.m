@@ -13,7 +13,7 @@ if trim==2
             s = s(begintime:end,:);
             if device==2 && sum(aux(:,1,1)) ~= 0
                 aux=aux(begintime:end,:,:);
-            elseif device==2 && sum(aux2.data(:,1,1)) ~= 0
+            elseif device==3 && sum(aux.data(:,1,1)) ~= 0
                 auxbegin = round(aux.samprate*begintime/samprate);
                 aux.data = aux.data(auxbegin:end,:,:);
                 aux.time = aux.time(auxbegin:end,:,:);
@@ -41,7 +41,7 @@ elseif trim==3 || trim==4
     if begintime>0
         if device==2 && sum(aux(:,1,1)) ~= 0
             aux=aux(begintime:end,:,:);
-        elseif device==3 && sum(aux2.data(:,1,1)) ~= 0
+        elseif device==3 && sum(aux.data(:,1,1)) ~= 0
             auxbegin = round(aux.samprate*begintime/samprate);
             auxend = round(aux.samprate*endScan/samprate);
             aux.data = aux.data(auxbegin:auxend,:,:);
