@@ -4,7 +4,7 @@ SCN Lab current preprocessing pipeline (09/25/2022). For an older/different vers
 # General
 UCLA SCN lab preprocessing pipeline for fNIRS data, collected with NIRx: NIRScout or NIRSport2. Will preprocess Snirf files but only if you have Homer3 toolbox.
 
-# About Gui-based or function options
+# Gui-based or function options
 runNIRSpreproc.mat is a script you can run with Gui pop-ups OR use prepreprocessingfNIRS.mat as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
 See below for more details on each step of the pipeline, and how to use this code yourself. 
 
@@ -18,6 +18,8 @@ If you want to use a Snirf file you must downloaded the full Homer3 toolbox at h
 		- All files must be together in each raw file folder. 
 		- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
 	- If using Snirf file for preprocessing you MUST have Homer3
+	- If using wavelet motion correction must have the MATLAB wavelet toolbox
+	- If using the PCfilter mtion correction must have the MATLAB mapping toolbox
 
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
@@ -40,7 +42,7 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 
 - Currently there are five options asked for by the input motionCorr: 
 	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. 
-	- I'm leaning toward wavelet currently.
+	- I'm leaning toward wavelet currently, but it is the longest and requires MATLAB wavelet toolbox.
 
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
 fNIRS channel. Doing so is our current approach to finding bad channels (good channels have a preponderance of signal in slow frequencies, pure noise has random amounts of signal at every frequency). 
@@ -115,6 +117,9 @@ OPTION 2: as a function
 best to start fresh.
 
 3. The main folder should be 'fNIRSpreProcessing' NOT 'fNIRSpreProcessing-main' remove the '-main' if so.
+4. If you are having problems with the compile script this may be due to how you named your scans. I have yet to find a perfect fix if your naming system has something like: 
+	- IP_scan_1, IP_scan_2, with IP being the prefix it will cause an error because of a duplicate scan name. To fix this remove the second underscore to look like below.
+		- IP_scan1, IP_scan2
 
 # FAQ Not Covered Above
 - In helperScripts/practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
