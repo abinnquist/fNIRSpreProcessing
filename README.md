@@ -19,7 +19,7 @@ Not Included:
 - If using the PCfilter motion correction MUST have the MATLAB mapping toolbox
 
 # Other Requirements 
-NOTE: Hyperscan should work for 2+ subject, so if you ran two hyperscans for a total of four subjects per group the script should still work as long as the folder structure is followed as shown below
+NOTE: Hyperscan should work for 2+ subjects per group, so if you ran two hyperscans for a total of four subjects per group the script should still work as long as the folder structure is followed as shown below
 - Data must be in the following structure: 
 	- Hyper with multiple scans: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
 	- Hyper w/ one scan: MAIN_DIRECTORY/GROUP/SUBJECT/raw files.  
