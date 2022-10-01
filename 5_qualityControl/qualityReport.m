@@ -29,9 +29,17 @@ fprintf('\n\t Generating data quality reports ...\n')
     reverseStr = '';
 
 if multiscan
-    snames = extract(string(scannames),lettersPattern);
+    snames = extract(string(scannames),alphanumericsPattern);
+    [~,~,p]=size(snames);
     if strcmp(dataprefix,snames(1,1,1))
-        scannames=snames(1,:,2);
+        if p<=2
+            scannames=snames(1,:,2);
+        elseif p<2
+            scannames=snames(:,:);
+        else
+            scannames=snames(:,:,2)+snames(:,:,end);
+            scannames=extract(string(scannames),lettersPattern);
+        end
     end
 end
 
