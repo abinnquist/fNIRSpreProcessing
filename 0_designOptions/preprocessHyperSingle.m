@@ -163,4 +163,5 @@ end
     
 Elapsedtime = toc(Elapsedtime);
 fprintf('\n\t Elapsed time: %g seconds\n', Elapsedtime);
+clear
 end
