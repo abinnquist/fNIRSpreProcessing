@@ -8,18 +8,26 @@ UCLA SCN lab preprocessing pipeline for fNIRS data, collected with NIRx: NIRScou
 runNIRSpreproc.mat is a script you can run with Gui pop-ups OR use prepreprocessingfNIRS.mat as a function that automates the SCN lab's current preprocessing pipeline for fNIRS data (originally written by Shannon Burns, 2018, MIT License). 
 See below for more details on each step of the pipeline, and how to use this code yourself. 
 
-# Dependencies
-The script depends on two publicly available Matlab packages - inpaint_nans and some Homer2 scripts. These are included with the preprocessingfNIRS repo. 
-If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
+# Dependencies & Toolboxes
+Included in repo: 
+- Two publicly available Matlab packages - inpaint_nans and some Homer2 scripts
+Not Included:
+- MUST have MATLAB statistics and machine learning toolbox for nan based functions (will eventually fix this but for now you need the toolbox)
+- If using Snirf file for preprocessing you MUST have Homer3 link below
+	- Homer3 toolbox at https://github.com/BUNPC/Homer3 
+- If using wavelet motion correction MUST have the MATLAB wavelet toolbox
+- If using the PCfilter motion correction MUST have the MATLAB mapping toolbox
 
 # Other Requirements 
-- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
-	- Omit Group or Scan level if the data is not hyperscan or multiscan, respectively. 
-	- All files must be together in each raw file folder. 
-	- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
-- If using Snirf file for preprocessing you MUST have Homer3
-- If using wavelet motion correction must have the MATLAB wavelet toolbox
-- If using the PCfilter motion correction must have the MATLAB mapping toolbox
+NOTE: Hyperscan should work for 2+ subject, so if you ran two hyperscans for a total of four subjects per group the script should still work as long as the folder structure is followed as shown below
+- Data must be in the following structure: 
+	- Hyper with multiple scans: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
+	- Hyper w/ one scan: MAIN_DIRECTORY/GROUP/SUBJECT/raw files.  
+	- Solo w/ multiple scans: MAIN_DIRECTORY/SUBJECT/SCAN/raw files. 
+	- Solo w/ one scan: MAIN_DIRECTORY/SUBJECT/raw files. 
+- All files must be together in each raw file folder 
+- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
+	- Additionally, if using compile avoid same name scans with a number (scan_1, scan_2) either different names or no underscore after the scan name (scan1, scan2)
 
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
@@ -31,10 +39,11 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 	- 1_extractFuncs/
 	- 2_trimming/
 	- 3_removeNoisy/
+		- Inpaint_nans/
+	- 4_filtering/
 		- motionCorrs/
 			- wavelet/
      		- raw_OD_concentration/
-	- 4_filtering/
 	- 5_qualityControl/
 	- 6_compileData/
 	- helperScripts/
