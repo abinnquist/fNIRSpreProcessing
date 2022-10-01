@@ -13,13 +13,13 @@ The script depends on two publicly available Matlab packages - inpaint_nans and 
 If you want to use a Snirf file you must downloaded the full Homer3 toolbox at https://github.com/BUNPC/Homer3. 
 
 # Other Requirements 
-	- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
-		- Omit Group or Scan level if the data is not hyperscan or multiscan, respectively. 
-		- All files must be together in each raw file folder. 
-		- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
-	- If using Snirf file for preprocessing you MUST have Homer3
-	- If using wavelet motion correction must have the MATLAB wavelet toolbox
-	- If using the PCfilter mtion correction must have the MATLAB mapping toolbox
+- Data must be in the following structure: MAIN_DIRECTORY/GROUP/SUBJECT/SCAN/raw files. 
+	- Omit Group or Scan level if the data is not hyperscan or multiscan, respectively. 
+	- All files must be together in each raw file folder. 
+	- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
+- If using Snirf file for preprocessing you MUST have Homer3
+- If using wavelet motion correction must have the MATLAB wavelet toolbox
+- If using the PCfilter motion correction must have the MATLAB mapping toolbox
 
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
@@ -118,7 +118,7 @@ best to start fresh.
 
 3. The main folder should be 'fNIRSpreProcessing' NOT 'fNIRSpreProcessing-main' remove the '-main' if so.
 4. If you are having problems with the compile script this may be due to how you named your scans. I have yet to find a perfect fix if your naming system has something like: 
-	- IP_scan_1, IP_scan_2, with IP being the prefix it will cause an error because of a duplicate scan name. To fix this remove the second underscore to look like below.
+	- IP_scan_1, IP_scan_2, with IP being the prefix. This naming system will cause an error because of a duplicate scan name (i.e., scan). To fix this remove the second underscore to look like below.
 		- IP_scan1, IP_scan2
 
 # FAQ Not Covered Above
