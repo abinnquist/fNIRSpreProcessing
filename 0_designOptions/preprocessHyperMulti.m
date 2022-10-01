@@ -7,7 +7,7 @@ Elapsedtime = tic;
 compInfo = inputdlg({'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)',...
     'Compile Z-score? (0=no, 1=yes)','Which channel rejection? (1=none, 2=noisy, or 3=noisy and uncertain)'},...
               'Compile data info', [1 35]); 
-
+    
 for i=1:length(currdir)
     group=currdir(i).name;  
     groupdir=dir(strcat(rawdir,filesep,group,filesep,dataprefix,'*'));
@@ -165,5 +165,4 @@ end
     
 Elapsedtime = toc(Elapsedtime);
 fprintf('\n\t Elapsed time: %g seconds\n', Elapsedtime);
-
 end
