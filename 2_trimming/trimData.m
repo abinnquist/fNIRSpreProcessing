@@ -11,6 +11,7 @@ if trim==2
         if begintime>0
             d = d(begintime:end,:);
             s = s(begintime:end,:);
+            t = t(begintime:end);
             if device==2 && sum(aux(:,1,1)) ~= 0
                 aux=aux(begintime:end,:,:);
             elseif device==3 && sum(aux.data(:,1,1)) ~= 0
