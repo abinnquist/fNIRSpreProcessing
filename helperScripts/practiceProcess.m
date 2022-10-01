@@ -74,6 +74,7 @@ if device==1 %NIRScout
     if probenumchannels~=datanumchannels
         error('ERROR: number of data channels in hdr file does not match number of channels in probeInfo file.');
     end
+    [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo);
 elseif device==2 %NIRSport
     [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
 elseif device==3 %NIRSport & other brands
@@ -110,12 +111,8 @@ satlength = 2; %in seconds
 QCoDthresh = 0.6 - 0.03*samprate; % >0.6 more stringency
 [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
 
-if device==1
-    [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo, channelmask);
-elseif device==2 || device==3
-    SD.MeasListAct = [channelmask'; channelmask'];
-    SD.MeasListVis = SD.MeasListAct;
-end
+SD.MeasListAct = [channelmask'; channelmask'];
+SD.MeasListVis = SD.MeasListAct;
 
 % This loop will create the correct MNI based on probe/digipts
 if SD.SrcPos==0
@@ -146,6 +143,11 @@ z_qamask = qualityAssessment(squeeze(dnormed(:,1,:)),samprate,qamethod,thresh);
 
 %% 6) Output results for uncorrected, removal of noisy & removal of noisy/uncertain
 mkdir(outpath)
+
+dataInfo(k).t(:,:,i)=t;
+dataInfo(k).s(:,:,i)=s;
+dataInfo(k).aux(:,:,i)=aux;
+dataInfo(k).samprate(:,:,i)=samprate;
 
 totalmask = channelmask;
 totalmask(~qamask) = 0;
