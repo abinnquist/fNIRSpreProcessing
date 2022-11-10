@@ -2,10 +2,10 @@ clear
 %This will collect the trigger data for the current study to check if there
 %are any problems, inconsistencies, etc before runnning the preprocessing.
 %I often use the first trigger to trim the data so I always want to make sure it
-%is present or in the correct location beofre preprocessing
+%is present or in the correct location before preprocessing
 
 % INPUTS
-dataprefix='IPC'; %Data prefix for the study
+dataprefix='0'; %Data prefix for the study
 hyper=1; %If hyperscanning
 numscans=5; %Number of scans per subject
 
@@ -50,7 +50,7 @@ if hyper==1
                 if isempty(stimmarks)
                     triggers(g,k,p)=0;
                 else
-                    triggers(g,k,p)=stimmarks;
+                    triggers(g,k,p)=stimmarks(1);
                 end
             end
         end
@@ -101,7 +101,8 @@ else
 end
 
 snames = extract(string(scannames),lettersPattern);
-if strcmp(dataprefix,snames(1,1,1))
+[~, ~, thirdD]=size(snames);
+if strcmp(dataprefix,snames(1,1,1)) || thirdD > 1
     sname=snames(1,:,2);
 end
 lenInterest=scanlen-triggers;
