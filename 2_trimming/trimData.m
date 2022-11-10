@@ -1,35 +1,39 @@
 function [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, device, aux)
-scanNum=scanNum+1;
 
-% 2) Trim scans: no=0, trim beginnin=1, trim begin & end=2
-% 2a) Trim beginning of data based on first trigger
-if trim==2 
+% 2) Trim scans: no=0, trim beginning=1, trim begin & end=2
+% 2a) Trim beginning based on first trigger (trim=2) or the last (trim==3)
+if trim==2 || trim==3
     ssum = sum(s,2);
     stimmarks = find(ssum);
     if length(stimmarks)>=1
-        begintime = stimmarks(1);
-        if begintime>0
-            d = d(begintime:end,:);
-            s = s(begintime:end,:);
-            t = t(begintime:end);
-            if device==2 && sum(aux(:,1,1)) ~= 0
-                aux=aux(begintime:end,:,:);
-            elseif device==3 && sum(aux.data(:,1,1)) ~= 0
-                auxbegin = round(aux.samprate*begintime/samprate);
-                aux.data = aux.data(auxbegin:end,:,:);
-                aux.time = aux.time(auxbegin:end,:,:);
-            end
-
-            stimmarks = stimmarks-begintime;
+        if trim==2
+            begintime = stimmarks(1);
+        else
+            begintime = stimmarks(end);
         end
-    else %No data trim if no trigger
-        error('ERROR: There are no triggers for this scan');
+    else
+        begintime=0;
+        %error('ERROR: There are no triggers for this scan');
     end
-elseif trim==3 || trim==4
+    if begintime>0
+        d = d(begintime:end,:);
+        s = s(begintime:end,:);
+        t = t(begintime:end); %Trim our frames to the same length as data
+        t = t-t(1,1); %Reset the first frame to be zero
+        if device==2 && sum(aux(:,1,1)) ~= 0
+            aux=aux(begintime:end,:,:);
+        elseif device==3 && sum(aux.data(:,1,1)) ~= 0
+            auxbegin = round(aux.samprate*begintime/samprate);
+            aux.data = aux.data(auxbegin:end,:,:);
+            aux.time = aux.time(auxbegin:end,:,:);
+        end
+        stimmarks = stimmarks-begintime;
+    end
+elseif trim==4 || trim==5
     % 2b) Trim nirs scan according to a specified begin time
     begintime=round(table2array(trimTimes(subj,scanNum))*samprate);
 
-    if trim==4
+    if trim==5
         endScan=begintime + round(table2array(trimTimes(subj,scanNum+numScans))*samprate);
     else
         endScan=length(d);
@@ -37,7 +41,8 @@ elseif trim==3 || trim==4
 
     d = d(begintime:endScan,:);
     s = s(begintime:endScan,:);
-    t = t(begintime:end);
+    t = t(begintime:end); %Trim our frames to the same length as data
+    t = t-t(1,1); %Reset the first frame to be zero
 
     if begintime>0
         if device==2 && sum(aux(:,1,1)) ~= 0
