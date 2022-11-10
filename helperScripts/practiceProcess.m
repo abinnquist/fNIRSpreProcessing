@@ -3,16 +3,17 @@ clc; clear
 % This script is for better understanding the pipeline and should not be
 % used for batch process
 %% INPUTS: 
-dataprefix='SS'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-motionCorr=0;   % 0 = no motion correction (not reccommended unless comparing)
+dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+motionCorr=1;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
                 % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
                 % 3 = baseline volatility & CBSI
                 % 4 = CBSI only
-numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
-i=1; % dyad
-j=1; % subject
+
+i=1; % dyad, if not dyadic just enter 0
+j=1; % subject, if you only have one subject enter 0
 k=1; % scan
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
@@ -39,21 +40,45 @@ scannames = {};
 
 %% Selecting what data to process
 % This example is for hyper & multi scan data
+if i>0 
+    %Here I select the dyad and create a directory
+    group=currdir(i).name;  
+    groupdir=dir(strcat(rawdir,filesep,group,filesep,dataprefix,'*'));
 
-%Here I select the dyad and create a directory
-group=currdir(i).name;  
-groupdir=dir(strcat(rawdir,filesep,group,filesep,dataprefix,'*'));
+    %Here I select the subject and create a directory
+    subjname = groupdir(j).name;
+    subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));
+    
+    %Here I select the scan 
+    scanname = subjdir(k).name;
+    scanfolder = strcat(rawdir,filesep,group,filesep,subjname,filesep,scanname);
 
-%Here I select the subject and create a directory
-subjname = groupdir(j).name;
-subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));
+    scannames = [scannames,scanname];
+    %This creates a new folder for my preprocessed data
+    outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,subjname,filesep,scanname);
+else
+    if j>0
+        %Here I select the subject and create a directory
+        subjname = currdir(j).name;
+        subjdir = dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
+        
+        %Here I select the scan 
+        scanname = subjdir(k).name;
+        scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
 
-%Here I select the scan 
-scanname = subjdir(k).name;
-scanfolder = strcat(rawdir,filesep,group,filesep,subjname,filesep,scanname);
+        scannames = [scannames,scanname];
+        %This creates a new folder for my preprocessed data
+        outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,scanname);
+    else
+        %Here I select the scan 
+        scanname = currdir(k).name;
+        scanfolder = strcat(rawdir,filesep,scanname);
 
-%This creates a new folder for my preprocessed data
-outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,filesep,subjname,filesep,scanname);
+        scannames = [scannames,scanname];
+        %This creates a new folder for my preprocessed data
+        outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,scanname);
+    end
+end
 
 %% 1) extract data values
 pp=dir(strcat(scanfolder,filesep,'*_probeInfo.mat'));
@@ -91,7 +116,7 @@ stimmarks = find(ssum); %Will collect all triggers
 
 %Will trim based on first trigger
 if length(stimmarks)>=1
-    begintime = stimmarks(1);
+    begintime = stimmarks(end);
     if begintime>0
         d = d(begintime:end,:);
         s = s(begintime:end,:);
@@ -126,7 +151,8 @@ else
     end
 end
 
-t = t(begintime:end); %This trims our frames to the same legnth as data
+t = t(begintime:end); %This trims our frames to the same length as data
+t = t-t(1,1); %Now we reset the first frame to be zero
 
 %% 4) motion filter, convert to hemodynamic changes
 [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
@@ -144,6 +170,9 @@ z_qamask = qualityAssessment(squeeze(dnormed(:,1,:)),samprate,qamethod,thresh);
 %% 6) Output results for uncorrected, removal of noisy & removal of noisy/uncertain
 mkdir(outpath)
 
+if i==0
+    i=1;
+end
 dataInfo(k).t(:,:,i)=t;
 dataInfo(k).s(:,:,i)=s;
 dataInfo(k).aux(:,:,i)=aux;
