@@ -41,10 +41,10 @@ if length(currdir)<1
 end
 
 %If you want trim the data at all before preproc and if you want to use a csv to trim the data 
-trimTypes = {'No trim','Beginning with first trigger', 'Beginning with .csv','Begin & end with .csv'};
+trimTypes = {'No trim','Beginning with 1st trigger','Beginning with last trigger', 'Beginning with .csv','Begin & end with .csv'};
 [trim,~] = listdlg('PromptString', 'Do you want to trim scans?',...
     'SelectionMode', 'single', 'ListString', trimTypes);
-if trim == 3 || trim == 4
+if trim == 4 || trim == 5
     [trimTs, trimPath] = uigetfile('*.csv','Choose trim time CSV');
     trimTimes = readtable(strcat(trimPath,trimTs));
     clear trimPath trimTs trimTypes
