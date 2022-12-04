@@ -1,10 +1,10 @@
 clc; clear
 %% Practice script to better understand the full pipeline
 % This script is for better understanding the pipeline and should not be
-% used for batch process
+% used for batch processing. It will only process one scan at a time.
 %% INPUTS: 
 dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-motionCorr=1;   % 0 = no motion correction (not reccommended unless comparing)
+motionCorr=2;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
                 % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
                 % 3 = baseline volatility & CBSI
@@ -13,8 +13,8 @@ numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
 i=1; % dyad, if not dyadic just enter 0
-j=1; % subject, if you only have one subject enter 0
-k=1; % scan
+j=2; % subject, if you only have one subject enter 0
+k=2; % scan
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
 
@@ -55,7 +55,7 @@ if i>0
 
     scannames = [scannames,scanname];
     %This creates a new folder for my preprocessed data
-    outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,subjname,filesep,scanname);
+    outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,filesep,subjname,filesep,scanname);
 else
     if j>0
         %Here I select the subject and create a directory
@@ -68,7 +68,7 @@ else
 
         scannames = [scannames,scanname];
         %This creates a new folder for my preprocessed data
-        outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,scanname);
+        outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,subjname,filesep,scanname);
     else
         %Here I select the scan 
         scanname = currdir(k).name;
@@ -124,8 +124,12 @@ if length(stimmarks)>=1
             auxbegin = round(aux.samprate*begintime/samprate);
             aux.data = aux.data(auxbegin:end,:,:);
             aux.time = aux.time(auxbegin:end,:,:);
+        elseif numaux > 0
+            aux=aux(begintime:end,:);
         end
         stimmarks = stimmarks-begintime;
+        t = t(begintime:end); %This trims our frames to the same length as data
+        t = t-t(1,1); %Now we reset the first frame to be zero
     end
 else %No data trim if no trigger
     begintime=1;
@@ -151,11 +155,19 @@ else
     end
 end
 
-t = t(begintime:end); %This trims our frames to the same length as data
-t = t-t(1,1); %Now we reset the first frame to be zero
-
 %% 4) motion filter, convert to hemodynamic changes
 [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
+
+%% To visualize how your motion correction looks compared to no correction uncomment
+
+% [dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 1, coords);
+% dCon1=squeeze(dconverted(:,1,:));
+% dCon2=squeeze(dconverted2(:,1,:));
+% tiledlayout(2,1)
+% nexttile
+% plot(dCon1)
+% nexttile
+% plot(dCon2)
 
 %% 5) final data quality assessment, remove uncertain channels
 % default is to use Pearson's correlation to check how impactful remaining
@@ -173,10 +185,6 @@ mkdir(outpath)
 if i==0
     i=1;
 end
-dataInfo(k).t(:,:,i)=t;
-dataInfo(k).s(:,:,i)=s;
-dataInfo(k).aux(:,:,i)=aux;
-dataInfo(k).samprate(:,:,i)=samprate;
 
 totalmask = channelmask;
 totalmask(~qamask) = 0;
@@ -230,3 +238,29 @@ end
 %% This creates a csv that shows loss of 
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 qualityReport(dataprefix,1,1,scannames,numchannels,preprocdir);
+
+%% 6) Compile data into one .mat file
+% Process at least two subjects/scans to get a better idea of what this
+% script does.
+
+%INPUTS TO CHANGE
+numScans=2; %Number of scans per subject preprocessed
+zdim=1; %1=Compile z-scored, 0=compile non-z-scored
+ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
+
+%
+preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
+[deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocdir,dataprefix,ch_reject,numScans,zdim);
+
+% I have yet to find the best way to name the scans due to variation in how
+% people name their scans. For now change the 'scannames' variable to include 
+% the true scan names in the alphabetical order they appear in the folder. 
+% Uncomment lines 258:262 to rename scans before saving.
+
+% scannames={'ingroup','neutral'};
+% for s=1:width(oxy3D)
+%     oxy3D(s).name=scannames{s};
+%     deoxy3D(s).name=scannames{s};
+% end
+
+save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
