@@ -61,7 +61,9 @@ Default threshold is set to 0.1 in preprocessingfNIRS. In testQCoD, change this 
 check if the currently selected QCoD threshold for bad channel marking is what you want. Can be run on raw data, but does not do any other preprocessing. 
 
 # How to Use
-To download: clone or pull repo to your desired local directory. 
+To download: clone or pull repo to your desired local directory. After unzipping make sure to remove '-main' from the 'fNIRSpreProcessing' folder name. I also recommend having hte pipeline in the same location as other toolboxes you may use like homer3. 
+
+Pre-preprocessing: There are scripts in 'helperScripts' in case you have named your folders incorrectly (i.e., folderRename'), want to make sure you triggers are as they should be before running preprocessing (i.e., triggerCheck), or want to better understand the pipeline without having to run the entire function (i.e., practiceProcess).
 
 OPTION 1: With GUI pop-ups 
 - Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
