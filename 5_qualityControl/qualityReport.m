@@ -38,6 +38,11 @@ if multiscan
             scannames=snames(:,:,2)+snames(:,:,end);
             scannames=extract(string(scannames),lettersPattern);
         end
+    elseif p==1
+        if strcmp(dataprefix,snames(1,1))
+            scannames=snames(2,:)+snames(end,:);
+            scannames=extract(string(scannames),lettersPattern);
+        end
     end
 end
 
