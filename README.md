@@ -26,13 +26,13 @@ NOTE: Hyperscan should work for 2+ subjects per group, so if you ran two hypersc
 	- Solo w/ multiple scans: MAIN_DIRECTORY/SUBJECT/SCAN/raw files. 
 	- Solo w/ one scan: MAIN_DIRECTORY/SUBJECT/raw files. 
 - All files must be together in each raw file folder 
-- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped
+- ALL dyads, subjects, and scan folders must start with a same prefix or they will be skipped. See 'helperScripts/folderRename' if you have not named your folders accordingly.
 	- Additionally, if using compile avoid same name scans with a number (scan_1, scan_2) either different names or no underscore after the scan name (scan1, scan2)
 
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
 
-Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify. See 'helperScripts/folderRename' if you have not named your folders accordingly.
+Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify. 
 
 - FOLDER STRUCTURE
 	- 0_designOptions/
