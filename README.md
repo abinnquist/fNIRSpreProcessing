@@ -32,7 +32,7 @@ NOTE: Hyperscan should work for 2+ subjects per group, so if you ran two hypersc
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
 
-Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify.
+Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify. See 'helperScripts/folderRename' if you have not named your folders accordingly.
 
 - FOLDER STRUCTURE
 	- 0_designOptions/
