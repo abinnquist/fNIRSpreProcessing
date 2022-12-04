@@ -1,7 +1,8 @@
 %-----------------------------------------------
 %step 4 - our filtering pipeline
 %-----------------------------------------------
- 
+ %Note: depending on you correction choice raw data is converted at
+ %differnt times (i.e., raw > OD > Hb)
 function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords)
     %depends on Homer2 package
     warning off; %sometimes hmrIntensity2Conc gives a warning we don't care about here
