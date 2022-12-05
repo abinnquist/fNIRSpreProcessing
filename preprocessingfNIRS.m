@@ -27,6 +27,7 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 addpath(genpath("0_designOptions/")); addpath(genpath("1_extractFuncs/")); 
 addpath(genpath("3_removeNoisy/")); addpath(genpath("4_filtering/"));
 addpath(genpath("5_qualityControl/")); addpath(genpath("6_compileData/"));
+addpath(genpath("helperScripts/"));
 
 %What device was used, NIRScout, NIRSport, or if you have SNIRF file
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file (must have Homer3)'};
