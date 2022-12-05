@@ -2,14 +2,17 @@ clc; clear
 %% Practice script to better understand the full pipeline
 % This script is for better understanding the pipeline and should not be
 % used for batch processing. It will only process one scan at a time.
+
+%Step 6 has it's own unique inputs and should only be run once a couple of
+%scans/subjects have been preprocessed.
 %% INPUTS: 
 dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-motionCorr=2;   % 0 = no motion correction (not reccommended unless comparing)
+motionCorr=1;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
                 % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
                 % 3 = baseline volatility & CBSI
                 % 4 = CBSI only
-numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
 i=1; % dyad, if not dyadic just enter 0
@@ -179,7 +182,7 @@ thresh = 0.1;
 qamask = qualityAssessment(squeeze(dconverted(:,1,:)),samprate,qamethod,thresh);
 z_qamask = qualityAssessment(squeeze(dnormed(:,1,:)),samprate,qamethod,thresh);
 
-%% 6) Output results for uncorrected, removal of noisy & removal of noisy/uncertain
+%% Output results for uncorrected, removal of noisy & removal of noisy/uncertain
 mkdir(outpath)
 
 if i==0
@@ -235,32 +238,40 @@ if exist('mni_ch_table','var')
     writetable(mni_ch_table,strcat(outpath,filesep,'channel_mnicoords.csv'),'Delimiter',',');
 end
 
-%% This creates a csv that shows loss of 
-preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
-qualityReport(dataprefix,1,1,scannames,numchannels,preprocdir);
-
-%% 6) Compile data into one .mat file
-% Process at least two subjects/scans to get a better idea of what this
-% script does.
-
+%% 6) Compile lost channels & data
 %INPUTS TO CHANGE
-numScans=2; %Number of scans per subject preprocessed
+hyperscan=1;
+multiscan=1;
+numscans=5; %Number of scans per subject preprocessed
+IDlength=4;
+numchannels=42;
 zdim=1; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
 
-%
+%Get scan names
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
-[deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocdir,dataprefix,ch_reject,numScans,zdim);
+[~, ~,snames] = countScans(currdir, preprocdir, dataprefix, hyperscan, numscans, IDlength);  
 
-% I have yet to find the best way to name the scans due to variation in how
-% people name their scans. For now change the 'scannames' variable to include 
-% the true scan names in the alphabetical order they appear in the folder. 
-% Uncomment lines 258:262 to rename scans before saving.
+%6.1) Compile number of lost channels
+if hyperscan
+    if multiscan
+        qualityReport(dataprefix,1,1,numchannels,preprocdir,snames);
+    else
+        qualityReport(dataprefix,1,0,numchannels,preprocdir,snames);
+    end
+else
+    if multiscan
+        qualityReport(dataprefix,0,1,numchannels,preprocdir,snames);
+    else
+        qualityReport(dataprefix,0,0,numchannels,preprocdir,snames);
+    end
+end
 
-% scannames={'ingroup','neutral'};
-% for s=1:width(oxy3D)
-%     oxy3D(s).name=scannames{s};
-%     deoxy3D(s).name=scannames{s};
-% end
+%6.2) Compile data into one .mat file
+if hyperscan
+    [deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocdir,dataprefix,ch_reject,numscans,zdim,snames);
+else
+    [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocdir,dataprefix,ch_reject,numscans,zdim,snames);
+end
 
 save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
