@@ -70,7 +70,7 @@ if hyperscan
                     scanname = subjdir(k).name;
                     currscan = snames(k);
                     scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,'*_nonoisych.mat'));
-                    if exist(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
+                    if ~isempty(scandir)
                         load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                         goodchannels = ~isnan(z_oxy(1,:));
                         sumgoodchannels = sum(goodchannels);
@@ -78,7 +78,7 @@ if hyperscan
                         chtable1.(currscan{1})(:) = chtable1.(currscan{1})(:) + goodchannels';
                     end
                     scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,'*_nouncertainch.mat'));
-                    if exist(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
+                    if ~isempty(scandir)
                         load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                         goodchannels = ~isnan(z_oxy(1,:));
                         sumgoodchannels = sum(goodchannels);
@@ -89,7 +89,7 @@ if hyperscan
                        
             else  
                 scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,'*_nonoisych.mat'));
-                if exist(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scandir(1).name),'file')
+                if ~isempty(scandir)
                     load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scandir(1).name)) 
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
@@ -97,7 +97,7 @@ if hyperscan
                     chtable1.scan(:) = chtable1.scan(:) + goodchannels';
                 end
                 scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,'*_nouncertainch.mat'));
-                if exist(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scandir(1).name),'file')
+                if ~isempty(scandir)
                     load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scandir(1).name)) 
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
@@ -124,7 +124,7 @@ else
                 scanname = subjdir(k).name;
                 currscan = snames(k);
                 scandir = dir(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,'*_nonoisych.mat'));
-                if exist(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
+                if ~isempty(scandir)
                     load(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
@@ -132,7 +132,7 @@ else
                     chtable1.(currscan{1})(:) = chtable1.(currscan{1})(:) + goodchannels';
                 end
                 scandir = dir(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,'*_nouncertainch.mat'));
-                if exist(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name),'file')
+                if ~isempty(scandir)
                     load(strcat(preprocdir,filesep,subjname,filesep,scanname,filesep,scandir(1).name))
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
@@ -143,7 +143,7 @@ else
                        
         else  
             scandir = dir(strcat(preprocdir,filesep,subjname,filesep,'*_nonoisych.mat'));
-            if exist(strcat(preprocdir,filesep,subjname,filesep,scandir(1).name),'file')
+            if ~isempty(scandir)
                 load(strcat(preprocdir,filesep,subjname,filesep,scandir(1).name)) 
                 goodchannels = ~isnan(z_oxy(1,:));
                 sumgoodchannels = sum(goodchannels);
@@ -151,7 +151,7 @@ else
                 chtable1.scan(:) = chtable1.scan(:) + goodchannels';
             end
             scandir = dir(strcat(preprocdir,filesep,subjname,filesep,'*_nouncertainch.mat'));
-            if exist(strcat(preprocdir,filesep,subjname,filesep,scandir(1).name),'file')
+            if ~isempty(scandir)
                 load(strcat(preprocdir,filesep,subjname,filesep,scandir(1).name)) 
                 goodchannels = ~isnan(z_oxy(1,:));
                 sumgoodchannels = sum(goodchannels);
