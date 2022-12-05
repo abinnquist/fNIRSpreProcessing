@@ -1,4 +1,4 @@
-function [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, device, aux)
+function [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, device, aux, numaux)
 
 % 2) Trim scans: no=0, trim beginning=1, trim begin & end=2
 % 2a) Trim beginning based on first trigger (trim=2) or the last (trim==3)
@@ -20,9 +20,9 @@ if trim==2 || trim==3
         s = s(begintime:end,:);
         t = t(begintime:end); %Trim our frames to the same length as data
         t = t-t(1,1); %Reset the first frame to be zero
-        if device==2 && sum(aux(:,1,1)) ~= 0
+        if device==2 && numaux > 0
             aux=aux(begintime:end,:,:);
-        elseif device==3 && sum(aux.data(:,1,1)) ~= 0
+        elseif device==3 && numaux > 0
             auxbegin = round(aux.samprate*begintime/samprate);
             aux.data = aux.data(auxbegin:end,:,:);
             aux.time = aux.time(auxbegin:end,:,:);
@@ -45,9 +45,9 @@ elseif trim==4 || trim==5
     t = t-t(1,1); %Reset the first frame to be zero
 
     if begintime>0
-        if device==2 && sum(aux(:,1,1)) ~= 0
+        if device==2 && numaux > 0
             aux=aux(begintime:end,:,:);
-        elseif device==3 && sum(aux.data(:,1,1)) ~= 0
+        elseif device==3 && numaux > 0
             auxbegin = round(aux.samprate*begintime/samprate);
             auxend = round(aux.samprate*endScan/samprate);
             aux.data = aux.data(auxbegin:auxend,:,:);
