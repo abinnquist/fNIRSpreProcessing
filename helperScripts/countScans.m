@@ -1,4 +1,4 @@
-function [scanCount, scannames] = countScans(currdir, rawdir, dataprefix, hyper, numscans)
+function [scanCount, scannames, snames] = countScans(currdir, rawdir, dataprefix, hyper, numscans, IDlength)
 
 if hyper
     scanCount=zeros(length(currdir),2); %If more than two it will adjust
@@ -18,6 +18,14 @@ if hyper
             end
         end
     end
+
+    %for the names of scans based on first subject
+    snames = cell(width(scannames),1,1);
+    for s=1:width(scannames)
+        sc=scannames{1,s};
+        sc=sc(length(dataprefix)+IDlength+2:end);
+        snames(s,1)={sc};
+    end
 else
     scanCount=zeros(length(currdir),1);
     scannames = cell(length(currdir),numscans);
@@ -30,6 +38,14 @@ else
             scanname = subjdir(k).name;
             scannames(p,k)={scanname};
         end
+    end
+
+    %for the names of scans based on first subject
+    snames=cell(width(scannames),1);
+    for s=1:width(scannames)
+        sc=scannames{1,s};
+        sc=sc(length(dataprefix)+IDLength+2:end);
+        snames(s,1)={sc};
     end
 end
 
