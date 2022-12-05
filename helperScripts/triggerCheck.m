@@ -1,20 +1,12 @@
-%This will collect the trigger data for the current study to check if there
-%are any problems, inconsistencies, etc before runnning the preprocessing.
-%I often use the first trigger to trim the data so I always want to make sure it
-%is present or in the correct location before preprocessing
+function trigInfo = triggerCheck(rawdir,dataprefix,IDlength,hyperscan,numscans)
 
-% I would reccomend running step by step and checking that the amount of scans 
-% are correct and the names are correct. Only change the 'Inputs' section.
-clear
+% Will collect the trigger data for the current study so you can check if there
+% are any problems, inconsistencies, etc before runnning the preprocessing.
+% I often use the first trigger to trim the data so I always want to make sure it
+% is present or in the correct location before preprocessing.
+% If run it without the output it will still save to the rawdir as trigInfo
 
-%% INPUTS
-dataprefix='IPC'; %Data prefix for the study
-IDLength=4; % Length of ID+1 (i.e. IPC_103_rest=4); 0=ID not in scan name
-hyper=1; %If hyperscanning
-numscans=5; %Number of scans per subject
-rawdir=uigetdir('','Choose data directory');
-
-%% Step 1: Scan numbers and names
+% Scan numbers and names
 addpath(genpath("fNIRSpreProcessing/1_extractFuncs/")); 
 
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
@@ -24,27 +16,10 @@ supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file'
 currdir=dir(strcat(rawdir,filesep,dataprefix,'*'));
 
 %Check how many scans per participant
-[scanCount, scannames] = countScans(currdir, rawdir, dataprefix, hyper, numscans);
+[scanCount, ~, snames] = countScans(currdir, rawdir, dataprefix, hyperscan, numscans, IDlength);
 
-%% Step 2: Get scan names
-if hyper
-    snames = cell(width(scannames),1,1);
-    for s=1:width(scannames)
-        sc=scannames{1,s};
-        sc=sc(length(dataprefix)+IDLength+2:end);
-        snames(s,1)={sc};
-    end
-else
-    snames=cell(width(scannames),1);
-    for s=1:width(scannames)
-        sc=scannames{1,s};
-        sc=sc(length(dataprefix)+IDLength+2:end);
-        snames(s,1)={sc};
-    end
-end
-
-%% Step 3: Collect trigger info and save
-if hyper==1
+% Collect trigger info and save
+if hyperscan==1
     fprintf('\n\t Checking triggers ...\n')
     reverseStr = '';
     Elapsedtime = tic;
@@ -158,4 +133,3 @@ else
 end
 
 save(strcat(rawdir,filesep,'trigInfo.mat'),'trigInfo')
-clear
