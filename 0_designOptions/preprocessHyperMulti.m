@@ -4,9 +4,10 @@ fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
 
-compInfo = inputdlg({'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)',...
-    'Compile Z-score? (0=no, 1=yes)','Which channel rejection? (1=none, 2=noisy, or 3=noisy and uncertain)'},...
-              'Compile data info', [1 35]); 
+compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
+    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
+    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
+              'Compile data info', [1 75]); 
     
 for i=1:length(currdir)
     group=currdir(i).name;  
@@ -15,11 +16,9 @@ for i=1:length(currdir)
     for j=1:length(groupdir)
         subjname = groupdir(j).name;
         subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));
-        scannames = {};
 
         for k=1:length(subjdir)
             scanname = subjdir(k).name;
-            scannames = [scannames,scanname];
 
             msg = sprintf('\n\t group %d/%d, subj %d/%d, scan %d/%d ...',i,length(currdir),...
                 j,length(groupdir),k,length(subjdir));
@@ -72,7 +71,7 @@ for i=1:length(currdir)
 
             % 2) Trim scans: no=0, trim beginnin=1, trim begin & end=2
             scanNum=k; subj=i; numScans=length(subjdir);
-            [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, device, aux);
+            [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, device, aux, numaux);
             
             %3) identify noisy channels (SNR channel rejection)
             satlength = 2; %in seconds
@@ -99,7 +98,7 @@ for i=1:length(currdir)
             qamask = qualityAssessment(squeeze(dconverted(:,1,:)),samprate,qamethod,thresh);
             z_qamask = qualityAssessment(squeeze(dnormed(:,1,:)),samprate,qamethod,thresh);
             
-            %6) Output results
+            % Output results
             mkdir(outpath)
             
             totalmask = channelmask;
@@ -150,17 +149,28 @@ for i=1:length(currdir)
     end
 end
 
+%6) Compile lost channels & data
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
-qualityReport(dataprefix,1,1,scannames,numchannels,preprocdir);
+if compInfo{1,1}=='1' || compInfo{3,1}=='1'
+    hyperscan=1;
+    IDlength=str2num(compInfo{2,1});
+    numscans=str2num(compInfo{4,1});
+    %Gets the scan names for all subjects
+    [~, ~, snames] = countScans(currdir, preprocdir, dataprefix, hyperscan, numscans,IDlength);   
 
-%6) Compile data into one .mat file
-if compInfo{1,1}=='1'
-    numScans=str2num(compInfo{2,1});
-    zdim=str2num(compInfo{3,1});
-    ch_reject=str2num(compInfo{4,1});
-    [deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocdir,dataprefix,ch_reject,numScans,zdim);
+    %6.1) Quality Check
+    if compInfo{1,1}=='1'
+        qualityReport(dataprefix,1,1,numchannels,preprocdir,snames);
+    end
 
-    save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
+    %6.2) Compile data into one .mat file
+    if compInfo{3,1}=='1'
+        zdim=str2num(compInfo{5,1});
+        ch_reject=str2num(compInfo{6,1});
+        [deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocdir,dataprefix,ch_reject,numscans,zdim,snames);
+    
+        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
+    end
 end
     
 Elapsedtime = toc(Elapsedtime);
