@@ -1,20 +1,17 @@
+function folderRename(rawdir,dataprefix,hyperscan)
 % Script will only add a prefix to any folders missing your chosen prefix,
 % will change nothing else. Adds the prefix to whatever the folder is
 % currently named. 
-% Make sure you only have the data folders or else it will rename other
-% folders in the directory.
-
-%% Properties to change
-hyperscan=1;
-dataprefix='IPC';
-lenPre=length(dataprefix);
+% Make sure you only have the data folders in the rawdir or else it will 
+% rename other folders in the directory.
 
 %Directory selection
 currpath=pwd;
-rawdir=uigetdir('','Choose Data Directory');
+
 cd(rawdir)
 currdir=dir(strcat(rawdir,filesep,'*'));
 currdir = currdir(~startsWith({currdir.name},'.'));
+lenPre=length(dataprefix);
 
 if hyperscan
     for i=1:length(currdir)
