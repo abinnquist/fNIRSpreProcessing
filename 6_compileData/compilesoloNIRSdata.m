@@ -1,7 +1,7 @@
 %Compiles the solo data for n scans
 %Compiles your choice of channel rejection from preprocessing (i.e. ch_reject) 
 
-function [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocess_dir,dataprefix,ch_reject,numScans,zdim)
+function [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocess_dir,dataprefix,ch_reject,numScans,zdim,snames)
 
 %find all of the preprocessed folders
 currdir=dir(strcat(preprocess_dir,filesep,dataprefix,'*'));
@@ -48,14 +48,14 @@ for sc=1:numScans
             auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
         end
     end
-    deoxy3D(sc).name=strcat('Scan',num2str(sc));
+    deoxy3D(sc).name=snames{sc};
     deoxy3D(sc).subdata=z_deoxy1;
     deoxy3D(sc).t=tC;
     deoxy3D(sc).triggers=sC;
     deoxy3D(sc).aux=auxC;
     deoxy3D(sc).samprate=samprate;
   
-    oxy3D(sc).name=strcat('Scan',num2str(sc));
+    oxy3D(sc).name=snames{sc};
     oxy3D(sc).subdata=z_oxy1;
     oxy3D(sc).t=tC;
     oxy3D(sc).triggers=sC;
