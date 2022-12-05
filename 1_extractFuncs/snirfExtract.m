@@ -15,7 +15,7 @@ if numaux>0
     aux.time=auxTime;
     aux.samprate=auxSampRate;
 else
-    aux = snirf.aux;
+    aux = [];
 end
 SD = getSD(snirf);
 trigInfo = snirfTrigInfo(snirf); % Trigger data sorted by time 
