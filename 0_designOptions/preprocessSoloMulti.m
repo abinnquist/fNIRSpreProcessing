@@ -4,9 +4,10 @@ fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
 
-compInfo = inputdlg({'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)',...
-    'Compile Z-score? (0=no, 1=yes)','Which channel rejection? (1=none, 2=noisy, or 3=noisy and uncertain)'},...
-              'Compile data info', [1 35]); 
+compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
+    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
+    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
+              'Compile data info', [1 75]); 
 
 for i=1:length(currdir)
     subjname=currdir(i).name;  
@@ -37,9 +38,10 @@ for i=1:length(currdir)
             coords=probeInfo.probes.coords_c3;
         end
 
-
         if device==1
             [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+            probenumchannels = probeInfo.probes.nChannel0;
+            datanumchannels = size(d,2)/2;
             if probenumchannels~=datanumchannels
                 error('ERROR: number of data channels in hdr file does not match number of channels in probeInfo file.');
             end
@@ -65,19 +67,15 @@ for i=1:length(currdir)
 
         % 2) Trim scans: no=0, trim beginnin=1, trim begin & end=2
         scanNum=k; subj=i; numScans=length(subjdir);
-        [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, numaux, aux);
+        [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, numaux, aux, numaux);
 
         %3) identify noisy channels
         satlength = 2; %in seconds
         QCoDthresh = 0.6 - 0.03*samprate;
         [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
       
-        if device==1
-            [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo, channelmask);
-        elseif device==2 || device==3
-            SD.MeasListAct = [channelmask'; channelmask'];
-            SD.MeasListVis = SD.MeasListAct;
-        end
+        SD.MeasListAct = [channelmask'; channelmask'];
+        SD.MeasListVis = SD.MeasListAct;
         
         %4) motion filter, convert to hemodynamic changes
         [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
@@ -146,17 +144,28 @@ for i=1:length(currdir)
     end
 end
  
+%6) Compile lost channels & data
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
-qualityReport(dataprefix,0,1,scannames,numchannels,preprocdir);
+if compInfo{1,1}=='1' || compInfo{3,1}=='1'
+    hyperscan=0;
+    IDlength=str2num(compInfo{2,1});
+    numscans=str2num(compInfo{4,1});
+    %Gets the scan names for all subjects
+    [~, ~, snames] = countScans(currdir, preprocdir, dataprefix, hyperscan, numscans, IDlength);   
 
-%6) Compile data into one .mat file
-if compInfo{1,1}=='1'
-    numScans=str2num(compInfo{2,1});
-    zdim=str2num(compInfo{3,1});
-    ch_reject=str2num(compInfo{4,1});
-    [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocdir,dataprefix,ch_reject,numScans,zdim);
+    %6.1) Quality Check
+    if compInfo{1,1}=='1'
+        qualityReport(dataprefix,1,1,numchannels,preprocdir,snames);
+    end
 
-    save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
+    %6.2) Compile data into one .mat file
+    if compInfo{3,1}=='1'
+        zdim=str2num(compInfo{5,1});
+        ch_reject=str2num(compInfo{6,1});
+        [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocdir,dataprefix,ch_reject,numscans,zdim,snames);
+    
+        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
+    end
 end
 
 Elapsedtime = toc(Elapsedtime);
