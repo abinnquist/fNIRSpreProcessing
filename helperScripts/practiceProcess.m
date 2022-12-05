@@ -5,27 +5,42 @@ clc; clear
 
 %Step 6 has it's own unique inputs and should only be run once a couple of
 %scans/subjects have been preprocessed.
+
+%You may also want to run some pre-preprocessing scripts such as
+%countScans.m and triggerCheck.m
+
 %% INPUTS: 
-dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+dataprefix='SNV3'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
 motionCorr=1;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
                 % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
                 % 3 = baseline volatility & CBSI
                 % 4 = CBSI only
-numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
 i=1; % dyad, if not dyadic just enter 0
 j=2; % subject, if you only have one subject enter 0
-k=2; % scan
+k=5; % scan
+
+%For pre-preproc OR step 6
+numscans=14; %Max number of scan per subject
+IDlength=0; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
+hyperscan=0;
+multiscan=1;
+
+zdim=1; %1=Compile z-scored, 0=compile non-z-scored
+ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
+
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
 
 addpath(genpath("0_designOptions\")); addpath(genpath("1_extractFuncs\")); 
 addpath(genpath("3_removeNoisy\")); addpath(genpath("4_filtering\"));
 addpath(genpath("5_qualityControl\")); addpath(genpath("6_imagingORcomparisons\"));
+addpath(genpath("helperScripts\"));
 
-%% Select your storage location
+%% Select your data storage location
 rawdir=uigetdir('','Choose Data Directory');
 
 currdir=dir(strcat(rawdir,filesep,dataprefix,'*'));
@@ -33,13 +48,21 @@ if length(currdir)<1
     error(['ERROR: No data files found with ',dataprefix,' prefix']);
 end
 
+%% Pre-preprocessing
+%Checks for the number of scan for each dyad/subject. Will also give you
+%the scan names based on the first subject.
+[scanCount, scannames, snames] = countScans(currdir, rawdir, dataprefix, hyperscan, numscans, IDlength);
+
+%Only run this if you have already run countScans and all subjects have the
+%same number of scan folders, even if the folder is empty. 
+%To run the check for only on or two scans use triggerCheckManual.m
+trigInfo = triggerCheck(rawdir,dataprefix,IDlength,hyperscan,numscans);
+
 %% Select your device and trim choice
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
 
 [device,~] = listdlg('PromptString', 'Select acquisition device:',...
     'SelectionMode', 'single', 'ListString', supported_devices);
-
-scannames = {};
 
 %% Selecting what data to process
 % This example is for hyper & multi scan data
@@ -56,7 +79,6 @@ if i>0
     scanname = subjdir(k).name;
     scanfolder = strcat(rawdir,filesep,group,filesep,subjname,filesep,scanname);
 
-    scannames = [scannames,scanname];
     %This creates a new folder for my preprocessed data
     outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,filesep,subjname,filesep,scanname);
 else
@@ -69,7 +91,6 @@ else
         scanname = subjdir(k).name;
         scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
 
-        scannames = [scannames,scanname];
         %This creates a new folder for my preprocessed data
         outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,subjname,filesep,scanname);
     else
@@ -77,10 +98,17 @@ else
         scanname = currdir(k).name;
         scanfolder = strcat(rawdir,filesep,scanname);
 
-        scannames = [scannames,scanname];
         %This creates a new folder for my preprocessed data
         outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,scanname);
     end
+end
+
+%Checks to see if there is data. If not true don't run preproc just make
+%empty folder. This allows the compile codes to work correctly.
+scdir=dir(scanfolder);
+scdir=scdir(~startsWith({scdir.name},'.'));
+if isempty(scdir)
+    mkdir(outpath)
 end
 
 %% 1) extract data values
@@ -239,39 +267,14 @@ if exist('mni_ch_table','var')
 end
 
 %% 6) Compile lost channels & data
-%INPUTS TO CHANGE
-hyperscan=1;
-multiscan=1;
-numscans=5; %Number of scans per subject preprocessed
-IDlength=4;
-numchannels=42;
-zdim=1; %1=Compile z-scored, 0=compile non-z-scored
-ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
-
 %Get scan names
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 [~, ~,snames] = countScans(currdir, preprocdir, dataprefix, hyperscan, numscans, IDlength);  
 
 %6.1) Compile number of lost channels
-if hyperscan
-    if multiscan
-        qualityReport(dataprefix,1,1,numchannels,preprocdir,snames);
-    else
-        qualityReport(dataprefix,1,0,numchannels,preprocdir,snames);
-    end
-else
-    if multiscan
-        qualityReport(dataprefix,0,1,numchannels,preprocdir,snames);
-    else
-        qualityReport(dataprefix,0,0,numchannels,preprocdir,snames);
-    end
-end
+qualityReport(dataprefix,hyperscan,multiscan,numchannels,preprocdir,snames);
 
 %6.2) Compile data into one .mat file
-if hyperscan
-    [deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocdir,dataprefix,ch_reject,numscans,zdim,snames);
-else
-    [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocdir,dataprefix,ch_reject,numscans,zdim,snames);
-end
+[deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,hyperscan,ch_reject,numscans,zdim,snames);
 
 save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
