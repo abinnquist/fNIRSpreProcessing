@@ -10,7 +10,7 @@ clc; clear
 %countScans.m and triggerCheck.m
 
 %% INPUTS: 
-dataprefix='SNV3'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
 motionCorr=1;   % 0 = no motion correction (not reccommended unless comparing)
                 % 1 = baseline volatility
                 % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
@@ -24,9 +24,9 @@ j=2; % subject, if you only have one subject enter 0
 k=5; % scan
 
 %For pre-preproc OR step 6
-numscans=14; %Max number of scan per subject
+numscans=5; %Max number of scan per subject
 IDlength=0; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
-hyperscan=0;
+hyperscan=1;
 multiscan=1;
 
 zdim=1; %1=Compile z-scored, 0=compile non-z-scored
@@ -49,6 +49,10 @@ if length(currdir)<1
 end
 
 %% Pre-preprocessing
+%Checks if all folders have the necessary dataprefix. Will add the prefix to
+%the existing folder if not present. Leaves folders with the prefix untouched.
+folderRename(rawdir,dataprefix,hyperscan)
+
 %Checks for the number of scan for each dyad/subject. Will also give you
 %the scan names based on the first subject.
 [scanCount, scannames, snames] = countScans(currdir, rawdir, dataprefix, hyperscan, numscans, IDlength);
