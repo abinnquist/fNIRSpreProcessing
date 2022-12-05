@@ -44,7 +44,7 @@ else
     snames=cell(width(scannames),1);
     for s=1:width(scannames)
         sc=scannames{1,s};
-        sc=sc(length(dataprefix)+IDLength+2:end);
+        sc=sc(length(dataprefix)+IDlength+2:end);
         snames(s,1)={sc};
     end
 end
