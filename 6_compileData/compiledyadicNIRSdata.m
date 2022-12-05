@@ -3,7 +3,7 @@
 %so the script does not error out.
 %Compiles your choice of channel rejection from preprocessing (i.e. ch_reject) 
 
-function [deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocess_dir,dataprefix,ch_reject,numScans,zdim)
+function [deoxy3D,oxy3D]= compiledyadicNIRSdata(preprocess_dir,dataprefix,ch_reject,numScans,zdim,snames)
 
 %find all of the preprocessed folders
 currdir=dir(strcat(preprocess_dir,filesep,dataprefix,'*'));
@@ -43,13 +43,13 @@ for sj=1:nSubs
             sC(1:length_convo,1,i)=s;
             auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
         end  
-        deoxy3D(sc).name=strcat('Scan',num2str(sc));
+        deoxy3D(sc).name=snames{sc};
         deoxy3D(sc).(subN)=z_deoxyC;
         deoxy3D(sc).(tN)=tC;
         deoxy3D(sc).(sN)=sC;
         deoxy3D(sc).(auxN)=auxC;
 
-        oxy3D(sc).name=strcat('Scan',num2str(sc));
+        oxy3D(sc).name=snames{sc};
         oxy3D(sc).(subN)=z_oxyC;
         oxy3D(sc).(tN)=tC;
         oxy3D(sc).(sN)=sC;
