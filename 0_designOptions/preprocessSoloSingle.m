@@ -21,6 +21,10 @@ for i=1:length(currdir)
 
     if ~exist(outpath,'dir')
 
+    scdir=dir(subjfolder);
+    scdir=scdir(~startsWith({scdir.name},'.'));
+    if ~isempty(scdir)
+
     %1) extract data values
         pp=dir(strcat(subjfolder,filesep,'*_probeInfo.mat'));
         if isempty(pp) && device==1
@@ -138,6 +142,10 @@ for i=1:length(currdir)
         if exist('mni_ch_table','var')
             writetable(mni_ch_table,strcat(outpath,filesep,'channel_mnicoords.csv'),'Delimiter',',');
         end
+    else
+        % Output: empty
+        mkdir(outpath)
+    end
     end
 end
 
@@ -150,14 +158,14 @@ if compInfo{1,1}=='1' || compInfo{3,1}=='1'
 
     %6.1) Quality Check
     if compInfo{1,1}=='1'
-        qualityReport(dataprefix,1,1,numchannels,preprocdir,snames);
+        qualityReport(dataprefix,0,0,numchannels,preprocdir,snames);
     end
 
     %6.2) Compile data into one .mat file
     if compInfo{3,1}=='1'
         zdim=str2num(compInfo{4,1});
         ch_reject=str2num(compInfo{5,1});
-        [deoxy3D,oxy3D]= compilesoloNIRSdata(preprocdir,dataprefix,ch_reject,1,zdim,snames);
+        [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,0,ch_reject,1,zdim,snames);
     
         save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
     end
