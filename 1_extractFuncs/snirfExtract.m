@@ -18,7 +18,7 @@ else
     aux = [];
 end
 
-rmpath('Homer3')
+rmpath(genpath('Homer3'))
 SD = getSD(snirf);
 trigInfo = snirfTrigInfo(snirf); % Trigger data sorted by time 
 
