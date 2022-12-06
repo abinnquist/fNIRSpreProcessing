@@ -49,8 +49,10 @@ for i=1:length(currdir)
         elseif device==3
             [d, samprate, t, SD, aux, trigInfo] = snirfExtract(subjfolder,numaux);
             s = zeros(length(d),1);
-            onset = trigInfo.Onset;
-            s(find(t==onset(1)),1) = 1;
+            if ~isempty(trigInfo)
+                onset = trigInfo.Onset;
+                s(find(t==onset(1)),1) = 1;
+            end
         end
         if SD.SrcPos==0
             load(strcat(rawdir,filesep,'SD_fix.mat'))
@@ -80,7 +82,7 @@ for i=1:length(currdir)
         end
         
         %4) motion filter, convert to hemodynamic changes
-        [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
+        [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords, t);
 
         %5) final data quality assessment, remove uncertain channels
         % default is to use Pearson's correlation to check how impactful
