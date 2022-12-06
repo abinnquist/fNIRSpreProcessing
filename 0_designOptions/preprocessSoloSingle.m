@@ -153,10 +153,9 @@ end
 
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 if compInfo{1,1}=='1' || compInfo{3,1}=='1'
-    hyperscan=0;
     IDlength=str2num(compInfo{2,1});
     %Gets the scan names for all subjects
-    [~, ~, snames] = countScans(currdir, preprocdir, dataprefix, hyperscan, 1, IDlength);   
+    [~, ~, snames] = countScans(currdir, rawdir, dataprefix, 0, 1, IDlength);   
 
     %6.1) Quality Check
     if compInfo{1,1}=='1'
