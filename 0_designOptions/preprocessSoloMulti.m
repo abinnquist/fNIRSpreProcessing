@@ -157,11 +157,10 @@ end
 %6) Compile lost channels & data
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 if compInfo{1,1}=='1' || compInfo{3,1}=='1'
-    hyperscan=0;
     IDlength=str2num(compInfo{2,1});
     numscans=str2num(compInfo{4,1});
     %Gets the scan names for all subjects
-    [~, ~, snames] = countScans(currdir, preprocdir, dataprefix, hyperscan, numscans, IDlength);   
+    [~, ~, snames] = countScans(currdir, rawdir, dataprefix, 0, numscans, IDlength);   
 
     %6.1) Quality Check
     if compInfo{1,1}=='1'
