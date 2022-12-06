@@ -17,6 +17,8 @@ if numaux>0
 else
     aux = [];
 end
+
+rmpath('Homer3')
 SD = getSD(snirf);
 trigInfo = snirfTrigInfo(snirf); % Trigger data sorted by time 
 
