@@ -89,20 +89,21 @@ if hyperscan
                        
             else  
                 scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,'*_nonoisych.mat'));
+                currscan = snames(1);
                 if ~isempty(scandir)
                     load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scandir(1).name)) 
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
-                    qatable1.scan(end) = sumgoodchannels;
-                    chtable1.scan(:) = chtable1.scan(:) + goodchannels';
+                    qatable1.(currscan{1})(end) = sumgoodchannels;
+                    chtable1.(currscan{1})(:) = chtable1.(currscan{1})(:) + goodchannels';
                 end
                 scandir = dir(strcat(preprocdir,filesep,group,filesep,subjname,filesep,'*_nouncertainch.mat'));
                 if ~isempty(scandir)
                     load(strcat(preprocdir,filesep,group,filesep,subjname,filesep,scandir(1).name)) 
                     goodchannels = ~isnan(z_oxy(1,:));
                     sumgoodchannels = sum(goodchannels);
-                    qatable2.scan(end) = sumgoodchannels;
-                    chtable2.scan(:) = chtable2.scan(:) + goodchannels';
+                    qatable2.(currscan{1})(end) = sumgoodchannels;
+                    chtable2.(currscan{1})(:) = chtable2.(currscan{1})(:) + goodchannels';
                 end
             end
         end
@@ -143,20 +144,21 @@ else
                        
         else  
             scandir = dir(strcat(preprocdir,filesep,subjname,filesep,'*_nonoisych.mat'));
+            currscan = snames(1);
             if ~isempty(scandir)
                 load(strcat(preprocdir,filesep,subjname,filesep,scandir(1).name)) 
                 goodchannels = ~isnan(z_oxy(1,:));
                 sumgoodchannels = sum(goodchannels);
-                qatable1.scan(end) = sumgoodchannels;
-                chtable1.scan(:) = chtable1.scan(:) + goodchannels';
+                qatable1.(currscan{1})(end) = sumgoodchannels;
+                chtable1.(currscan{1})(:) = chtable1.(currscan{1})(:) + goodchannels';
             end
             scandir = dir(strcat(preprocdir,filesep,subjname,filesep,'*_nouncertainch.mat'));
             if ~isempty(scandir)
                 load(strcat(preprocdir,filesep,subjname,filesep,scandir(1).name)) 
                 goodchannels = ~isnan(z_oxy(1,:));
                 sumgoodchannels = sum(goodchannels);
-                qatable2.scan(end) = sumgoodchannels;
-                chtable2.scan(:) = chtable2.scan(:) + goodchannels';
+                qatable2.(currscan{1})(end) = sumgoodchannels;
+                chtable2.(currscan{1})(:) = chtable2.(currscan{1})(:) + goodchannels';
             end
         end
     end
