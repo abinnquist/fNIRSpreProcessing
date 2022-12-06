@@ -27,7 +27,7 @@ function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr,
         elseif motionCorr==5
             [dod] = hmrMotionCorrectWavelet(dod,SD,1.5);
         elseif motionCorr==6 %In progress
-            [dod, dlocal] = hmrSSR(dod, SD, 0, t, 6, 0, 0, 10);
+            [dod, ~] = hmrSSR(dod, SD, 0, t);
         end
         dod = hmrBandpassFilt(dod,samprate,0.008,0.2);
         ppf = [6 6];
