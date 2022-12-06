@@ -59,7 +59,7 @@ multiscan=str2num(cell2mat(studyInfo(3)));
 numaux=str2num(cell2mat(studyInfo(4)));
 
 mcorrTypes = {'Baseline volatility','PCFilter (MUST have mapping toolbox)',...
-    'PCA by channel','CBSI','Wavelet (uses db2)','None'};
+    'PCA by channel','CBSI','Wavelet (uses db2)','Short channel regression','None'};
 [motionCorr,~] = listdlg('PromptString', 'What kind of motion correction do you want to do?',...
 'SelectionMode', 'single', 'ListSize',[250,150], 'ListString', mcorrTypes);
 
