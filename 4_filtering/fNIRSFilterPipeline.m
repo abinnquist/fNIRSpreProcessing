@@ -3,7 +3,7 @@
 %-----------------------------------------------
  %Note: depending on you correction choice raw data is converted at
  %differnt times (i.e., raw > OD > Hb)
-function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords)
+function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords, t)
     %depends on Homer2 package
     warning off; %sometimes hmrIntensity2Conc gives a warning we don't care about here
     %see hmrMotionArtifact in Homer2 documentation for parameter description
@@ -18,21 +18,23 @@ function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr,
         [dconverted, ~] = hmrIntensity2Conc(dfiltered, SD, samprate, 0.008, 0.2, [6, 6]);
     end
     
-    if motionCorr==2 || motionCorr==5
+    if motionCorr==2 || motionCorr==5 || motionCorr==6
         dod = hmrIntensity2OD( d );
         if motionCorr==2
             if ~isempty(coords)
                 dod = spatialPCFilter(dod, coords);
             end
-        else
+        elseif motionCorr==5
             [dod] = hmrMotionCorrectWavelet(dod,SD,1.5);
+        elseif motionCorr==6 %In progress
+            [dod, dlocal] = hmrSSR(dod, SD, 0, t, 6, 0, 0, 10);
         end
         dod = hmrBandpassFilt(dod,samprate,0.008,0.2);
         ppf = [6 6];
         dconverted = hmrOD2Conc( dod, SD, ppf );
     end
     
-    if any(or(motionCorr==4,motionCorr==6))
+    if any(or(motionCorr==4,motionCorr==7))
         dfiltered=d;
         %see hmrIntensity2Conc in Homer2 documentation for parameter description
         [dconverted, ~] = hmrIntensity2Conc(dfiltered, SD, samprate, 0.008, 0.2, [6, 6]);
