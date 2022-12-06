@@ -10,18 +10,20 @@ clc; clear
 %countScans.m and triggerCheck.m
 
 %% INPUTS: 
-dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-motionCorr=1;   % 0 = no motion correction (not reccommended unless comparing)
-                % 1 = baseline volatility
-                % 2 = wavelet, require homer2 (old: PCFilter-requires mapping toolbox)
-                % 3 = baseline volatility & CBSI
-                % 4 = CBSI only
-numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
+dataprefix='SS'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+motionCorr=7;   % 1 = Baseline volatility
+                % 2 = PCFilter-requires mapping toolbox
+                % 3 = PCA x channel
+                % 4 = CBSI
+                % 5 = Wavelet, requires homer2 
+                % 6 = Short channel regression (Must have short chans)
+                % 7 = No correction
+numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
-i=1; % dyad, if not dyadic just enter 0
-j=2; % subject, if you only have one subject enter 0
-k=5; % scan
+i=0; % dyad, if not dyadic just enter 0
+j=0; % subject, if you only have one subject enter 0
+k=2; % scan
 
 %For pre-preproc OR step 6
 numscans=5; %Max number of scan per subject
@@ -140,8 +142,10 @@ elseif device==2 %NIRSport
 elseif device==3 %NIRSport & other brands
     [d, samprate, t, SD, aux, trigInfo] = snirfExtract(scanfolder,numaux);
     s = zeros(length(d),1);
-    onset = trigInfo.Onset;
-    s(find(t==onset(1)),1) = 1;
+    if ~isempty(trigInfo)
+        onset = trigInfo.Onset;
+        s(find(t==onset(1)),1) = 1;
+    end
 end
 
 %% 2) Trim scans
@@ -191,7 +195,7 @@ else
 end
 
 %% 4) motion filter, convert to hemodynamic changes
-[dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords);
+[dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords,t);
 
 %% To visualize how your motion correction looks compared to no correction uncomment
 
