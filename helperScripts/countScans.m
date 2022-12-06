@@ -29,14 +29,21 @@ if hyper
 else
     scanCount=zeros(length(currdir),1);
     scannames = cell(length(currdir),numscans);
-    for p=1:length(currdir)
-        subjname = currdir(p).name;
-        subjdir = dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
-        scanCount(p,1)=length(subjdir);
-
-        for k=1:length(subjdir)
-            scanname = subjdir(k).name;
-            scannames(p,k)={scanname};
+    if numscans > 1
+        for p=1:length(currdir)
+            subjname = currdir(p).name;
+            subjdir = dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
+            scanCount(p,1)=length(subjdir);
+    
+            for k=1:length(subjdir)
+                scanname = subjdir(k).name;
+                scannames(p,k)={scanname};
+            end
+        end
+    else
+        for k=1:length(currdir)
+            scanname = currdir(k).name;
+            scannames(k,1)={scanname};
         end
     end
 
