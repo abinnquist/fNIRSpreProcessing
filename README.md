@@ -12,7 +12,7 @@ See below for more details on each step of the pipeline, and how to use this cod
 Included in repo: 
 - Two publicly available Matlab packages - inpaint_nans and some Homer2 scripts
 Not Included:
-- MUST have MATLAB statistics and machine learning toolbox for nan based functions (will eventually fix this but for now you need the toolbox)
+- MUST have MATLAB statistics and machine learning toolbox for nan based functions (will eventually fix this but for now you need the toolbox) & Signal Processing toolbox
 - If using Snirf file for preprocessing you MUST have Homer3 link below
 	- Homer3 toolbox at https://github.com/BUNPC/Homer3 
 - If using wavelet motion correction MUST have the MATLAB wavelet toolbox
