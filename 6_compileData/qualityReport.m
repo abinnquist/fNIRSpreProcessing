@@ -38,7 +38,7 @@ qatable1 = [qatable1a qatable1b];
 qatable2 = qatable1;
 qatable_copy = qatable1;
 
-chtable1a = array2table([1:channelnum]');
+chtable1a = array2table((1:channelnum)');
 chtable1a.Properties.VariableNames={'channelnum'};
 chtable1b = array2table(zeros(channelnum,length(snames)));
 chtable1b.Properties.VariableNames=snames;
