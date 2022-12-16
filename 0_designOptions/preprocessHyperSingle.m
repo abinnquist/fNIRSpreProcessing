@@ -74,12 +74,8 @@ for i=1:length(currdir)
             QCoDthresh = 0.6 - 0.03*samprate;
             [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
             
-            if device==1
-                [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo, channelmask);
-            elseif device==2 || device==3
-                SD.MeasListAct = [channelmask'; channelmask'];
-                SD.MeasListVis = SD.MeasListAct;
-            end
+            SD.MeasListAct = [channelmask'; channelmask'];
+            SD.MeasListVis = SD.MeasListAct;
             
             %4) motion filter, convert to hemodynamic changes
             [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords, t);
