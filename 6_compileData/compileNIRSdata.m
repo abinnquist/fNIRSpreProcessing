@@ -42,7 +42,7 @@ if hyperscan
                 end
                 [lenAux,nAux]=size(aux);
                 tC(1:length_convo,1,i)=t';
-                sC(1:length_convo,1,i)=s;
+                sC(1:length_convo,1,i)=s(:,1);
                 auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
             end  
             deoxy3D(sc).name=snames{sc};
