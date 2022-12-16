@@ -49,9 +49,10 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 	- helperScripts/
 		- In development/
 
-- Currently there are five options asked for by the input motionCorr: 
-	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, or none=6. 
+- Currently there are six options asked for by the input motionCorr: 
+	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, Short channel regression=6, or none=7. 
 	- I'm leaning toward wavelet currently, but it is the longest and requires MATLAB wavelet toolbox.
+	- Short channel regression is only possible if you collected data with short channels
 
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
 fNIRS channel. Doing so is our current approach to finding bad channels (good channels have a preponderance of signal in slow frequencies, pure noise has random amounts of signal at every frequency). 
@@ -80,26 +81,26 @@ OPTION 1: With GUI pop-ups
 		- NIRSport 
 		- Snirf file (MUST have Homer3)
 	4. Pop-up: Select location of where the data folder that contains all your NIRS data is
-	5. Pop-up (select one): Do you want to trim the data before preproc, if so how? 
-		- No trim
-		- Trim from first trigger
-		- Trim begginning with supplemental .csv
-		- Trim begginning & end with supplemental .csv
-			- Structure of .csv below, handles 1-n scans per subject: 
-				- column_1 = subject or dyad number
-    				- column_2 = 1st scan where to start trim
-    				- column_3 = 1st scan length
-    				- column_4 = 2nd scan start trim
-    				- column_5 = 2nd scan length
-    				- column_n*2 = nth scan start trim
-    				- column_n*2+1 = nth scan length
-	6. Pop-up: If you want to compile the data into one .mat file. 
+	5. Pop-up: If you want to compile the data into one .mat file. 
 		- Note: You MUST have the same number of scans for every subject.
 		- Compile data: 0=No, 1=Yes
 		- Number of scans: any number 1 to n. n=number of scans per subject
     		- Z-scored: 0=oxy/deoxy, 1=z_oxy/z_deoxy
     		- Channel rejection: 1=none, 2=noisy only, 3=noisy and uncertain 
-
+	6. Pop-up (select one): Do you want to trim the data before preproc, if so how? 
+		- No trim
+		- Trim beginning of data from first trigger
+		- Trim beginning of data from last trigger
+		- Trim beginning of data with supplemental .mat
+		- Trim beginning of data with supplemental spreadsheet (.csv, .xls, .xlsx)
+		- NOTE: if using supplemental .mat or spreadsheet
+			- If .mat: 
+				- Single subjects: 2D matrix (i.e., sub x scan) 
+				- Hyperscan: 3D matrix (i.e., dyad x scan x sub)
+			- If spreadsheet 2D regardless (i.e., one sheet):
+				- Single subjects: sub x scan1, ... scanN
+				- Hyperscan: dyad x scan1_sub1, ... scanNsubN
+				
 OPTION 2: as a function
 - In the command window: addpath(genpath('fNIRSpreProcessing')) 
 - Run the function preprocessingfNIRS from the command window
@@ -109,7 +110,7 @@ OPTION 2: as a function
 1. Dataprefix string: prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
 2. Hyperscanning marker: 1=hyperscanning, 0=single subject 
 3. Multiscan marker: 1=multiple scans per participant, 0=single scan
-4. Preferred Motion correction: 1=baseline volatility, 1=baseline volatility, 2=PCFilter, 3=PCA by channel, 4=CBSI, 5=Wavelet, 6=None 
+4. Preferred Motion correction: 1=baseline volatility, 1=baseline volatility, 2=PCFilter, 3=PCA by channel, 4=CBSI, 5=Wavelet, 6=Short channel regression, 7=none 
 5. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
 
 - No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
