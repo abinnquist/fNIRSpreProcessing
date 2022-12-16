@@ -41,30 +41,41 @@ if length(currdir)<1
     error(['ERROR: No data files found with ',dataprefix,' prefix']);
 end
 
-%If you want trim the data at all before preproc and if you want to use a csv to trim the data 
-trimTypes = {'No trim','Beginning with 1st trigger','Beginning with last trigger', 'Beginning with .csv','Begin & end with .csv'};
+%Compile data info
+compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
+    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
+    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
+              'Compile data info', [1 75]); 
+
+%Type of data trim, if wanted
+trimTypes = {'No trim','Beginning with 1st trigger','Beginning with last trigger',...
+    'Beginning with .mat','Beginning with a spreadsheet'};
 [trim,~] = listdlg('PromptString', 'Do you want to trim scans?',...
     'SelectionMode', 'single', 'ListString', trimTypes);
-if trim == 4 || trim == 5
-    [trimTs, trimPath] = uigetfile('*.csv','Choose trim time CSV');
-    trimTimes = readtable(strcat(trimPath,trimTs));
-    clear trimPath trimTs trimTypes
+if trim == 4 
+    [trimTs, trimPath] = uigetfile('*.mat','Choose trim time .mat');
+    load(strcat(trimPath,trimTs))
+elseif trim == 5
+    numscans=str2num(compInfo{4});
+    [trimTs, trimPath] = uigetfile('*.*','Choose trim times spreadsheet');
+    trimTimes =  trimConvert(trimTs, trimPath, numscans);
 else
     trimTimes=[];
 end
+clear trimPath trimTs trimTypes
 
 %Will select correct script for study design (i.e., hyperscan? multiscan?)
 if hyperscan
     if multiscan
-        preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes);
+        preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
     else
-        preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes);
+        preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
     end
 else
     if multiscan
-        preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes);
+        preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
     else
-        preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes);
+        preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
     end
 end
 
