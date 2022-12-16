@@ -7,27 +7,25 @@ clc; clear
 % If you prefer to manually input study Information uncomment the first four 
 % lines under INPUT or else the script will use a GUI pop-up to ask. 
 %
-% The script has 3 pop-ups before processing and 1 after in the below order:
+% The script has 6 pop-ups before processing and 1 after in the below order:
 % 1. Pop-up (4 inputs): dataprefix for all folders of interest, if hyperscans, if
 % multiple scans per subject/dyad, how many if any auxiliaries
 % 2. Pop-up (select one): What type of motion correction do you want to use?
 % 3. Pop-up: Where is the folder that contains all your NIRS data?
 % 4. Pop-up: What machine collected the data: NIRScout, NIRSport or a .snirf file
-% 5. Pop-up: What type of trimming of the data you want to do, if any? 
-% Structure of .csv below, handles 1-n scans per subject: 
-    % Column_1 = subject or dyad number
-    % column_2 = 1st scan where to start trim
-    % column_3 = 1st scan length
-    % column_4 = 2nd scan start trim
-    % column_5 = 2nd scan length
-    % column_n*2 = nth scan start trim
-    % column_n*2+1 = nth scan length
-% 6. Pop-up: If you want to compile the data into one .mat file. 
+% 5. Pop-up: If you want to compile the preprocessed data into one .mat file. 
 % Note: You MUST have the same number of scans for every subject.
     % Compile data: 0=No, 1=Yes
     % Number of scans: any number 1 to n. n=number of scans per subject
     % Z-scored: 0=oxy/deoxy, 1=z_oxy/z_deoxy
     % Channel rejection: 1=none, 2=noisy only, 3=noisy and uncertain (reccommended)
+% 6. Pop-up: What type of data trimming do you want to do, if any? 
+    % If hyperscan
+        % If .mat: should be in 3D format (i.e., dyad x scan x sub)
+        % If spreadsheet: should be in 2D format (i.e., dyad x scanSub1,scanSub2,...scanSubn)
+        % the script will convert it to a .mat for you
+    % If single subject
+        % If .mat or spreadsheet: should be in 2D format (i.e., sub x scan)
 
 % OUTPUTS: 
 % In 'PreProcessedFiles' created by the script:
