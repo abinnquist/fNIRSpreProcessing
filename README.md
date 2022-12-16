@@ -105,12 +105,12 @@ OPTION 1: With GUI pop-ups
 OPTION 2: as a function
 - In the command window: addpath(genpath('fNIRSpreProcessing')) 
 - Run the function preprocessingfNIRS from the command window
-- takes 5 arguments: preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
+- Takes 5 arguments: preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
      - Example: preprocessingfNIRS('IPC', 1, 1, 3, 2) <- for a dyadic study, with multiple scans, PCA selected as motion correction, and 2 accelerometers.
 
 1. Dataprefix string: prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
-2. Hyperscanning marker: 1=hyperscanning, 0=single subject 
-3. Multiscan marker: 1=multiple scans per participant, 0=single scan
+2. Hyperscan: 1=hyperscanning, 0=single subject 
+3. Multiscan: 1=multiple scans per participant, 0=single scan
 4. Preferred Motion correction: 1=baseline volatility, 1=baseline volatility, 2=PCFilter, 3=PCA by channel, 4=CBSI, 5=Wavelet, 6=Short channel regression, 7=none 
 5. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
 
