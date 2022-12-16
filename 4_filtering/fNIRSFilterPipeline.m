@@ -20,6 +20,18 @@ function [dconverted, dnormed]= fNIRSFilterPipeline(d, SD, samprate, motionCorr,
     
     if motionCorr==2 || motionCorr==5 || motionCorr==6
         dod = hmrIntensity2OD( d );
+        
+        [repInf(:,1),repInf(:,2)]=find(isinf(dod)); %If an Inf value shows up
+        if ~isempty(repInf)
+            for r=1:height(repInf)
+                if ~isinf(dod(repInf(r,1)-1,repInf(r,2)))
+                    dod(repInf(r,1),repInf(r,2))=dod(repInf(r,1)-1,repInf(r,2));
+                elseif ~isinf(dod(repInf(r,1)+1,repInf(r,2)))
+                    dod(repInf(r,1),repInf(r,2))=dod(repInf(r,1)+1,repInf(r,2));
+                end
+            end
+        end
+
         if motionCorr==2
             if ~isempty(coords)
                 dod = spatialPCFilter(dod, coords);
