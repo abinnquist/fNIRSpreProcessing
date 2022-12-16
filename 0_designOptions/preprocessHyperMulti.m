@@ -1,13 +1,8 @@
-function preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes)
+function preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
-
-compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
-    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
-    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
-              'Compile data info', [1 75]); 
     
 for i=1:length(currdir)
     group=currdir(i).name;  
@@ -75,8 +70,8 @@ for i=1:length(currdir)
                 end
     
                 % 2) Trim scans: no=0, trim beginnin=1, trim begin & end=2
-                scanNum=k; subj=i; numScans=length(subjdir);
-                [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, device, aux, numaux);
+                sInfo(1,1)=i; sInfo(2,1)=j; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
+                [d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, device, aux, numaux, sInfo);
                 
                 %3) identify noisy channels (SNR channel rejection)
                 satlength = 2; %in seconds
