@@ -10,28 +10,28 @@ clc; clear
 %countScans.m and triggerCheck.m
 
 %% INPUTS: 
-dataprefix='SS'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-motionCorr=7;   % 1 = Baseline volatility
+dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+motionCorr=5;   % 1 = Baseline volatility
                 % 2 = PCFilter-requires mapping toolbox
                 % 3 = PCA x channel
                 % 4 = CBSI
                 % 5 = Wavelet, requires homer2 
                 % 6 = Short channel regression (Must have short chans)
                 % 7 = No correction
-numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
-i=0; % dyad, if not dyadic just enter 0
-j=0; % subject, if you only have one subject enter 0
-k=2; % scan
+i=4; % dyad, if not dyadic just enter 0
+j=1; % subject, if you only have one subject enter 0
+k=3; % scan
 
 %For pre-preproc OR step 6
-numscans=5; %Max number of scan per subject
-IDlength=0; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
 hyperscan=1;
 multiscan=1;
 
-zdim=1; %1=Compile z-scored, 0=compile non-z-scored
+numscans=5; %Max number of scan per subject
+IDlength=4; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
+zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
 
 %% Make all folders active in your path
@@ -64,11 +64,33 @@ folderRename(rawdir,dataprefix,hyperscan)
 %To run the check for only on or two scans use triggerCheckManual.m
 trigInfo = triggerCheck(rawdir,dataprefix,IDlength,hyperscan,numscans);
 
-%% Select your device and trim choice
+%% Select your device, compile options, and trim choice
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
-
 [device,~] = listdlg('PromptString', 'Select acquisition device:',...
     'SelectionMode', 'single', 'ListString', supported_devices);
+
+%Quality assesment & Compile options
+compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
+    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
+    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
+              'Compile data info', [1 75]); 
+
+%Type of data trim, if wanted
+trimTypes = {'No trim','Beginning with 1st trigger','Beginning with last trigger',...
+    'Beginning with .mat','Beginning with a spreadsheet'};
+[trim,~] = listdlg('PromptString', 'Do you want to trim scans?',...
+    'SelectionMode', 'single', 'ListString', trimTypes);
+if trim == 4 
+    [trimTs, trimPath] = uigetfile('*.mat','Choose trim time .mat');
+    load(strcat(trimPath,trimTs))
+elseif trim == 5
+    numscans=str2num(compInfo{4});
+    [trimTs, trimPath] = uigetfile('*.*','Choose trim times spreadsheet');
+    trimTimes =  trimConvert(trimTs, trimPath, numscans);
+else
+    trimTimes=[];
+end
+clear trimPath trimTs trimTypes
 
 %% Selecting what data to process
 % This example is for hyper & multi scan data
@@ -199,9 +221,10 @@ end
 
 %% To visualize how your motion correction looks compared to no correction uncomment
 
-% [dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 1, coords);
+% [dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 4, coords, t);
 % dCon1=squeeze(dconverted(:,1,:));
 % dCon2=squeeze(dconverted2(:,1,:));
+% 
 % tiledlayout(2,1)
 % nexttile
 % plot(dCon1)
