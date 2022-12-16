@@ -93,13 +93,14 @@ OPTION 1: With GUI pop-ups
 		- Trim beginning of data from last trigger
 		- Trim beginning of data with supplemental .mat
 		- Trim beginning of data with supplemental spreadsheet (.csv, .xls, .xlsx)
-		- NOTE: if using supplemental .mat or spreadsheet
-			- If .mat: 
-				- Single subjects: 2D matrix (i.e., sub x scan) 
-				- Hyperscan: 3D matrix (i.e., dyad x scan x sub)
-			- If spreadsheet 2D regardless (i.e., one sheet):
-				- Single subjects: sub x scan1, ... scanN
-				- Hyperscan: dyad x scan1_sub1, ... scanNsubN
+
+	- NOTE: if using supplemental .mat or spreadsheet trim time MUST be in frames and in correct format
+		- If using a .mat: 
+			- Single subjects: 2D matrix (i.e., sub x scan) 
+			- Hyperscan: 3D matrix (i.e., dyad x scan x sub)
+		- If spreadsheet 2D regardless (i.e., one sheet):
+			- Single subjects: sub x scan1, ... scanN
+			- Hyperscan: dyad x scan1_sub1, ... scanNsubN
 				
 OPTION 2: as a function
 - In the command window: addpath(genpath('fNIRSpreProcessing')) 
