@@ -1,13 +1,8 @@
-function preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes)
+function preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
-
-compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
-    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
-    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
-              'Compile data info', [1 75]); 
 
 for i=1:length(currdir)
     subjname=currdir(i).name;  
@@ -71,9 +66,9 @@ for i=1:length(currdir)
                 end
             end
     
-            % 2) Trim scans: no=0, trim beginnin=1, trim begin & end=2
-            scanNum=k; subj=i; numScans=length(subjdir);
-            [d,s,t,aux] = trimData(trim, d, s, t, subj, scanNum, numScans, trimTimes, samprate, numaux, aux, numaux);
+            % 2) Trim scans
+            sInfo(1,1)=i; sInfo(2,1)=1; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
+            [d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, numaux, aux, numaux, sInfo);
     
             %3) identify noisy channels
             satlength = 2; %in seconds
