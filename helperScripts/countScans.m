@@ -12,9 +12,13 @@ if hyper
             subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));     
             scanCount(g,p)=length(subjdir);
 
-            for k=1:length(subjdir)
-                scanname = subjdir(k).name;
-                scannames(g,k,p)={scanname};
+            if numscans==1
+                scannames(g,1,p) = {subjname};
+            else
+                for k=1:length(subjdir)
+                    scanname = subjdir(k).name;
+                    scannames(g,k,p)={scanname};
+                end
             end
         end
     end
