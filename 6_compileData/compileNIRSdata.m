@@ -26,9 +26,14 @@ if hyperscan
                 dyad=currdir(i).name; %define dyad
                 dyaddir=dir(strcat(preprocdir,filesep,dyad,filesep,dataprefix,'*'));
                 subject=dyaddir(sj).name;
-                subfolder=dir(strcat(dyaddir(sj).folder,filesep,subject,filesep,dataprefix,'*')); 
-                subfiles=dir(strcat(subfolder(sj).folder,filesep,subfolder(sc).name,filesep,'*.mat'));
                 
+                if numScans==1
+                    subfiles=dir(strcat(dyaddir(sj).folder,filesep,subject,filesep,dataprefix,'*.mat')); 
+                else
+                    subfolder=dir(strcat(dyaddir(sj).folder,filesep,subject,filesep,dataprefix,'*')); 
+                    subfiles=dir(strcat(subfolder(sj).folder,filesep,subfolder(sc).name,filesep,'*.mat'));
+                end
+
                 if zdim && ~isempty(subfiles) %In case you are missing scans
                     load(strcat(subfiles(ch_reject).folder,filesep,subfiles(ch_reject).name),'z_oxy','z_deoxy','t','s','samprate','aux')
                     [length_convo, numchans]=size(z_oxy);
@@ -41,9 +46,9 @@ if hyperscan
                     z_oxyC(1:length_convo,1:numchans,i)=oxy(1:length_convo,:);
                 end
                 [lenAux,nAux]=size(aux);
+                auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
                 tC(1:length_convo,1,i)=t';
                 sC(1:length_convo,1,i)=s(:,1);
-                auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
             end  
             deoxy3D(sc).name=snames{sc};
             deoxy3D(sc).(subN)=z_deoxyC;
@@ -56,6 +61,7 @@ if hyperscan
             oxy3D(sc).(tN)=tC;
             oxy3D(sc).(sN)=sC;
             oxy3D(sc).(auxN)=auxC;
+
             if sj==max(nSubs)
                 deoxy3D(sc).samprate=samprate;
                 oxy3D(sc).samprate=samprate;
@@ -100,23 +106,23 @@ else
                     end
                 end
                 [lenAux,nAux]=size(aux);
-                tC(1:length_convo,1,i)=t';
-                sC(1:length_convo,1,i)=s;
                 auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
+                tC(1:length_convo,1,i)=t';
+                sC(1:length_convo,1,i)=s;    
             end
         end
         deoxy3D(sc).name=snames{sc};
         deoxy3D(sc).subdata=z_deoxy1;
         deoxy3D(sc).t=tC;
         deoxy3D(sc).triggers=sC;
-        deoxy3D(sc).aux=auxC;
         deoxy3D(sc).samprate=samprate;
+        deoxy3D(sc).aux=auxC;
       
         oxy3D(sc).name=snames{sc};
         oxy3D(sc).subdata=z_oxy1;
         oxy3D(sc).t=tC;
         oxy3D(sc).triggers=sC;
-        oxy3D(sc).aux=auxC;
         oxy3D(sc).samprate=samprate;
+        oxy3D(sc).aux=auxC;
     end  
 end
