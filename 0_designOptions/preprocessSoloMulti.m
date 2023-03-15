@@ -155,7 +155,7 @@ if compInfo{1,1}=='1' || compInfo{3,1}=='1'
     IDlength=str2num(compInfo{2,1});
     numscans=str2num(compInfo{4,1});
     %Gets the scan names for all subjects
-    [~, ~, snames] = countScans(currdir, rawdir, dataprefix, 0, numscans, IDlength);   
+    [~, ~, snames] = countScans(currdir, dataprefix, 0, numscans, IDlength);   
 
     %6.1) Quality Check
     if compInfo{1,1}=='1'
