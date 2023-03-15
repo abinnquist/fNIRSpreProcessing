@@ -1,5 +1,5 @@
-function [scanCount, scannames, snames] = countScans(currdir, rawdir, dataprefix, hyper, numscans, IDlength)
-
+function [scanCount, scannames, snames] = countScans(currdir, dataprefix, hyper, numscans, IDlength)
+rawdir=currdir(1).folder;
 if hyper
     scanCount=zeros(length(currdir),2); %If more than two it will adjust
     scannames = cell(length(currdir),numscans,2);
