@@ -21,9 +21,9 @@ motionCorr=5;   % 1 = Baseline volatility
 numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
-i=4; % dyad, if not dyadic just enter 0
+i=6; % dyad, if not dyadic just enter 0
 j=1; % subject, if you only have one subject enter 0
-k=3; % scan
+k=2; % scan
 
 %For pre-preproc OR step 6
 hyperscan=1;
@@ -57,7 +57,7 @@ folderRename(rawdir,dataprefix,hyperscan)
 
 %Checks for the number of scan for each dyad/subject. Will also give you
 %the scan names based on the first subject.
-[scanCount, scannames, snames] = countScans(currdir, rawdir, dataprefix, hyperscan, numscans, IDlength);
+[scanCount, scannames, snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);
 
 %Only run this if you have already run countScans and all subjects have the
 %same number of scan folders, even if the folder is empty. 
@@ -132,7 +132,7 @@ else
 end
 
 %Checks to see if there is data. If not true don't run preproc just make
-%empty folder. This allows the compile codes to work correctly.
+%empty folder. This allows the compile code to work correctly.
 scdir=dir(scanfolder);
 scdir=scdir(~startsWith({scdir.name},'.'));
 if isempty(scdir)
@@ -172,6 +172,11 @@ end
 
 %% 2) Trim scans
 % Trim beginning of data based on first trigger
+
+%Below is the actual code for trimming
+% sInfo(1,1)=i; sInfo(2,1)=j; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
+% [d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, device, aux, numaux, sInfo);
+
 ssum = sum(s,2);
 stimmarks = find(ssum); %Will collect all triggers
 
