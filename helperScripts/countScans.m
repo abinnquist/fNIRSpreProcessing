@@ -1,15 +1,15 @@
 function [scanCount, scannames, snames] = countScans(currdir, dataprefix, hyper, numscans, IDlength)
-rawdir=currdir(1).folder;
+rdir=currdir(1).folder;
 if hyper
     scanCount=zeros(length(currdir),2); %If more than two it will adjust
     scannames = cell(length(currdir),numscans,2);
     for g=1:length(currdir)
         group=currdir(g).name;  
-        groupdir=dir(strcat(rawdir,filesep,group,filesep,dataprefix,'*'));
+        groupdir=dir(strcat(rdir,filesep,group,filesep,dataprefix,'*'));
     
         for p=1:length(groupdir)
             subjname = groupdir(p).name;
-            subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));     
+            subjdir = dir(strcat(rdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));     
             scanCount(g,p)=length(subjdir);
 
             if numscans==1
@@ -36,7 +36,7 @@ else
     if numscans > 1
         for p=1:length(currdir)
             subjname = currdir(p).name;
-            subjdir = dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
+            subjdir = dir(strcat(rdir,filesep,subjname,filesep,dataprefix,'*'));
             scanCount(p,1)=length(subjdir);
     
             for k=1:length(subjdir)
@@ -55,7 +55,7 @@ else
     snames=cell(width(scannames),1);
     for s=1:width(scannames)
         sc=scannames{1,s};
-        sc=sc(length(dataprefix)+IDlength+2:end);
+        sc=sc(IDlength+1:end);
         snames(s,1)={sc};
     end
 end
