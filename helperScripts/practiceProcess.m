@@ -10,7 +10,7 @@ clc; clear
 %countScans.m and triggerCheck.m
 
 %% INPUTS: 
-dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+dataprefix='SD'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
 motionCorr=5;   % 1 = Baseline volatility
                 % 2 = PCFilter-requires mapping toolbox
                 % 3 = PCA x channel
@@ -54,6 +54,14 @@ end
 %Checks if all folders have the necessary dataprefix. Will add the prefix to
 %the existing folder if not present. Leaves folders with the prefix untouched.
 folderRename(rawdir,dataprefix,hyperscan)
+
+%ONLY for hyperscanning with multiple scans, creates new folder & reorganizes 
+%folder structure from: session>scan>subjects to session>subject>scans
+% scanNames={'bonding','opposition','rest'}; %Name of scans (i.e., SD_001_bonding)
+% numHyper = 2;  %Change this to however many participants per session
+% pathName = rawdir; %where ever the original data is stored
+% newdir = 'C:\Users\Mike\Desktop\SD_nirs'; %Where you want the new organization to go
+% reOrganizeFolders(scanNames,numHyper,pathName,newdir); %uncomment ONLY if needed
 
 %Checks for the number of scan for each dyad/subject. Will also give you
 %the scan names based on the first subject.
