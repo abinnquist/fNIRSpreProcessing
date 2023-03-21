@@ -49,7 +49,7 @@ clc; clear
 %                   % Other auxiliary inputs: eeg, pulse, etc.
 
 definput = {' ','0','0','0'};
-studyInfo = inputdlg({'Dataprefix  for all study folders','Hyperscan? (0=no, 1=yes)','Multiscan? (0=no, 1=yes)','Number of auxiliary? (0-n)'},...
+studyInfo = inputdlg({'Dataprefix for all study folders','Hyperscan? (0=no, 1=yes)','Multiscan? (0=no, 1=yes)','Number of auxiliary? (0-n)'},...
               'Study Info', [1 35], definput,'on');     
 dataprefix=char(studyInfo(1));
 hyperscan=str2num(cell2mat(studyInfo(2)));
