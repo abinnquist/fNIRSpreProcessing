@@ -16,7 +16,7 @@ supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file'
 currdir=dir(strcat(rawdir,filesep,dataprefix,'*'));
 
 %Check how many scans per participant
-[scanCount, ~, snames] = countScans(currdir, rawdir, dataprefix, hyperscan, numscans, IDlength);
+[scanCount, ~, snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);
 
 % Collect trigger info and save
 if hyperscan==1
