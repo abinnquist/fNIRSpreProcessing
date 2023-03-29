@@ -18,7 +18,7 @@ motionCorr=5;   % 1 = Baseline volatility
                 % 5 = Wavelet, requires homer2 
                 % 6 = Short channel regression (Must have short chans)
                 % 7 = No correction
-numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 
 i=6; % dyad, if not dyadic just enter 0
@@ -29,7 +29,7 @@ k=2; % scan
 hyperscan=1;
 multiscan=1;
 
-numscans=5; %Max number of scan per subject
+numscans=3; %Max number of scan per subject
 IDlength=4; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
