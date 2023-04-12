@@ -10,7 +10,7 @@ clc; clear
 %countScans.m and triggerCheck.m
 
 %% INPUTS: 
-dataprefix='SD'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
 motionCorr=5;   % 1 = Baseline volatility
                 % 2 = PCFilter-requires mapping toolbox
                 % 3 = PCA x channel
@@ -29,7 +29,7 @@ k=2; % scan
 hyperscan=1;
 multiscan=1;
 
-numscans=3; %Max number of scan per subject
+numscans=5; %Max number of scan per subject
 IDlength=4; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
