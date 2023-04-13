@@ -48,6 +48,10 @@ else
         for k=1:length(currdir)
             scanname = currdir(k).name;
             scannames(k,1)={scanname};
+            datadir=strcat(currdir(k).folder,filesep,currdir(k).name);
+            if ~isempty(datadir)
+                scanCount(k,1)=1;
+            end
         end
     end
 
