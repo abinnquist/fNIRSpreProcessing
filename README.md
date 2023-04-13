@@ -64,7 +64,7 @@ check if the currently selected QCoD threshold for bad channel marking is what y
 # How to Use
 To download: clone or pull repo to your desired local directory. After unzipping make sure to remove '-main' from the 'fNIRSpreProcessing' folder name. I also recommend having hte pipeline in the same location as other toolboxes you may use like homer3. 
 
-Pre-preprocessing: There are scripts in 'helperScripts' in case you have named your folders incorrectly (i.e., folderRename'), want to make sure you triggers are as they should be before running preprocessing (i.e., triggerCheck), or want to better understand the pipeline without having to run the entire function (i.e., practiceProcess).
+Pre-preprocessing: See next section below for how to make sure your data is ready for preprocessing.
 
 OPTION 1: With GUI pop-ups 
 - Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
@@ -117,6 +117,18 @@ OPTION 2: as a function
 - No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
+# Pre-preprocessing: Data structure, triggers, and more
+There are scripts in 'helperScripts' for the following changes if needed. 
+1. folderRename.m: Your folders are missing the study prefix. This can be for some of the or all of them. It will only add the study prefix for the ones that are missing.
+2. reOrganizeFolders.m: This will reorder the scans for a study so it is in the correct structure for preprocessing. Only use if the structure of you folders is wrong. This is most common for hyperscanning. The folders should be in the below structure.
+	- studyPrefix_DyadNumber > studyPrefix_subjectNumber > studyPrefix_subjectNumber_scan
+		- Example: ![image](https://user-images.githubusercontent.com/57020313/231604166-959df19a-429b-413c-89b3-456c9357d2a8.png)
+3. countScans.m: Counts how many scans per subject and collects the names of the scan based on the first dyad/subject. 
+4. triggerCheck.m: makes a new .mat of all the triggers in every scan so you can ensure you have the correct amount of triggers in the correct place. Won't change anything, this function is for reviewing triggers ONLY.
+5. triggerChangeManual.m: You can delete, add, or modify triggers scan by scan with this script. Best used if you only have a few that need to be changed. See below section for how-to video.
+
+want to make sure you triggers are as they should be before running preprocessing (i.e., triggerCheck), or want to better understand the pipeline without having to run the entire function (i.e., practiceProcess).
+
 # Known Difficulties
 1. Since this is still being worked on, here are some known issues that might pop up and how to fix them right now:
  	- UPDATE: The problem below should be fixed. Please let me know if this problem is still occuring.
@@ -134,6 +146,8 @@ best to start fresh.
 	- IP_scan_1, IP_scan_2, with IP being the prefix. This naming system will cause an error because of a duplicate scan name (i.e., scan). To fix this remove the second underscore to look like below.
 		- IP_scan1, IP_scan2
 
+# How-to Videos
+I will have more video(s) soon but for trigger and visualization: https://www.youtube.com/@AshleyBinnquist
+
 # FAQ Not Covered Above
 - In helperScripts/practiceProcess.m is to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
-- COMING SOON: I will have a video(s) with a walkthrough on how to use the script for different types of data.
