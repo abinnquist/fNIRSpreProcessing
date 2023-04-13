@@ -57,10 +57,10 @@ folderRename(rawdir,dataprefix,hyperscan)
 
 %ONLY for hyperscanning with multiple scans, creates new folder & reorganizes 
 %folder structure from: session>scan>subjects to session>subject>scans
-% scanNames={'bonding','opposition','rest'}; %Name of scans (i.e., SD_001_bonding)
+% scanNames={'ingroup','neutral','opposition','rest','videos'}; %Name of scans (i.e., SD_001_bonding)
 % numHyper = 2;  %Change this to however many participants per session
 % pathName = rawdir; %where ever the original data is stored
-% newdir = 'C:\Users\Mike\Desktop\SD_nirs'; %Where you want the new organization to go
+% newdir = 'C:\Users\Mike\Desktop\IPC_nirs'; %Where you want the new organization to go
 % reOrganizeFolders(scanNames,numHyper,pathName,newdir); %uncomment ONLY if needed
 
 %Checks for the number of scan for each dyad/subject. Will also give you
