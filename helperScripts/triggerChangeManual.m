@@ -8,7 +8,7 @@ hyperscan=1; %If hyperscanning
 numscans=5; %Number of scans per subject
 rawdir=uigetdir('','Choose data directory');
 
-g=6; % dyad, if not dyadic just enter 0
+g=67; % dyad, if not dyadic just enter 0
 p=1; % subject, if you only have one subject enter 0
 k=2; % scan
 
