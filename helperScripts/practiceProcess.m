@@ -29,7 +29,7 @@ motionCorr=5;   % 1 = Baseline volatility
                 % 5 = Wavelet, requires homer2 
                 % 6 = Short channel regression (Must have short chans)
                 % 7 = No correction
-numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=6;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 i=0; % dyad, if not dyadic just enter 0
 j=1; % subject, if you only have one subject enter 0
@@ -54,7 +54,7 @@ end
 %% Pre-preprocessing
 %Checks if all folders have the necessary dataprefix. Will add the prefix to
 %the existing folder if not present. Leaves folders with the prefix untouched.
-folderRename(rawdir,dataprefix,hyperscan)
+% folderRename(rawdir,dataprefix,hyperscan)
 
 %ONLY for hyperscanning with multiple scans, creates new folder & reorganizes 
 %folder structure from: session>scan>subjects to session>subject>scans
@@ -234,15 +234,15 @@ end
 [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords,t);
 
 %% To visualize how your motion correction looks compared to no correction uncomment
-% [dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 7, coords, t);
-% dCon1=squeeze(dconverted(:,1,:));
-% dCon2=squeeze(dconverted2(:,1,:));
-% 
-% tiledlayout(2,1)
-% nexttile
-% plot(dCon1)
-% nexttile
-% plot(dCon2)
+[dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 7, coords, t);
+dCon1=squeeze(dconverted(:,1,:));
+dCon2=squeeze(dconverted2(:,1,:));
+
+tiledlayout(2,1)
+nexttile
+plot(dCon1)
+nexttile
+plot(dCon2)
 
 %% 5) final data quality assessment, remove uncertain channels
 % default is to use Pearson's correlation to check how impactful remaining
