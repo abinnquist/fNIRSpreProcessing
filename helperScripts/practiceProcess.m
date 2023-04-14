@@ -10,7 +10,19 @@ clc; clear
 %countScans.m and triggerCheck.m
 
 %% INPUTS: 
-dataprefix='IPC'; % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+% (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
+dataprefix='SM'; 
+
+%For pre-preproc OR step 6
+hyperscan=0;
+multiscan=1;
+
+numscans=4; %Max number of scan per subject
+IDlength=7; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
+zdim=0; %1=Compile z-scored, 0=compile non-z-scored
+ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
+
+%Motion correction selection
 motionCorr=5;   % 1 = Baseline volatility
                 % 2 = PCFilter-requires mapping toolbox
                 % 3 = PCA x channel
@@ -24,15 +36,6 @@ numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
 i=6; % dyad, if not dyadic just enter 0
 j=1; % subject, if you only have one subject enter 0
 k=2; % scan
-
-%For pre-preproc OR step 6
-hyperscan=1;
-multiscan=1;
-
-numscans=5; %Max number of scan per subject
-IDlength=4; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
-zdim=0; %1=Compile z-scored, 0=compile non-z-scored
-ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
 
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
@@ -63,7 +66,7 @@ folderRename(rawdir,dataprefix,hyperscan)
 % newdir = 'C:\Users\Mike\Desktop\IPC_nirs'; %Where you want the new organization to go
 % reOrganizeFolders(scanNames,numHyper,pathName,newdir); %uncomment ONLY if needed
 
-%Checks for the number of scan for each dyad/subject. Will also give you
+%Checks for the number of scans for each dyad/subject. Will also give you
 %the scan names based on the first subject.
 [scanCount, scannames, snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);
 
