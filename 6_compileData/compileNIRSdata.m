@@ -70,7 +70,7 @@ if hyperscan
     end
 else
     for sc=1:numScans
-        z_oxyC=nan(1,1,1); z_deoxyC=nan(1,1,1);
+        z_oxy1=nan(1,1,1); z_deoxy1=nan(1,1,1);
         tC=nan(1,1,1); sC=nan(1,1,1);
         auxC=nan(1,1,1); 
     
