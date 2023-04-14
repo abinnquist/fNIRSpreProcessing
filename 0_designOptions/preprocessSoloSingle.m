@@ -61,7 +61,7 @@ for i=1:length(currdir)
         end
 
         % 2) Trim scans
-        sInfo(1,1)=i; sInfo(2,1)=1; sInfo(3,1)=1; sInfo(4,1)=length(subjdir);
+        sInfo(1,1)=i; sInfo(2,1)=1; sInfo(3,1)=1; sInfo(4,1)=length(scdir);
         [d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, numaux, aux, numaux, sInfo);
 
         %3) identify noisy channels
