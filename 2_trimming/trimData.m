@@ -19,7 +19,7 @@ if trim==2 || trim==3
         t = t(begintime:end); %Trim frames to the same length as data
         t = t-t(1,1); %Reset the first frame to be zero
         if device==2 && numaux > 0
-            aux=aux(begintime:end,:,:);
+            aux=aux(begintime:end,:);
         elseif device==3 && numaux > 0
             auxbegin = round(aux.samprate*begintime/samprate);
             aux.data = aux.data(auxbegin:end,:,:);
@@ -37,7 +37,7 @@ elseif trim==4 || trim==5 % 2b) Trim nirs scan according to a specified begin ti
 
     if begintime>0
         if device==2 && numaux > 0
-            aux=aux(begintime:end,:,:);
+            aux=aux(begintime:end,:);
         elseif device==3 && numaux > 0
             auxbegin = round(aux.samprate*begintime/samprate);
             aux.data = aux.data(auxbegin:end,:,:);
