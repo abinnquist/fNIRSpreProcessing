@@ -97,30 +97,35 @@ else
             msg = sprintf('\n\t scan %d/%d, subj %d/%d ...',k,numscans,p,length(currdir));
             fprintf([reverseStr,msg]);
             reverseStr = repmat(sprintf('\b'),1,length(msg)); 
+            
+            if ~isempty(subjdir) 
+                scanname = subjdir(k).name;
+                scandir=dir(strcat(rawdir,filesep,subjname,filesep,subjdir(k).name,filesep));
 
-            scanname = subjdir(k).name;
-            scandir=dir(strcat(rawdir,filesep,subjname,filesep,subjdir(k).name,filesep));
-
-            if length(scandir) > 2
-                scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
-
-                if device==1
-                    [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
-                else
-                    [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
-                end  
-                lenScan=length(d);
-                scanLength(p,1)=lenScan;
-
-                ssum = sum(s,2);
-                stimmarks = find(ssum);
-    
-                if isempty(stimmarks)
-                    triggers(p,k)=0;
-                else
-                    nt=length(stimmarks);
-                    triggers(p,1:nt)=stimmarks;
+                if length(scandir) > 2
+                    scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
                 end
+            else
+                scanfolder = strcat(rawdir,filesep,subjname);
+            end
+
+            if device==1
+                [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+            else
+                [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
+            end  
+
+            lenScan=length(d);
+            scanLength(p,1)=lenScan;
+
+            ssum = sum(s,2);
+            stimmarks = find(ssum);
+    
+            if isempty(stimmarks)
+                triggers(p,k)=0;
+            else
+                nt=length(stimmarks);
+                triggers(p,1:nt)=stimmarks;
             end
         end
         trigInfo(k).scanname=snames{k};
