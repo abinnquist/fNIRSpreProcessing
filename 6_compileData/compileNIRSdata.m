@@ -75,7 +75,7 @@ else
         auxC=nan(1,1,1); 
     
         for i=1:length(currdir)
-            subject=currdir(i).name; %define dyad
+            subject=currdir(i).name; %define subject
             subfolder=dir(strcat(preprocdir,filesep,subject,filesep,dataprefix,'*'));
     
             if ~isempty(subfolder) 
@@ -92,7 +92,7 @@ else
                         z_deoxy1(1:length_convo,1:numchans,i)=deoxy(1:length_convo,:);
                         z_oxy1(1:length_convo,1:numchans,i)=oxy(1:length_convo,:);
                     end
-                else %for single sub & single scan
+                elseif ~isempty(subfiles) && numScans == 1 %for single sub & single scan
                     if zdim
                         load(strcat(subfolder(ch_reject).folder,filesep,subfolder(ch_reject).name),'z_oxy','z_deoxy','t','s','samprate','aux') 
                         [length_convo, numchans]=size(z_oxy);
