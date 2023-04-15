@@ -1,4 +1,4 @@
-function folderRename(rawdir,dataprefix,hyperscan)
+function folderRename(rawdir,dataprefix,hyperscan,multiscan)
 % Script will only add a prefix to any folders missing your chosen prefix,
 % will change nothing else. Adds the prefix to whatever the folder is
 % currently named. 
@@ -21,11 +21,11 @@ if hyperscan
 
         if ~strcmp(group(1:lenPre),dataprefix)
             newgp=strcat(dataprefix,'_',group);
-            movefile(subjname, newgp)
+            movefile(group, newgp)
         else
             newgp=group;
         end
-        cd(group)
+        cd(newgp)
 
         for j=1:length(groupdir)
             subjname = groupdir(j).name;
@@ -38,7 +38,9 @@ if hyperscan
             else
                 newsb=subjname;
             end
-            cd(subjname)
+            cd(newsb)
+            subjdir=dir(cd);
+            subjdir = subjdir(~startsWith({subjdir.name},'.'));
 
             for k=1:length(subjdir)
                 scanname = subjdir(k).name;
@@ -64,17 +66,19 @@ else
         else
             newsb=subjname;
         end
-        cd(subjname)
-
-        for k=1:length(subjdir)
-            scanname = subjdir(k).name;
-
-            if ~strcmp(scanname(1:lenPre),dataprefix)
-                newsc=strcat(dataprefix,'_',scanname);
-                movefile(scanname, newsc)
+        if multiscan
+            cd(subjname)
+    
+            for k=1:length(subjdir)
+                scanname = subjdir(k).name;
+    
+                if ~strcmp(scanname(1:lenPre),dataprefix)
+                    newsc=strcat(dataprefix,'_',scanname);
+                    movefile(scanname, newsc)
+                end
             end
+            cd ..
         end
-        cd ..
     end
 end
 cd(currpath)
