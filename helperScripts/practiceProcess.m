@@ -11,12 +11,12 @@ clc; clear
 
 %% INPUTS: 
 % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-dataprefix='SM'; 
+dataprefix='SS'; 
 
 %For pre-preproc OR step 6
 hyperscan=0;
-multiscan=1;
-numscans=4; %Max number of scan per subject
+multiscan=0;
+numscans=5; %Max number of scan per subject
 IDlength=8; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
@@ -26,14 +26,14 @@ motionCorr=5;   % 1 = Baseline volatility
                 % 2 = PCFilter-requires mapping toolbox
                 % 3 = PCA x channel
                 % 4 = CBSI
-                % 5 = Wavelet, requires homer2 
+                % 5 = Wavelet
                 % 6 = Short channel regression (Must have short chans)
                 % 7 = No correction
-numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
-i=0; % dyad, if not dyadic just enter 0
+i=1; % dyad, if not dyadic just enter 0
 j=1; % subject, if you only have one subject enter 0
-k=3; % scan
+k=1; % scan
 
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
@@ -54,7 +54,7 @@ end
 %% Pre-preprocessing
 %Checks if all folders have the necessary dataprefix. Will add the prefix to
 %the existing folder if not present. Leaves folders with the prefix untouched.
-% folderRename(rawdir,dataprefix,hyperscan)
+folderRename(rawdir,dataprefix,hyperscan,multiscan)
 
 %ONLY for hyperscanning with multiple scans, creates new folder & reorganizes 
 %folder structure from: session>scan>subjects to session>subject>scans
