@@ -224,8 +224,8 @@ if SD.SrcPos==0
     digfile = strcat(rawdir,filesep,'digpts.txt');
     mni_ch_table = getMNIcoords(digfile, SD);
 else
-    digfile = strcat(scanfolder,filesep,'digpts.txt');
-    if device>=2 && exist(digfile,'file')
+    digfile = strcat(scanfolder,filesep,dataprefix,'_digpts.txt');
+    if device>=1 && exist(digfile,'file')
         mni_ch_table = getMNIcoords(digfile, SD);
     end
 end
