@@ -98,7 +98,7 @@ else
             fprintf([reverseStr,msg]);
             reverseStr = repmat(sprintf('\b'),1,length(msg)); 
             
-            if ~isempty(subjdir) 
+            if numscans > 1 
                 scanname = subjdir(k).name;
                 scandir=dir(strcat(rawdir,filesep,subjname,filesep,subjdir(k).name,filesep));
 
