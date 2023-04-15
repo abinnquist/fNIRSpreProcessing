@@ -11,12 +11,12 @@ clc; clear
 
 %% INPUTS: 
 % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-dataprefix='CogLoad'; 
+dataprefix='SM'; 
 
 %For pre-preproc OR step 6
 hyperscan=0;
 multiscan=1;
-numscans=2; %Max number of scan per subject
+numscans=4; %Max number of scan per subject
 IDlength=8; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
@@ -29,11 +29,11 @@ motionCorr=5;   % 1 = Baseline volatility
                 % 5 = Wavelet, requires homer2 
                 % 6 = Short channel regression (Must have short chans)
                 % 7 = No correction
-numaux=6;       % Number of aux inputs. Currently ONLY works for accelerometers.
+numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
                 % Other auxiliary inputs: eeg, pulse, etc.
 i=0; % dyad, if not dyadic just enter 0
 j=1; % subject, if you only have one subject enter 0
-k=1; % scan
+k=3; % scan
 
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
@@ -224,8 +224,9 @@ if SD.SrcPos==0
     digfile = strcat(rawdir,filesep,'digpts.txt');
     mni_ch_table = getMNIcoords(digfile, SD);
 else
-    digfile = strcat(scanfolder,filesep,dataprefix,'_digpts.txt');
-    if device>=1 && exist(digfile,'file')
+    digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+    if ~isempty(digloc) && device > 1
+        digfile=strcat(digloc.folder,filesep,digloc.name);
         mni_ch_table = getMNIcoords(digfile, SD);
     end
 end
