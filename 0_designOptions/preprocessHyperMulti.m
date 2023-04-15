@@ -63,8 +63,9 @@ for i=1:length(currdir)
                     digfile = strcat(rawdir,filesep,'digpts.txt');
                     mni_ch_table = getMNIcoords(digfile, SD);
                 else
-                    digfile = strcat(scanfolder,filesep,'digpts.txt');
-                    if device>=2 && exist(digfile,'file')
+                    digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+                    if ~isempty(digloc) && device > 1
+                        digfile=strcat(digloc.folder,filesep,digloc.name);
                         mni_ch_table = getMNIcoords(digfile, SD);
                     end
                 end
