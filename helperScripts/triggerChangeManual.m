@@ -2,15 +2,15 @@
 %before running
 clear; clc
 %% INPUTS
-dataprefix='IPC'; %Data prefix for the study
+dataprefix='SD'; %Data prefix for the study
 IDlength=4; % Length of ID+1 (i.e. IPC_103_rest=4); 0=ID not in scan name
 hyperscan=1; %If hyperscanning
-numscans=5; %Number of scans per subject
+numscans=3; %Number of scans per subject
 rawdir=uigetdir('','Choose data directory');
 
-g=67; % dyad, if not dyadic just enter 0
+g=10; % dyad, if not dyadic just enter 0
 p=1; % subject, if you only have one subject enter 0
-k=2; % scan
+k=3; % scan
 
 %% Step 1: Scan numbers and names
 addpath(genpath("fNIRSpreProcessing/1_extractFuncs/")); 
@@ -79,6 +79,7 @@ end
 % Find triggers and length of scan based on first trigger
 if device==1
     [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+    disp('You will not be able to save changes for NIRScout')
 else
     [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
 end
@@ -140,6 +141,9 @@ saveTrigs=inputdlg({newTrigs},'Save Trigger',[1 65]);
 if strcmp(saveTrigs{1},'1')
     nirsfile = dir(strcat(scanfolder,'/*.nirs'));
     nirsFileName=strcat(nirsfile.folder,filesep,nirsfile.name);
-    
-    save(nirsFileName,'d','samprate','s','SD','aux','t')
+    if device==1
+        disp('Currently this script does not save changes for the NIRScout')
+    else
+        save(nirsFileName,'d','samprate','s','SD','aux','t')
+    end
 end
