@@ -45,22 +45,29 @@ if hyperscan
                     z_deoxyC(1:length_convo,1:numchans,i)=deoxy(1:length_convo,:);
                     z_oxyC(1:length_convo,1:numchans,i)=oxy(1:length_convo,:);
                 end
-                [lenAux,nAux]=size(aux);
-                auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
-                tC(1:length_convo,1,i)=t';
-                sC(1:length_convo,1,i)=s(:,1);
+                if exist('aux','var')
+                    [lenAux,nAux]=size(aux);
+                    auxC(1:lenAux,1:nAux,i)=aux(1:lenAux,:);
+                end
+                tC(1:length_convo,1,i)=t;
+                if ~isempty(s)
+                    sC(1:length_convo,1,i)=s(:,1);
+                end
             end  
             deoxy3D(sc).name=snames{sc};
             deoxy3D(sc).(subN)=z_deoxyC;
             deoxy3D(sc).(tN)=tC;
             deoxy3D(sc).(sN)=sC;
-            deoxy3D(sc).(auxN)=auxC;
     
             oxy3D(sc).name=snames{sc};
             oxy3D(sc).(subN)=z_oxyC;
             oxy3D(sc).(tN)=tC;
             oxy3D(sc).(sN)=sC;
-            oxy3D(sc).(auxN)=auxC;
+
+            if ~isempty(auxC)
+                oxy3D(sc).(auxN)=auxC;
+                deoxy3D(sc).(auxN)=auxC;
+            end
 
             if sj==max(nSubs)
                 deoxy3D(sc).samprate=samprate;
