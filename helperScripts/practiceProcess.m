@@ -11,13 +11,13 @@ clc; clear
 
 %% INPUTS: 
 % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-dataprefix='SS'; 
+dataprefix='SD'; 
 
 %For pre-preproc OR step 6
-hyperscan=0;
-multiscan=0;
-numscans=5; %Max number of scan per subject
-IDlength=8; %If the subject ID is in the scan name (i.e., IPC_301_rest=4)
+hyperscan=1; %0=no; 1=yes
+multiscan=1; %0=no; 1=yes
+numscans=3; %Max number of scan per subject
+IDlength=4; %If the subject ID is in the scan name (i.e., IPC_rest=4 or IPC_301_rest=8)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
 
@@ -58,10 +58,10 @@ folderRename(rawdir,dataprefix,hyperscan,multiscan)
 
 %ONLY for hyperscanning with multiple scans, creates new folder & reorganizes 
 %folder structure from: session>scan>subjects to session>subject>scans
-% scanNames={'ingroup','neutral','opposition','rest','videos'}; %Name of scans (i.e., SD_001_bonding)
+% scanNames={'bonding','opposition','rest'}; %Name of scans (i.e., SD_001_bonding)
 % numHyper = 2;  %Change this to however many participants per session
 % pathName = rawdir; %where ever the original data is stored
-% newdir = 'C:\Users\Mike\Desktop\IPC_nirs'; %Where you want the new organization to go
+% newdir = 'C:\Users\Mike\Desktop\SD_nirs'; %Where you want the new organization to go
 % reOrganizeFolders(scanNames,numHyper,pathName,newdir); %uncomment ONLY if needed
 
 %Checks for the number of scans for each dyad/subject. Will also give you
@@ -183,32 +183,32 @@ end
 % Trim beginning of data based on first trigger
 
 %Below is the actual code for trimming
-% sInfo(1,1)=i; sInfo(2,1)=j; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
-% [d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, device, aux, numaux, sInfo);
+sInfo(1,1)=i; sInfo(2,1)=j; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
+[d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, device, aux, numaux, sInfo);
 
-ssum = sum(s,2);
-stimmarks = find(ssum); %Will collect all triggers
-
-%Will trim based on first trigger
-if length(stimmarks)>=1
-    begintime = stimmarks(end);
-    if begintime>0
-        d = d(begintime:end,:);
-        s = s(begintime:end,:);
-        if device==3 && numaux > 0
-            auxbegin = round(aux.samprate*begintime/samprate);
-            aux.data = aux.data(auxbegin:end,:,:);
-            aux.time = aux.time(auxbegin:end,:,:);
-        elseif numaux > 0
-            aux=aux(begintime:end,:);
-        end
-        stimmarks = stimmarks-begintime;
-        t = t(begintime:end); %This trims our frames to the same length as data
-        t = t-t(1,1); %Now we reset the first frame to be zero
-    end
-else %No data trim if no trigger
-    begintime=1;
-end
+% ssum = sum(s,2);
+% stimmarks = find(ssum); %Will collect all triggers
+% 
+% %Will trim based on first trigger
+% if length(stimmarks)>=1
+%     begintime = stimmarks(end);
+%     if begintime>0
+%         d = d(begintime:end,:);
+%         s = s(begintime:end,:);
+%         if device==3 && numaux > 0
+%             auxbegin = round(aux.samprate*begintime/samprate);
+%             aux.data = aux.data(auxbegin:end,:,:);
+%             aux.time = aux.time(auxbegin:end,:,:);
+%         elseif numaux > 0
+%             aux=aux(begintime:end,:);
+%         end
+%         stimmarks = stimmarks-begintime;
+%         t = t(begintime:end); %This trims our frames to the same length as data
+%         t = t-t(1,1); %Now we reset the first frame to be zero
+%     end
+% else %No data trim if no trigger
+%     begintime=1;
+% end
 
 %% 3) identify noisy channels (SNR channel rejection)
 satlength = 2; %in seconds
@@ -235,15 +235,42 @@ end
 [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords,t);
 
 %% To visualize how your motion correction looks compared to no correction uncomment
-[dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 7, coords, t);
-dCon1=squeeze(dconverted(:,1,:));
-dCon2=squeeze(dconverted2(:,1,:));
-
-tiledlayout(2,1)
-nexttile
-plot(dCon1)
-nexttile
-plot(dCon2)
+% %No motion correction
+% [dconverted2, ~] = fNIRSFilterPipeline(d, SD, samprate, 7, coords, t); 
+% 
+% %Change the 4th input for a different motion correction to compare
+% [dconverted3, ~] = fNIRSFilterPipeline(d, SD, samprate, 4, coords, t); 
+% 
+% dCon1=squeeze(dconverted(:,1,:));
+% dCon2=squeeze(dconverted2(:,1,:));
+% dCon3=squeeze(dconverted3(:,1,:));
+% 
+% windowTime=1750:1800; %select a window of time to visualize or just 1:end of scan
+% 
+% %To visualize motion correction vs. no correction, first plot also shows what
+% % the data looks like with with noisy channels (mask created in step 3)
+% tiledlayout(3,1)
+% nexttile
+% plot(dCon1(windowTime,:))
+% xlabel('All Channels')
+% nexttile
+% plot(dCon1(windowTime,logical(channelmask)))
+% xlabel('Noisy Channels Removed: Motion Correction')
+% nexttile
+% plot(dCon2(windowTime,logical(channelmask)))
+% xlabel('Noisy Channels Removed: No Motion Correction')
+% 
+% %Visualize 1) no motion correction 2) current correction 3) alternative correction
+% tiledlayout(3,1)
+% nexttile
+% plot(dCon2(windowTime,logical(channelmask)))
+% xlabel('Noisy Channels Removed: No Motion Correction')
+% nexttile
+% plot(dCon1(windowTime,logical(channelmask)))
+% xlabel('Noisy Channels Removed: Current Motion Correction')
+% nexttile
+% plot(dCon3(windowTime,logical(channelmask)))
+% xlabel('Noisy Channels Removed: Alternative Motion Correction')
 
 %% 5) final data quality assessment, remove uncertain channels
 % default is to use Pearson's correlation to check how impactful remaining
@@ -263,7 +290,7 @@ totalmask(~qamask) = 0;
 z_totalmask = channelmask;
 z_totalmask(~z_qamask) = 0;
 
-% Uncorrected 
+% No rejection of saturated channels 
 numchannels = size(dconverted,3);
 oxy = zeros(size(dconverted,1), numchannels);
 deoxy = zeros(size(dconverted,1), numchannels);
@@ -282,11 +309,7 @@ for c = 1:numchannels
     new_d(:,(c*2)-1) = oxy(:,c);
     new_d(:,c*2) = deoxy(:,c);
 end
-if i==1
-    save(strcat(outpath,filesep,group,'_',scanname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
-else
-    save(strcat(outpath,filesep,scanname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
-end
+save(strcat(outpath,filesep,scanname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
 
 % Data with noisy channels removed 
 oxy(:,~channelmask) = NaN;
@@ -295,11 +318,7 @@ totaloxy(:,~channelmask) = NaN;
 z_oxy(:,~channelmask) = NaN;
 z_deoxy(:,~channelmask) = NaN;
 z_totaloxy(:,~channelmask) = NaN;
-if i==1
-    save(strcat(outpath,filesep,group,'_',scanname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
-else
-    save(strcat(outpath,filesep,scanname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
-end
+save(strcat(outpath,filesep,scanname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
 
 % Data with noisy channels removed & uncertain based QA mask
 oxy(:,~totalmask) = NaN;
@@ -308,11 +327,7 @@ totaloxy(:,~totalmask) = NaN;
 z_oxy(:,~z_totalmask) = NaN;
 z_deoxy(:,~z_totalmask) = NaN;
 z_totaloxy(:,~z_totalmask) = NaN;
-if i==1
-    save(strcat(outpath,filesep,group,'_',scanname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
-else
-    save(strcat(outpath,filesep,scanname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
-end
+save(strcat(outpath,filesep,scanname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
 
 %Will create an MNI csv if it exists
 if exist('mni_ch_table','var')
@@ -330,6 +345,6 @@ qualityReport(dataprefix,hyperscan,multiscan,numchannels,preprocdir,snames);
 %6.2) Compile data into one .mat file
 %Note that for numscans I have it equal to 1 because this is a practice
 %script in which we have only processed one scan.
-[deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,hyperscan,ch_reject,1,zdim,snames);
+[deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,hyperscan,ch_reject,numscans,zdim,snames);
 
 save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
