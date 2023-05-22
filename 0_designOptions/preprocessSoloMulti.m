@@ -158,16 +158,16 @@ if compInfo{1,1}=='1' || compInfo{3,1}=='1'
     %Gets the scan names for all subjects
     [~, ~, snames] = countScans(currdir, dataprefix, 0, numscans, IDlength);   
 
-    %6.1) Quality Check
-    if compInfo{1,1}=='1'
-        qualityReport(dataprefix,0,1,numchannels,preprocdir,snames);
-    end
-
-    %6.2) Compile data into one .mat file
+    %6.1) Compile data into one .mat file
     if compInfo{3,1}=='1'
         zdim=str2num(compInfo{5,1});
         ch_reject=str2num(compInfo{6,1});
         [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,0,ch_reject,numscans,zdim,snames);
+
+        %6.2) Check lost channels, writes two csvs and add to compiled
+        if compInfo{1,1}=='1'
+            qualityRep;
+        end
     
         save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
     end
