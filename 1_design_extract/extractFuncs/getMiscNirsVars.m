@@ -1,7 +1,7 @@
 %-----------------------------------------------
 %step 3 - convert to nirs format
 %-----------------------------------------------
-function [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo)
+function [SD, aux, t] = getMiscNirsVars(d, samprate, wavelengths, probeInfo)
     nSrcs = probeInfo.probes.nSource0;
     nDets = probeInfo.probes.nDetector0;
     numchannels = probeInfo.probes.nChannel0;
