@@ -3,21 +3,21 @@ clc; clear
 % This script is for better understanding the pipeline and should not be
 % used for batch processing. It will only process one scan at a time.
 
-%Step 6 has it's own unique inputs and should only be run once a couple of
-%scans/subjects have been preprocessed.
+% Step 6 has it's own unique inputs and should only be run once a couple of
+% scans/subjects have been preprocessed.
 
-%You may also want to run some pre-preprocessing scripts such as
-%countScans.m and triggerCheck.m
+% You may want to run some pre-preprocessing in folder '0_prePreProcessing' 
+% use prePreProcessing.m to check if datais organized correctly.
 
 %% INPUTS: 
 % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-dataprefix='SD'; 
+dataprefix='CC'; 
 
 %For pre-preproc OR step 6
 hyperscan=1; %0=no; 1=yes
 multiscan=1; %0=no; 1=yes
-numscans=3; %Max number of scan per subject
-IDlength=4; %If the subject ID is in the scan name (i.e., IPC_rest=4 or IPC_301_rest=8)
+numscans=4; %Max number of scans per subject
+IDlength=5; %If the subject ID is in the scan name (i.e., IPC_rest=4 or IPC_301_rest=8)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
 
@@ -29,8 +29,7 @@ motionCorr=5;   % 1 = Baseline volatility
                 % 5 = Wavelet
                 % 6 = Short channel regression (Must have short chans)
                 % 7 = No correction
-numaux=0;       % Number of aux inputs. Currently ONLY works for accelerometers.
-                % Other auxiliary inputs: eeg, pulse, etc.
+numaux=2;       % Number of aux inputs. Currently ONLY works for accelerometers.
 i=1; % dyad, if not dyadic just enter 0
 j=1; % subject, if you only have one subject enter 0
 k=1; % scan
@@ -38,7 +37,7 @@ k=1; % scan
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
 
-addpath(genpath("0_designOptions\")); addpath(genpath("1_extractFuncs\")); 
+addpath(genpath("0_prePreProcessing\")); addpath(genpath("1_design_extract\")); 
 addpath(genpath("3_removeNoisy\")); addpath(genpath("4_filtering\"));
 addpath(genpath("5_qualityControl\")); addpath(genpath("6_imagingORcomparisons\"));
 addpath(genpath("helperScripts\"));
@@ -52,26 +51,8 @@ if length(currdir)<1
 end
 
 %% Pre-preprocessing
-%Checks if all folders have the necessary dataprefix. Will add the prefix to
-%the existing folder if not present. Leaves folders with the prefix untouched.
-folderRename(rawdir,dataprefix,hyperscan,multiscan)
-
-%ONLY for hyperscanning with multiple scans, creates new folder & reorganizes 
-%folder structure from: session>scan>subjects to session>subject>scans
-% scanNames={'bonding','opposition','rest'}; %Name of scans (i.e., SD_001_bonding)
-% numHyper = 2;  %Change this to however many participants per session
-% pathName = rawdir; %where ever the original data is stored
-% newdir = 'C:\Users\Mike\Desktop\SD_nirs'; %Where you want the new organization to go
-% reOrganizeFolders(scanNames,numHyper,pathName,newdir); %uncomment ONLY if needed
-
-%Checks for the number of scans for each dyad/subject. Will also give you
-%the scan names based on the first subject.
-[scanCount, scannames, snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);
-
-%Only run this if you have already run countScans and all subjects have the
-%same number of scan folders, even if the folder is empty. 
-%To run the check for only on or two scans use triggerCheckManual.m
-trigInfo = triggerCheck(rawdir,dataprefix,IDlength,hyperscan,numscans);
+%See the prePreProcessing script (folder: 0_prePreProcessing) for checking 
+%that your data is correctly organized and ready to pre-process
 
 %% Select your device, compile options, and trim choice
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file'};
