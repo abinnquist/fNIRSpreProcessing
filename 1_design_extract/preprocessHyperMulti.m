@@ -40,13 +40,13 @@ for i=1:length(currdir)
                 end
     
                 if device==1
-                    [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+                    [d, ~, samprate, wavelengths, s] = extractNIRxData(scanfolder);
                     probenumchannels = probeInfo.probes.nChannel0;
                     datanumchannels = size(d,2)/2;
                     if probenumchannels~=datanumchannels
                         error('ERROR: number of data channels in hdr file does not match number of channels in probeInfo file.');
                     end
-                    [SD, aux, t] = getMiscNirsVars(d, sd_ind, samprate, wavelengths, probeInfo);
+                    [SD, aux, t] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
                 elseif device==2
                     [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
                 elseif device==3
@@ -58,9 +58,15 @@ for i=1:length(currdir)
                     end
                 end
     
-                if SD.SrcPos==0
+                if SD.SrcPos==0  && isempty(pp)
                     load(strcat(rawdir,filesep,'SD_fix.mat'))
                     digfile = strcat(rawdir,filesep,'digpts.txt');
+                    mni_ch_table = getMNIcoords(digfile, SD);
+                elseif SD.SrcPos==0  && ~isempty(pp)
+                    load(fullfile(pp.folder,filesep,pp.name));
+                    wavelengths=SD.Lambda;
+                    [SD, ~, ~] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
+                    digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
                     mni_ch_table = getMNIcoords(digfile, SD);
                 else
                     digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
