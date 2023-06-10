@@ -160,6 +160,24 @@ elseif device==3 %NIRSport & other brands
     end
 end
 
+if SD.SrcPos==0  && isempty(pp)
+    load(strcat(rawdir,filesep,'SD_fix.mat'))
+    digfile = strcat(rawdir,filesep,'digpts.txt');
+    mni_ch_table = getMNIcoords(digfile, SD);
+elseif SD.SrcPos==0  && ~isempty(pp)
+    load(fullfile(pp.folder,filesep,pp.name));
+    wavelengths=SD.Lambda;
+    [SD, ~, ~] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
+    digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+    mni_ch_table = getMNIcoords(digfile, SD);
+else
+    digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+    if ~isempty(digloc) && device > 1
+        digfile=strcat(digloc.folder,filesep,digloc.name);
+        mni_ch_table = getMNIcoords(digfile, SD);
+    end
+end
+
 %% 2) Trim scans
 % Trim beginning of data based on first trigger
 
@@ -190,6 +208,7 @@ sInfo(1,1)=i; sInfo(2,1)=j; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
 % else %No data trim if no trigger
 %     begintime=1;
 % end
+% This loop will create the correct MNI based on probe/digipts
 
 %% 3) identify noisy channels (SNR channel rejection)
 satlength = 2; %in seconds
@@ -198,19 +217,6 @@ QCoDthresh = 0.6 - 0.03*samprate; % >0.6 more stringency
 
 SD.MeasListAct = [channelmask'; channelmask'];
 SD.MeasListVis = SD.MeasListAct;
-
-% This loop will create the correct MNI based on probe/digipts
-if SD.SrcPos==0
-    load(strcat(rawdir,filesep,'SD_fix.mat'))
-    digfile = strcat(rawdir,filesep,'digpts.txt');
-    mni_ch_table = getMNIcoords(digfile, SD);
-else
-    digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
-    if ~isempty(digloc) && device > 1
-        digfile=strcat(digloc.folder,filesep,digloc.name);
-        mni_ch_table = getMNIcoords(digfile, SD);
-    end
-end
 
 %% 4) motion filter, convert to hemodynamic changes
 [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords,t);
