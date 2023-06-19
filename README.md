@@ -31,12 +31,13 @@ NOTE: Hyperscan should work for 2+ subjects per group, so if you ran two hypersc
 
 # Contents
 Preprocessing is structured as 6-step pipeline: extracting raw data & auxiliary variable from files; trimming dead time; removing bad channels; motion correction of the data with your choice of correction; quality check for remaining unreliable channels after motion correction; compilation of data into one .mat file (optional). 
+In addition, there is a prPreProcessing (folder 0) & postPreProcessing folder (folder 7). I highly reccomend using prePreProcessing to ensure your data is organized correctly and ready for preProcessing or else you will run into errors. 
 
 Please see comments in runNIRSPreproc.m file to read about specific functionality. Folders are for the most part organized in this step-based structure to more easily navigate to specific scripts if there is a problem or you want to modify. 
 
 - FOLDER STRUCTURE
-	- 0_designOptions/
-	- 1_extractFuncs/
+	- 0_prePreProcessing/
+	- 1_design_extract/
 	- 2_trimming/
 	- 3_removeNoisy/
 		- Inpaint_nans/
@@ -46,6 +47,7 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
      		- raw_OD_concentration/
 	- 5_qualityControl/
 	- 6_compileData/
+	- 7_postPreProcessing/
 	- helperScripts/
 		- In development/
 
@@ -118,7 +120,9 @@ OPTION 2: as a function
 (timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
 
 # Pre-preprocessing: Data structure, triggers, and more
-There are scripts in 'helperScripts' for the following changes if needed. 
+There is now a folder to check for the following before you start preprocessing. You can run these scripts seperately or use the prePREprocessing.m script to choose which functions you would like to run.
+
+0. prePREprocessing.m: Turn on/off the below functions to ensure good data organization before running preprocessing.
 1. folderRename.m: Your folders are missing the study prefix. This can be for some of the or all of them. It will only add the study prefix for the ones that are missing.
 2. reOrganizeFolders.m: This will reorder the scans for a study so it is in the correct structure for preprocessing. Only use if the structure of you folders is wrong. This is most common for hyperscanning. The folders should be in the below structure.
 	- studyPrefix_DyadNumber > studyPrefix_subjectNumber > studyPrefix_subjectNumber_scan
@@ -126,6 +130,7 @@ There are scripts in 'helperScripts' for the following changes if needed.
 3. countScans.m: Counts how many scans per subject and collects the names of the scan based on the first dyad/subject. 
 4. triggerCheck.m: makes a new .mat of all the triggers in every scan so you can ensure you have the correct amount of triggers in the correct place. Won't change anything, this function is for reviewing triggers ONLY.
 5. triggerChangeManual.m: You can delete, add, or modify triggers scan by scan with this script. Best used if you only have a few that need to be changed. See below section for how-to video.
+6. triggerDuplicate.m: For hyperscanning ONLY. If you trigger is only in one subjects scan this will find it and then duplicate that trigger in the other subjects scan. Not needed if using the NIRScout ot single subjects scanning.
 
 want to make sure you triggers are as they should be before running preprocessing (i.e., triggerCheck), or want to better understand the pipeline without having to run the entire function (i.e., practiceProcess).
 
@@ -138,8 +143,7 @@ want to make sure you triggers are as they should be before running preprocessin
  subject's .hdr file that had the correct montage. 
  
  2. Delete all false start files from the data directory, or will cause script to error out. 
-	- UPDATE: If the script errored out while preprocessing but what was processing was done correctly you should be able to start from that point. However, probably
-best to start fresh.
+	- UPDATE: If the script errored out while preprocessing but what was processing was done correctly you should be able to start from that point. 
 
 3. The main folder should be 'fNIRSpreProcessing' NOT 'fNIRSpreProcessing-main' remove the '-main' if so.
 4. If you are having problems with the compile script this may be due to how you named your scans. I have yet to find a perfect fix if your naming system has something like: 
