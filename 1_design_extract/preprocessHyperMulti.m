@@ -58,15 +58,16 @@ for i=1:length(currdir)
                     end
                 end
     
-                if SD.SrcPos==0  && isempty(pp)
+                if SD.SrcPos(1,1)==0  && isempty(pp)
                     load(strcat(rawdir,filesep,'SD_fix.mat'))
                     digfile = strcat(rawdir,filesep,'digpts.txt');
                     mni_ch_table = getMNIcoords(digfile, SD);
-                elseif SD.SrcPos==0  && ~isempty(pp)
+                elseif SD.SrcPos(1,1)==0  && ~isempty(pp)
                     load(fullfile(pp.folder,filesep,pp.name));
                     wavelengths=SD.Lambda;
                     [SD, ~, ~] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
                     digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+                    digfile=strcat(digloc.folder,filesep,digloc.name);
                     mni_ch_table = getMNIcoords(digfile, SD);
                 else
                     digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
