@@ -29,7 +29,7 @@
 scn2vis=1; %Which scan you want to visualize
 hyper=1; % 1=hyperscanned, 0=single subject
 compare=1; %0=off, 1=on
-plotallChans=0; %1=plot all channels on one pane, 0=plot each channel seperately
+plotallChans=1; %1=plot all channels on one pane, 0=plot each channel seperately
 dataprefix='SD';
 datapath='C:\Users\Mike\Desktop\SD_nirs';
 
@@ -45,7 +45,7 @@ end
 
 %Take note of subjects or dyads that look great and those that have high
 %magnitude channels. Make a short list for later comparison.
-visInfo = inputdlg({'Which subject/dyads to visualize? (1-n)','What channels (if all put 0)?'},'Vis Info', [1 75]); 
+visInfo = inputdlg({'Which subject/dyads to visualize? (1-n)','What channels (if all put 1:n)?'},'Vis Info', [1 75]); 
 subs2vis=str2num(cell2mat(visInfo(1))); %You can specify which subjects/dyads to plot (i.e., 1:nsubs OR 36:40 OR [1,6,23,50])
 
 if str2num(cell2mat(visInfo(2)))
