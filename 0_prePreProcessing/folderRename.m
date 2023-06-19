@@ -19,40 +19,44 @@ if hyperscan
         groupdir = dir(strcat(rawdir,filesep,group,filesep));
         groupdir = groupdir(~startsWith({groupdir.name},'.'));
 
-        if ~strcmp(group(1:lenPre),dataprefix)
+        if ~strcmp(group(1:lenPre),dataprefix) && groupdir(1).isdir==1
             newgp=strcat(dataprefix,'_',group);
             movefile(group, newgp)
         else
             newgp=group;
         end
-        cd(newgp)
 
-        for j=1:length(groupdir)
-            subjname = groupdir(j).name;
-            subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep));
-            subjdir = subjdir(~startsWith({subjdir.name},'.'));
+        if groupdir(1).isdir==1
+            cd(newgp)
 
-            if ~strcmp(subjname(1:lenPre),dataprefix)
-                newsb=strcat(dataprefix,'_',subjname);
-                movefile(subjname, newsb)
-            else
-                newsb=subjname;
-            end
-            cd(newsb)
-            subjdir=dir(cd);
-            subjdir = subjdir(~startsWith({subjdir.name},'.'));
-
-            for k=1:length(subjdir)
-                scanname = subjdir(k).name;
-
-                if ~strcmp(scanname(1:lenPre),dataprefix)
-                    newsc=strcat(dataprefix,'_',scanname);
-                    movefile(scanname, newsc)
+            for j=1:length(groupdir)
+                subjname = groupdir(j).name;
+                subjdir = dir(strcat(rawdir,filesep,group,filesep,subjname,filesep));
+                subjdir = subjdir(~startsWith({subjdir.name},'.'));
+    
+                if ~strcmp(subjname(1:lenPre),dataprefix) 
+                    newsb=strcat(dataprefix,'_',subjname);
+                    movefile(subjname, newsb)
+                else
+                    newsb=subjname;
                 end
+
+                cd(newsb)
+                subjdir=dir(cd);
+                subjdir = subjdir(~startsWith({subjdir.name},'.'));
+    
+                for k=1:length(subjdir)
+                    scanname = subjdir(k).name;
+    
+                    if ~strcmp(scanname(1:lenPre),dataprefix)
+                        newsc=strcat(dataprefix,'_',scanname);
+                        movefile(scanname, newsc)
+                    end
+                end
+                cd ..
             end
             cd ..
         end
-        cd ..
     end
 else
     for j=1:length(currdir)
@@ -60,13 +64,14 @@ else
         subjdir = dir(strcat(rawdir,filesep,subjname,filesep));
         subjdir = subjdir(~startsWith({subjdir.name},'.'));
 
-        if ~strcmp(subjname(1:lenPre),dataprefix)
+        if ~strcmp(subjname(1:lenPre),dataprefix) && subjdir(1).isdir==1
             newsb=strcat(dataprefix,'_',subjname);
             movefile(subjname, newsb)
         else
             newsb=subjname;
         end
-        if multiscan
+
+        if multiscan && subjdir(1).isdir==1
             cd(subjname)
     
             for k=1:length(subjdir)
