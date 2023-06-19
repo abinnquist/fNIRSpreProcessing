@@ -5,7 +5,7 @@ clc;clear
 %   Note 1: if structure for hyperscanning is incorrect such that all scans
 %   are in one folder (no seperate subject folders) then set hyperscan=0
 %   when running this script or else it won't iterate through all folders.
-%   Note 2: Only run this when you have nothing else in the data folder
+%   Note 2: Run this with no other non-data folders, other files are fine
 
 % reOrganize: ONLY use if you hyperscanned and the folder organization is incorrect.   
 % Creates new data folder & reorganizes folder structure (options below) 
@@ -35,10 +35,10 @@ clc;clear
 % Suggestion: Run trigCheck again to check if triggers duplicated as planned
 
 %% Scripts to run
-addPrefix=0; %0=no, 1=yes (only run once with data ONLY)
+addPrefix=1; %0=no, 1=yes (ONLY run once with data)
 reOrganize=0; %0=no, 1=yes & flip scans and subjects, 2=yes & seperate subjects
 scanCheck=0; %0=no, 1=yes 
-trigCheck=1; %0=no, 1=yes (will make new/overwrite trigInfo)
+trigCheck=0; %0=no, 1=yes (will make new/overwrite trigInfo)
 dupTrigs=0; %0=no, 1=yes (only for hyperscanning)
 
 %% INPUTS:  
