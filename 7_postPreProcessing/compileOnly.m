@@ -1,9 +1,9 @@
 %% Set properties
-dataprefix='SD';
-IDlength=4;
+dataprefix='CC';
+IDlength=5;
 ch_reject=2; %1=none, 2=noisy only, 3=noisy&uncertain
 hyperscan=1; %0=no, 1=yes
-numscans=3; %number of scans per subject
+numscans=4; %number of scans per subject
 zdim=0; %0=no z-score, 1=z-score
 
 %% Select your data storage location
@@ -27,6 +27,6 @@ preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 [~, ~,snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);  
 
 %% Compile Data & Save
-[deoxy3D,oxy3D] = compileNIRSdata(preprocdir,dataprefix,hyperscan,ch_reject,numScans,zdim,snames);
+[deoxy3D,oxy3D] = compileNIRSdata(preprocdir,dataprefix,hyperscan,ch_reject,numscans,zdim,snames);
 
 save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
