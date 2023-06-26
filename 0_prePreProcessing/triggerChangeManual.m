@@ -2,15 +2,15 @@
 %before running
 clear; clc
 %% INPUTS
-dataprefix='CC'; %Data prefix for the study
+dataprefix='IPC'; %Data prefix for the study
 IDlength=5; % Length of ID+1 (i.e. IPC_103_rest=4); 0=ID not in scan name
-hyperscan=1; %If hyperscanning
-numscans=4; %Number of scans per subject
+hyperscan=0; %If hyperscanning
+numscans=5; %Number of scans per subject
 rawdir=uigetdir('','Choose data directory');
 
-g=2; % dyad, if not dyadic just enter 0
-p=2; % subject, if you only have one subject enter 0
-k=2; % scan
+g=0; % dyad, if not dyadic just enter 0
+p=3; % subject, if you only have one subject enter 0
+k=1; % scan
 
 %% Step 1: Scan numbers and names
 addpath(genpath("fNIRSpreProcessing/1_design_extract/")); 
