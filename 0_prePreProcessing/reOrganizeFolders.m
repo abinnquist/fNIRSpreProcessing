@@ -1,4 +1,4 @@
-function reOrganizeFolders(reOrganize,scanNames,dataprefix,numHyper,pathName,newdir)
+function reOrganizeFolders(reOrganize,snames,dataprefix,numHyper,pathName,newdir)
 % Make a new folder and subfolders to re-organize hyperscanned subjects w/ multiple scans
 %Creates a new folder and moves the folders w/ NIRS data for correct structure 
 %for preprocessing 2+ subjects (not needed for single scan hyper or single subject)
@@ -29,7 +29,7 @@ if reOrganize==1
             for p=1:numHyper
                 psPath = fullfile(pathName,dyName,scName,pName{p});
                 scanName = pName{p};
-                currName = scanName(1:end-(length(scanNames{sc})+1));
+                currName = scanName(1:end-(length(snames{sc})+1));
                 subFolder = strcat(newdir,filesep,dyName,filesep,currName);
                 if ~exist(subFolder)
                     mkdir (subFolder)
@@ -41,7 +41,7 @@ if reOrganize==1
         end
     end
 elseif reOrganize==2
-    nscans=length(scanNames);
+    nscans=length(snames);
     for d = 1:length(oldnirsDir)
         dyName=oldnirsDir(d).name;
         dyDir = dir(strcat(pathName,filesep,dyName,filesep,dataprefix,'*'));
@@ -52,7 +52,7 @@ elseif reOrganize==2
         strtScan=1;
         for p=1:numHyper
             %Create folders to seperate scans based on subjects
-            subName=dyDir(strtScan).name; subName=subName(1:end-length(scanNames{1,1}));
+            subName=dyDir(strtScan).name; subName=subName(1:end-length(snames{1,1}));
             subFolder = strcat(newdir,filesep,dyName,filesep,subName);
             mkdir (subFolder)
             
