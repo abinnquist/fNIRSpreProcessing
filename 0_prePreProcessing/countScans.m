@@ -27,7 +27,7 @@ if hyper
     snames = cell(width(scannames),1,1);
     for s=1:width(scannames)
         sc=scannames{1,s};
-        sc=sc(length(dataprefix)+IDlength+2:end);
+        sc=sc(length(dataprefix)+IDlength+1:end);
         snames(s,1)={sc};
     end
 else
@@ -59,7 +59,7 @@ else
     snames=cell(width(scannames),1);
     for s=1:width(scannames)
         sc=scannames{1,s};
-        sc=sc(IDlength+1:end);
+        sc=sc(length(dataprefix)+IDlength+1:end);
         snames(s,1)={sc};
     end
 end
