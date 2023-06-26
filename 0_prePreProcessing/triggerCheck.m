@@ -46,6 +46,7 @@ if hyperscan==1
 
                 scanname = subjdir(k).name;
                 scandir=dir(strcat(rawdir,filesep,group,filesep,subjname,filesep,subjdir(k).name,filesep));
+                scandir=scandir(~startsWith({scandir.name},'.'));
                 subjectNames(g,p)={subjname};
                 dyadNums(g,p)={group};
 
@@ -87,51 +88,73 @@ else
     for k=1:numscans
         subjectNames=cell(length(currdir),1);
         scanLength=nan(length(currdir),1);
-        triggers=nan(length(currdir),numscans);
+        triggers=nan(length(currdir),1);
 
         for p=1:length(currdir)
             subjname = currdir(p).name;
             subjectNames(p,1)={subjname};
-            subjdir = dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
+            subjdir = dir(strcat(rawdir,filesep,subjname,filesep));
+            subjdir = subjdir(~startsWith({subjdir.name},'.'));
 
             msg = sprintf('\n\t scan %d/%d, subj %d/%d ...',k,numscans,p,length(currdir));
             fprintf([reverseStr,msg]);
             reverseStr = repmat(sprintf('\b'),1,length(msg)); 
             
-            if numscans > 1 
+            if numscans > 1 && ~isempty(subjdir)
                 scanname = subjdir(k).name;
                 scandir=dir(strcat(rawdir,filesep,subjname,filesep,subjdir(k).name,filesep));
+                scandir=scandir(~startsWith({scandir.name},'.'));
 
                 if length(scandir) > 2
                     scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
+
+                    if device==1
+                        [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+                    else
+                        [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
+                    end  
+        
+                    lenScan=length(d);
+                    scanLength(p,1)=lenScan;
+        
+                    ssum = sum(s,2);
+                    stimmarks = find(ssum);
+            
+                    if isempty(stimmarks)
+                        triggers(p,1)=0;
+                    else
+                        nt=length(stimmarks);
+                        triggers(p,1:nt)=stimmarks;
+                    end
                 end
-            else
+
+            elseif ~isempty(subjdir)
                 scanfolder = strcat(rawdir,filesep,subjname);
-            end
 
-            if device==1
-                [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
-            else
-                [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
-            end  
-
-            lenScan=length(d);
-            scanLength(p,1)=lenScan;
-
-            ssum = sum(s,2);
-            stimmarks = find(ssum);
+                if device==1
+                    [d, sd_ind, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+                else
+                    [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
+                end  
     
-            if isempty(stimmarks)
-                triggers(p,k)=0;
-            else
-                nt=length(stimmarks);
-                triggers(p,1:nt)=stimmarks;
+                lenScan=length(d);
+                scanLength(p,1)=lenScan;
+    
+                ssum = sum(s,2);
+                stimmarks = find(ssum);
+        
+                if isempty(stimmarks)
+                    triggers(p,1)=0;
+                else
+                    nt=length(stimmarks);
+                    triggers(p,1:nt)=stimmarks;
+                end
             end
+            trigInfo(k).scanname=snames{k};
+            trigInfo(k).subNum=subjectNames;
+            trigInfo(k).trigs=triggers;   
+            trigInfo(k).scanLen=scanLength;
         end
-        trigInfo(k).scanname=snames{k};
-        trigInfo(k).subNum=subjectNames;
-        trigInfo(k).trigs=triggers;   
-        trigInfo(k).scanLen=scanLength; 
     end
     Elapsedtime = toc(Elapsedtime);
     fprintf('\n\t Elapsed time: %g seconds\n', Elapsedtime);
