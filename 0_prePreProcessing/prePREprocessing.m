@@ -15,7 +15,8 @@ clc;clear
 
 % countScans: Will count the scans for all subject/dyads to make sure you
 % are not missing data. 
-%   snames: list of scan names based on the first subject
+%   snames: list of scan names based on the first subject (IDlength=how many
+%   characters after the data prefix before the scan name)
 %   scannames: Matrix of all dyad/subject scan names
 %   scanCount: matrix of the number of scans per dyad/subject
 
@@ -35,23 +36,25 @@ clc;clear
 % Suggestion: Run trigCheck again to check if triggers duplicated as planned
 
 %% Scripts to run
-addPrefix=1; %0=no, 1=yes (ONLY run once with data)
+addPrefix=0; %0=no, 1=yes (ONLY run once with data)
 reOrganize=0; %0=no, 1=yes & flip scans and subjects, 2=yes & seperate subjects
-scanCheck=0; %0=no, 1=yes 
-trigCheck=0; %0=no, 1=yes (will make new/overwrite trigInfo)
+scanCheck=1; %0=no, 1=yes 
+trigCheck=1; %0=no, 1=yes (will make new/overwrite trigInfo)
 dupTrigs=0; %0=no, 1=yes (only for hyperscanning)
 
 %% INPUTS:  
-dataprefix='CC'; %Character prefix of folders that contains data. E.g., 'ST' for ST_101
-hyperscan=1; %0=no, 1=yes
+dataprefix='IPC'; %Character prefix of folders that contains data. E.g., 'ST' for ST_101
+hyperscan=0; %0=no, 1=yes
 multiscan=1; %0=no, 1=yes
-IDlength=5; % e.g. 'CC_103_rest' IDlength=3;
-numscans=4; %number of scans per subject
 
 %Below inputs only used if re-organizing folders, set to anything if not re-organizing
 numHyper = 2;  % However many participants per session (2+)
-newdir = 'C:\Users\Mike\Desktop\CC_data'; %Where you want the new organization to go
-scanNames={'clip','conv','post','rest'}; %Name of scans (i.e., SD_001_bonding)
+newdir = 'C:\Users\Mike\Desktop\SD_nirs'; %Where you want the new organization to go
+snames={'bonding','opposition','rest'}; %Name of scans (i.e., SD_001_bonding)
+
+%Below inputs only used for countScans, triggerCheck, & triggerDuplicate
+IDlength=5; % e.g. 'CC_4900_rest' IDlength=6 vs. 'CC_4900rest' IDlength=5;
+numscans=5; %number of scans per subject
 
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
@@ -76,7 +79,7 @@ end
 % 2 = session>all scans to session>subject>scans
 if reOrganize
     pathName = rawdir; %where ever the original data is stored
-    reOrganizeFolders(reOrganize,scanNames,dataprefix,numHyper,pathName,newdir); %uncomment ONLY if needed
+    reOrganizeFolders(reOrganize,snames,dataprefix,numHyper,pathName,newdir); %uncomment ONLY if needed
     rawdir=newdir;
     currdir=dir(strcat(rawdir,filesep,dataprefix,'*'));
     if length(currdir)<1
