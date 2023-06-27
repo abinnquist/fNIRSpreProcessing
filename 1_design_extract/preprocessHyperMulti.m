@@ -58,11 +58,11 @@ for i=1:length(currdir)
                     end
                 end
     
-                if SD.SrcPos(1,1)==0  && isempty(pp)
+                if all(all(SD.SrcPos==0)) && isempty(pp)
                     load(strcat(rawdir,filesep,'SD_fix.mat'))
                     digfile = strcat(rawdir,filesep,'digpts.txt');
                     mni_ch_table = getMNIcoords(digfile, SD);
-                elseif SD.SrcPos(1,1)==0  && ~isempty(pp)
+                elseif all(all(SD.SrcPos==0)) && ~isempty(pp)
                     load(fullfile(pp.folder,filesep,pp.name));
                     wavelengths=SD.Lambda;
                     [SD, ~, ~] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
@@ -177,6 +177,7 @@ if compInfo{1,1}=='1' || compInfo{3,1}=='1'
 
         %6.2) Check lost channels, writes two csvs and add to compiled
         if compInfo{1,1}=='1'
+            hyperscan=1;
             qualityRep;
         end
     
