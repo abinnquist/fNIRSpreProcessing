@@ -56,11 +56,11 @@ for i=1:length(currdir)
                 end
             end
             
-            if SD.SrcPos==0  && isempty(pp)
+            if all(all(SD.SrcPos==0)) && isempty(pp)
                 load(strcat(rawdir,filesep,'SD_fix.mat'))
                 digfile = strcat(rawdir,filesep,'digpts.txt');
                 mni_ch_table = getMNIcoords(digfile, SD);
-            elseif SD.SrcPos==0  && ~isempty(pp)
+            elseif all(all(SD.SrcPos==0)) && ~isempty(pp)
                 load(fullfile(pp.folder,filesep,pp.name));
                 wavelengths=SD.Lambda;
                 [SD, ~, ~] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
@@ -170,13 +170,14 @@ if compInfo{1,1}=='1' || compInfo{3,1}=='1'
         zdim=str2num(compInfo{5,1});
         ch_reject=str2num(compInfo{6,1});
         [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,0,ch_reject,numscans,zdim,snames);
+    
+        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
 
         %6.2) Check lost channels, writes two csvs and add to compiled
         if compInfo{1,1}=='1'
+            hyperscan=0;
             qualityRep;
         end
-    
-        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
     end
 end
 
