@@ -11,13 +11,13 @@ clc; clear
 
 %% INPUTS: 
 % (character) Prefix of folders that contains data. E.g., 'ST' for ST_101, ST_102, etc. 
-dataprefix='CC'; 
+dataprefix='SD'; 
 
 %For pre-preproc OR step 6
 hyperscan=1; %0=no; 1=yes
 multiscan=1; %0=no; 1=yes
-numscans=4; %Max number of scans per subject
-IDlength=5; %If the subject ID is in the scan name (i.e., IPC_rest=4 or IPC_301_rest=8)
+numscans=3; %Max number of scans per subject
+IDlength=5; %If the subject ID is in the scan name (i.e., IPC_rest=1 or IPC_301_rest=5)
 zdim=0; %1=Compile z-scored, 0=compile non-z-scored
 ch_reject=2; %Which channel rejection to compile. 1=none, 2=noisy, 3=noisy&uncertain
 
