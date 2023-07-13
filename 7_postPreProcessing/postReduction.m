@@ -1,38 +1,41 @@
 %% Properties to change
-dataprefix='CogLoad';
-datapath='C:\Users\Mike\Desktop\SD_nirs';
-lenConvo=2000; % In frames, depends on sample rate
+dataprefix='IPC';
+datapath='C:\Users\Mike\Desktop\IPC_nirs';
+lenConvo=3000; % In frames, depends on sample rate
 hyper=1; %0=no 1=yes
-scn2vis=1; %Which scan to inspect
+scn2vis=5; %Which scan to inspect
 compare=1; %0=off, 1=on
 
-good=41:45; %Subjects with NO high magnitude channels
-bad=[31,52,58,65,69]; %Subjects with high magnitude channels
+% good=41:45; %Subjects with NO high magnitude channels
+% bad=[31,52,58,65,69]; %Subjects with high magnitude channels
+
+good=[32,37,45,49,60,65,69]; %Subjects with NO high magnitude channels
+bad=[34,36,39,41,43,50,51,56]; %Subjects with high magnitude channels
 
 %Areas to average, based on probe and what areas you want to inspect
-% arNames=["mPFC","dlPFC","TPJ","VM"];
-% ars={7:14;[1:6,15:20];[25:31,36:42];[21:24,32:35]}; %mPFC, lPFC, TPJ (Gestalt), VM
+arNames=["mPFC","dlPFC","TPJ","VM"];
+ars={7:14;[1:6,15:20];[25:31,36:42];[21:24,32:35]}; %mPFC, lPFC, TPJ (Gestalt), VM
     %Alternative areas
 % arNames={'VAT','FPN','DMN','DAT'};
 % ars={[1:2,5,16,20,26];[3:4,10,15,18:19,25,31,36:37];[6:9,11:14,17,22,27:28,30,38:39,41];...
 %     [21,23:24,32:35,39:40,42]}; %VAT, FPN, DMN, DAT
 
-%Aga's areas: %mpfc, LdlPFC, RdlPFC, LTPJ, RTPJ, vm
-arNames=["mPFC","LdlPFC","RdlPFC","LTPJ","RTPJ","VM"];
-ars={[1:3,8, 16:17, 19, 58];[5,6,7,9, 13,14]; [59, 60, 61, 62, 63, 64];...
-    [43:45, 52, 54:55]; [96:98, 105, 107, 110]; [47, 48, 56, 93, 94, 102, 104, 106]}; 
+% %Aga's areas: %mpfc, LdlPFC, RdlPFC, LTPJ, RTPJ, vm
+% arNames=["mPFC","LdlPFC","RdlPFC","LTPJ","RTPJ","VM"];
+% ars={[1:3,8, 16:17, 19, 58];[5,6,7,9, 13,14]; [59, 60, 61, 62, 63, 64];...
+%     [43:45, 52, 54:55]; [96:98, 105, 107, 110]; [47, 48, 56, 93, 94, 102, 104, 106]}; 
 
 %Areas w/ channels removed to correlate for comparison 
 %reduced magnitude vs. no reduction vs. removed channels
-% arsR={[7:10,12];[1:3,5,16:18,20];[25:28,30:31,36:37,40:41];[21:22,24,32:35]}; % For IPC data
+arsR={[7:10,12];[1:3,5,16:18,20];[25:28,30:31,36:37,40:41];[21:22,24,32:35]}; % For IPC data
 %arsR={[7:10,12,14];[1:3,5:6,15:18,20];[25,26,28,30,36:37,39,41];[21:22,24,32,34:35]}; % For SD data
 
-%Aga's areas: %mpfc, LdlPFC, RdlPFC, LTPJ, RTPJ, vm
-arsR={[1:3,8, 16:17, 19, 58];[5,6,7,9, 13,14]; [59, 60, 61, 62, 63, 64];...
-    [43:45, 52, 54:55]; [96:98, 105, 107, 110]; [47, 48, 56, 93, 94, 102, 106]}; 
+% %Aga's areas: %mpfc, LdlPFC, RdlPFC, LTPJ, RTPJ, vm
+% arsR={[1:3,8, 16:17, 19, 58];[5,6,7,9, 13,14]; [59, 60, 61, 62, 63, 64];...
+%     [43:45, 52, 54:55]; [96:98, 105, 107, 110]; [47, 48, 56, 93, 94, 102, 106]}; 
 
 %% Load in the data
-load(strcat(datapath,filesep,dataprefix,'_compile.mat'),'oxy3D')
+load(strcat(datapath,filesep,dataprefix,'_compileR.mat'),'oxy3D')
 
 if hyper
     [~, nchans, nsubs]=size(oxy3D(scn2vis).sub1);
@@ -104,7 +107,7 @@ end
 good2corr=[ogchans(good,:,1),elimchans(good,:,1),redchans(good,:,1)];
 bad2corr=[ogchans(bad,:,1),elimchans(bad,:,1),redchans(bad,:,1)];
 
-%Figure to visualize correlation difference 
+%Figure to visualize correlation difference for bad
 figure()
 tiledlayout(3,1,'TileSpacing','none')
 nexttile
@@ -117,6 +120,23 @@ ylabel('Eliminated');yticks=([2,4,6]);
 colorbar
 nexttile
 imagesc(redchans(bad,:,1))
+yticks=([2,4,6]);xticks(1:4);
+xticklabels(arNames);ylabel('Reduced');
+colorbar
+
+%Figure to visualize correlation difference for good
+figure()
+tiledlayout(3,1,'TileSpacing','none')
+nexttile
+imagesc(ogchans(good,:,1));xticks(2);
+ylabel('Original');yticks=([2,4,6]);
+colorbar
+nexttile
+imagesc(elimchans(good,:,1));xticks(2);
+ylabel('Eliminated');yticks=([2,4,6]);
+colorbar
+nexttile
+imagesc(redchans(good,:,1))
 yticks=([2,4,6]);xticks(1:4);
 xticklabels(arNames);ylabel('Reduced');
 colorbar
@@ -181,3 +201,40 @@ if compare
     end
 end
 
+%% Group Averages
+mPFC=[1,5,9];
+dlPFC=[2,6,10];
+TPJ=[3,7,11];
+SPL=[4,8,12];
+
+badGroup(:,1)=mean(atanh(bad2corr(:,mPFC)));
+badGroup(:,2)=mean(atanh(bad2corr(:,dlPFC)));
+badGroup(:,3)=mean(atanh(bad2corr(:,TPJ)));
+badGroup(:,4)=mean(atanh(bad2corr(:,SPL)));
+
+goodGroup(:,1)=mean(atanh(good2corr(:,mPFC)));
+goodGroup(:,2)=mean(atanh(good2corr(:,dlPFC)));
+goodGroup(:,3)=mean(atanh(good2corr(:,TPJ)));
+goodGroup(:,4)=mean(atanh(good2corr(:,SPL)));
+
+badGroup=array2table(badGroup','VariableNames',{'Original','Eliminated','Reduced'},...
+    'RowNames',{'mPFC','dlPFC','TPJ','SPL'});
+goodGroup=array2table(goodGroup','VariableNames',{'Original','Eliminated','Reduced'},...
+    'RowNames',{'mPFC','dlPFC','TPJ','SPL'});
+
+
+%Compare all
+corrGroup(:,1)=nanmean(atanh(ogchans(:,:,1)));
+corrGroup(:,2)=nanmean(atanh(elimchans(:,:,1)));
+corrGroup(:,3)=nanmean(atanh(redchans(:,:,1)));
+
+corrGroup=array2table(corrGroup,'VariableNames',{'Original','Eliminated','Reduced'},...
+    'RowNames',{'mPFC','dlPFC','TPJ','SPL'});
+
+[mask_gr, critP]=fdr_bky(ogchans(:,:,2),0.05,'yes'); %Creates a mask for sig. areas
+[mask_gr, critP]=fdr_bky(elimchans(:,:,2),0.05,'yes');
+[mask_gr, critP]=fdr_bky(redchans(:,:,2),0.05,'yes');
+
+[h,p,ci,stats] = ttest(ogchans(:,:,1))
+[h,p,ci,stats] = ttest(elimchans(:,:,1))
+[h,p,ci,stats] = ttest(redchans(:,:,1))
