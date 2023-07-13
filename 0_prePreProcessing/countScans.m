@@ -1,8 +1,13 @@
 function [scanCount, scannames, snames] = countScans(currdir, dataprefix, hyper, numscans, IDlength)
 rdir=currdir(1).folder;
+
+if length(numscans) < 2
+    numscans=1:numscans;
+end
+
 if hyper
     scanCount=zeros(length(currdir),2); %If more than two it will adjust
-    scannames = cell(length(currdir),numscans,2);
+    scannames = cell(length(currdir),length(numscans),2);
     for g=1:length(currdir)
         group=currdir(g).name;  
         groupdir=dir(strcat(rdir,filesep,group,filesep,dataprefix,'*'));
@@ -12,12 +17,14 @@ if hyper
             subjdir = dir(strcat(rdir,filesep,group,filesep,subjname,filesep,dataprefix,'*'));     
             scanCount(g,p)=length(subjdir);
 
-            if numscans==1
+            if length(numscans)==1
                 scannames(g,1,p) = {subjname};
             else
-                for k=1:length(subjdir)
+                sk=1;
+                for k=numscans
                     scanname = subjdir(k).name;
-                    scannames(g,k,p)={scanname};
+                    scannames(g,sk,p)={scanname};
+                    sk=sk+1;
                 end
             end
         end
