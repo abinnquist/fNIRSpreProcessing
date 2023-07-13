@@ -1,9 +1,9 @@
 %% Set properties
-dataprefix='CC';
+dataprefix='SD';
 IDlength=5;
 ch_reject=2; %1=none, 2=noisy only, 3=noisy&uncertain
 hyperscan=1; %0=no, 1=yes
-numscans=4; %number of scans per subject
+numscans=[1,3]; %number of scans (i.e., 3) OR scans that you want to compile (i.e., [1,3])
 zdim=0; %0=no z-score, 1=z-score
 
 %% Select your data storage location
