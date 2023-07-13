@@ -26,11 +26,11 @@
 
 %% Properties to change
 % Make sure to change the protperties specific to your study
-scn2vis=1; %Which scan you want to visualize
+scn2vis=3; %Which scan you want to visualize
 hyper=1; % 1=hyperscanned, 0=single subject
 compare=1; %0=off, 1=on
 plotallChans=1; %1=plot all channels on one pane, 0=plot each channel seperately
-dataprefix='SD';
+dataprefix='IPC';
 datapath='C:\Users\Mike\Desktop\SD_nirs';
 
 %% plot all 
