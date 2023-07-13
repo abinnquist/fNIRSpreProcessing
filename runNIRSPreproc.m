@@ -1,20 +1,22 @@
 clc; clear
 % INSTRUCTIONS: Run the script from the folder that contains the overarching 
-% folder:'fNIRSpreProcessing' OR make sure all sub-folders are active 
+% folder 'fNIRSpreProcessing' OR make sure all sub-folders are active. 
+%
 % NOTE 1: If using snirf file pwd must contain Homer3 
 % NOTE 2: Wavelet correct will take the longest
+% NOTE 3: If you prefer to manually input study info uncomment below the section
+%         labelled "Start manual input here (OPTIONAL)" or else the script 
+%         will use a GUI pop-up to ask for inputs.
 %
-% If you prefer to manually input study Information uncomment the first four 
-% lines under INPUT or else the script will use a GUI pop-up to ask. 
-%
-% The script has 6 pop-ups before processing and 1 after in the below order:
-% 1. Pop-up (4 inputs): dataprefix for all folders of interest, if hyperscans, if
-% multiple scans per subject/dyad, how many if any auxiliaries
+% INPUTS:
+% The script has 6 pop-ups or 8 inputs before pre processing in the below order:
+% 1. Pop-up (4 inputs): dataprefix for all folders of interest, if hyperscanned, if
+% multiple scans per subject/dyad/triad/quad, if/how many auxiliaries
 % 2. Pop-up (select one): What type of motion correction do you want to use?
 % 3. Pop-up: Where is the folder that contains all your NIRS data?
 % 4. Pop-up: What machine collected the data: NIRScout, NIRSport or a .snirf file
 % 5. Pop-up: If you want to compile the preprocessed data into one .mat file. 
-% Note: You MUST have the same number of scans for every subject.
+% Note: You MUST have the same number of scan folders for every subject.
     % Compile data: 0=No, 1=Yes
     % Number of scans: any number 1 to n. n=number of scans per subject
     % Z-scored: 0=oxy/deoxy, 1=z_oxy/z_deoxy
@@ -42,12 +44,10 @@ clc; clear
 % the 'helperScripts' folder
 
 %% INPUTS: 
-% dataprefix='IPC'; % (character) Prefix of folders for all data. E.g., 'ST' for ST_101, ST_102, etc. 
-% hyperscan=1;      % 0 or 1. 1 if hyperscanning, 0 if single subject.
-% multiscan=1;      % 0 or 1. 1 if multiple scans per person, 0 if single scan
-% numaux=2;         % Number of aux inputs. Currently ONLY works for accelerometers.
-%                   % Other auxiliary inputs: eeg, pulse, etc.
+% To make all folders active in your path
+addpath(genpath('fNIRSpreProcessing'))
 
+%Study specifics: dataprefix, hyper, multi, etc.
 definput = {' ','0','0','0'};
 studyInfo = inputdlg({'Dataprefix for all study folders','Hyperscan? (0=no, 1=yes)','Multiscan? (0=no, 1=yes)','Number of auxiliary? (0-n)'},...
               'Study Info', [1 35], definput,'on');     
@@ -56,14 +56,81 @@ hyperscan=str2num(cell2mat(studyInfo(2)));
 multiscan=str2num(cell2mat(studyInfo(3)));
 numaux=str2num(cell2mat(studyInfo(4)));
 
+%Type of motion correction
 mcorrTypes = {'Baseline volatility','PCFilter (MUST have mapping toolbox)',...
     'PCA by channel','CBSI','Wavelet (uses db2)','Short channel regression','None'};
 [motionCorr,~] = listdlg('PromptString', 'What kind of motion correction do you want to do?',...
 'SelectionMode', 'single', 'ListSize',[250,150], 'ListString', mcorrTypes);
 
-%% To make all folders active in your path
-addpath(genpath('fNIRSpreProcessing'))
-preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
+%What device was used, NIRScout, NIRSport, or if you have SNIRF file
+supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file (must have Homer3)'};
+[device,~] = listdlg('PromptString', 'Select acquisition device:',...
+    'SelectionMode', 'single', 'ListString', supported_devices);
+
+%Compile data info
+compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=5; CF005_rest=4; SNV_rest=1)?',...
+    'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
+    'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
+              'Compile data info', [1 75]); 
+
+%Type of data trim, if wanted
+trimTypes = {'No trim','Beginning with 1st trigger','Beginning with last trigger',...
+    'Beginning with .mat','Beginning with a spreadsheet'};
+[trim,~] = listdlg('PromptString', 'Do you want to trim scans?',...
+    'SelectionMode', 'single', 'ListString', trimTypes);
+
+%Directory selection
+rawdir=uigetdir('','Choose Data Directory');
+
+%% Start manual input here (OPTIONAL)
+% dataprefix='IPC'; % (character) Prefix of folders for all data. E.g., 'ST' for ST_101, ST_102, etc. 
+% hyperscan=1;      % 0 or 1. 1 if hyperscanning, 0 if single subject.
+% multiscan=1;      % 0 or 1. 1 if multiple scans per person, 0 if single scan
+% numaux=2;         % Number of aux inputs. Currently ONLY works for accelerometers.
+%                   % Other auxiliary inputs: eeg, pulse, etc.
+% motionCorr=1;     %0 = no motion correction (not reccommended)
+%                   %1 = baseline volatility
+%                   %2 = PCFilter (requires mapping toolbox)
+%                   %3 = baseline volatility & CBSI
+%                   %4 = CBSI only
+% device=1;         %1 = NIRScout, 2 = NIRSport or .nirs,  3 = .snirf
+% trim=1;           %1 = no trim, 2 = w/ 1st trigger, 3 = w/ last trigger,
+%                   %4 = w/ .mat file, 5 = w/ spreadsheet
+% rawdir='';        %Folder path with all the data to be processed
+
+%select location of trim times (if applicable)
+if trim == 4 
+    [trimTs, trimPath] = uigetfile('*.mat','Choose trim time .mat');
+    load(strcat(trimPath,trimTs))
+elseif trim == 5
+    numscans=str2num(compInfo{4});
+    [trimTs, trimPath] = uigetfile('*.*','Choose trim times spreadsheet');
+    trimTimes =  trimConvert(trimTs, trimPath, numscans);
+else
+    trimTimes=[];
+end
+clear trimPath trimTs trimTypes
+
+%Check if there is data in the rawdir
+currdir=dir(strcat(rawdir,filesep,dataprefix,'*'));
+if length(currdir)<1
+    error(['ERROR: No data files found with ',dataprefix,' prefix']);
+end
+
+%Will select correct script for study design (i.e., hyperscan? multiscan?)
+if hyperscan
+    if multiscan
+        preprocessHyperMultiN;
+    else
+        preprocessHyperSingleN;
+    end
+else
+    if multiscan
+        preprocessSoloMultiN;
+    else
+        preprocessSoloSingleN;
+    end
+end
 
 %% DEBUGGING TIPS:
 %Note that this function is, funcitonal, but not 100% optimized  
