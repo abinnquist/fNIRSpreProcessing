@@ -1,10 +1,10 @@
 %% Properties to change
 hyper=1; % 1=hyperscanned, 0=single subject
-%convoLen=[3051,4577,4577,1525,2893]; %IN: 3000, OUT&NEU: 4500, REST: 1800, VIDS: 2800
+convoLen=[3051,4577,4577,1525,2893]; %IN: 3000, OUT&NEU: 4500, REST: 1800, VIDS: 2893
 %convoLen=[4500,4500,1100]; %BOND&OUT: 4500, REST: 1100
-convoLen=[2440,6100,2440,1500]; %BOND&OUT: 4500, REST: 1100
-datapath='C:\Users\Mike\Desktop\SD_nirs';
-dataprefix='CC';
+%convoLen=[2440,6100,2440,1500]; %BOND&OUT: 4500, REST: 1100
+datapath='C:\Users\Mike\Desktop\IPC_nirs';
+dataprefix='IPC';
 
 %% Load in compiled data. Make sure to change this to your data location
 load(strcat(datapath,filesep,dataprefix,'_compile.mat'),'oxy3D','deoxy3D')
@@ -197,5 +197,5 @@ for scn2vis=1:numscans
         oxy3D(scn2vis).subR=scanRed1;
     end
 end
-save(strcat(datapath,filesep,dataprefix,'_compile.mat'),'oxy3D','deoxy3D')
+save(strcat(datapath,filesep,dataprefix,'_compileR.mat'),'oxy3D','deoxy3D')
 
