@@ -17,6 +17,8 @@ clc; clear
 % 4. Pop-up: What machine collected the data: NIRScout, NIRSport or a .snirf file
 % 5. Pop-up: If you want to compile the preprocessed data into one .mat file. 
 % Note: You MUST have the same number of scan folders for every subject.
+    % Quality check: 0=No, 1=Yes
+    % ID length: Number of charaters after the dataprefix & before the scan name (e.g. IPC_101_rest = 5 or IPC101rest = 3)
     % Compile data: 0=No, 1=Yes
     % Number of scans: any number 1 to n. n=number of scans per subject
     % Z-scored: 0=oxy/deoxy, 1=z_oxy/z_deoxy
