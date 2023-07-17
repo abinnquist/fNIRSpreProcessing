@@ -134,6 +134,7 @@ else
     end
 end
 
+clear
 %% DEBUGGING TIPS:
 %Note that this function is, funcitonal, but not 100% optimized  
 % 1. I would check is if you are in the correct location too

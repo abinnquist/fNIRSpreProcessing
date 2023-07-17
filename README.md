@@ -120,7 +120,7 @@ OPTION 2: as a function
 5. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
 
 - No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
-(timepoint x channel). Also saves variables that would go into the .nirs format like t (triggers) and s (samples is seconds). 
+(timepoint x channel). Also saves variables that would go into the .nirs format like t (time in seconds) and s (triggers). 
 
 # Pre-preprocessing: Data structure, triggers, and more
 There is now a folder to check for the following before you start preprocessing. You can run these scripts seperately or use the prePREprocessing.m script to choose which functions you would like to run.

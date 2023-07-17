@@ -89,38 +89,36 @@ else
     
         for i=1:length(currdir)
             subject=currdir(i).name; %define subject
-            subfolder=dir(strcat(preprocdir,filesep,subject,filesep,dataprefix,'*'));
-    
-            if ~isempty(subfolder) 
+     
+            if numscans==1
+                subfiles=dir(strcat(preprocdir,filesep,subject,filesep,dataprefix,'*')); 
+            else
+                subfolder=dir(strcat(preprocdir,filesep,subject,filesep,dataprefix,'*'));
                 subfiles=dir(strcat(subfolder(1).folder,filesep,subfolder(sc).name,filesep,'*.mat'));
-                if ~isempty(subfiles)
-                    if zdim
-                        load(strcat(subfiles(ch_reject).folder,filesep,subfiles(ch_reject).name),'z_oxy','z_deoxy','t','s','samprate','aux') 
-                        deoxyC(1:length(z_deoxy),1:width(z_deoxy),i)=z_deoxy;
-                        oxyC(1:length(z_oxy),1:width(z_oxy),i)=z_oxy;
-                    else
-                        load(strcat(subfiles(ch_reject).folder,filesep,subfiles(ch_reject).name),'oxy','deoxy','t','s','samprate','aux') 
-                        deoxyC(1:length(deoxy),1:width(deoxy),i)=deoxy;
-                        oxyC(1:length(oxy),1:width(oxy),i)=oxy;
-                    end
-                elseif ~isempty(subfiles) && numscans == 1 %for single sub & single scan
-                    if zdim
-                        load(strcat(subfolder(ch_reject).folder,filesep,subfolder(ch_reject).name),'z_oxy','z_deoxy','t','s','samprate','aux') 
-                        deoxyC(1:length(z_deoxy),1:width(z_deoxy),i)=z_deoxy;
-                        oxyC(1:length(z_oxy),1:width(z_oxy),i)=z_oxy;
-                    else
-                        load(strcat(subfolder(ch_reject).folder,filesep,subfolder(ch_reject).name),'oxy','deoxy','t','s','samprate','aux') 
-                        deoxyC(1:length(deoxy),1:width(deoxy),i)=deoxy;
-                        oxyC(1:length(oxy),1:width(oxy),i)=oxy;
-                    end
-                end
-                
-                if exist('aux','var')
-                    auxC(1:length(aux),1:width(aux),i)=aux;
-                end
-                tC(1:length(t),1,i)=t';
-                sC(1:length(s),1,i)=s;    
             end
+                
+            if ~isempty(subfiles)
+                if zdim
+                    load(strcat(subfiles(ch_reject).folder,filesep,subfiles(ch_reject).name),'z_oxy','z_deoxy','t','s','samprate','aux') 
+                    deoxyC(1:length(z_deoxy),1:width(z_deoxy),i)=z_deoxy;
+                    oxyC(1:length(z_oxy),1:width(z_oxy),i)=z_oxy;
+                else
+                    load(strcat(subfiles(ch_reject).folder,filesep,subfiles(ch_reject).name),'oxy','deoxy','t','s','samprate','aux') 
+                    deoxyC(1:length(deoxy),1:width(deoxy),i)=deoxy;
+                    oxyC(1:length(oxy),1:width(oxy),i)=oxy;
+                end
+            end
+                
+            if exist('aux','var')
+                aux=reshape(aux,length(aux),[]);
+                auxC(1:length(aux),1:width(aux),i)=aux;
+            end
+            if exist('t','var')
+                tC(1:length(t),1,i)=t';
+            end
+            if exist('s','var')
+                sC(1:length(s),1,i)=s;
+            end    
         end
         deoxy3D(sk).name=snames{sk};
         deoxy3D(sk).subdata=deoxyC;
@@ -137,10 +135,9 @@ else
             oxy3D(sk).aux=auxC;
         end
 
-        if sj==max(nSubs)
-            deoxy3D(sk).samprate=samprate;
-            oxy3D(sk).samprate=samprate;
-        end    
+        deoxy3D(sk).samprate=samprate;
+        oxy3D(sk).samprate=samprate;
+    
         sk=sk+1;
     end  
 end
