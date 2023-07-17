@@ -38,6 +38,7 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 - FOLDER STRUCTURE
 	- 0_prePreProcessing/
 	- 1_design_extract/
+		- functionBased/
 	- 2_trimming/
 	- 3_removeNoisy/
 		- Inpaint_nans/
@@ -51,7 +52,7 @@ Please see comments in runNIRSPreproc.m file to read about specific functionalit
 	- helperScripts/
 		- In development/
 
-- Currently there are six options asked for by the input motionCorr: 
+- Currently there are six options for the input motionCorr: 
 	- Volatility correction=1, PCfilter=2, PCA=3, CBSI=4, Wavelet=5, Short channel regression=6, or none=7. 
 	- I'm leaning toward wavelet currently, but it is the longest and requires MATLAB wavelet toolbox.
 	- Short channel regression is only possible if you collected data with short channels
@@ -80,11 +81,13 @@ OPTION 1: With GUI pop-ups
 	2. Pop-up (select one): What type of motion correction do you want to use?
 	3. Pop-up (select one): What machine collected the data? 
 		- NIRScout 
-		- NIRSport 
+		- NIRSport2 or .nirs file 
 		- Snirf file (MUST have Homer3)
 	4. Pop-up: Select location of where the data folder that contains all your NIRS data is
 	5. Pop-up: If you want to compile the data into one .mat file. 
 		- Note: You MUST have the same number of scans for every subject.
+		- Run a quality check: 0=No, 1=Yes
+		- ID length: Number of charaters after the dataprefix and before the scan names (e.g. IPC_101_rest = 5 or IPC101rest = 3)
 		- Compile data: 0=No, 1=Yes
 		- Number of scans: any number 1 to n. n=number of scans per subject
     		- Z-scored: 0=oxy/deoxy, 1=z_oxy/z_deoxy
@@ -117,7 +120,7 @@ OPTION 2: as a function
 5. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
 
 - No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
-(timepoint x channel). Also saves variables that would go into the .nirs format like t and s. 
+(timepoint x channel). Also saves variables that would go into the .nirs format like t (triggers) and s (samples is seconds). 
 
 # Pre-preprocessing: Data structure, triggers, and more
 There is now a folder to check for the following before you start preprocessing. You can run these scripts seperately or use the prePREprocessing.m script to choose which functions you would like to run.
@@ -130,7 +133,7 @@ There is now a folder to check for the following before you start preprocessing.
 3. countScans.m: Counts how many scans per subject and collects the names of the scan based on the first dyad/subject. 
 4. triggerCheck.m: makes a new .mat of all the triggers in every scan so you can ensure you have the correct amount of triggers in the correct place. Won't change anything, this function is for reviewing triggers ONLY.
 5. triggerChangeManual.m: You can delete, add, or modify triggers scan by scan with this script. Best used if you only have a few that need to be changed. See below section for how-to video.
-6. triggerDuplicate.m: For hyperscanning ONLY. If you trigger is only in one subjects scan this will find it and then duplicate that trigger in the other subjects scan. Not needed if using the NIRScout ot single subjects scanning.
+6. triggerDuplicate.m: For hyperscanning ONLY. If your trigger is only in one of the subject's scan this will find it and then duplicate that trigger in the other subject's scan. Not needed if using the NIRScout ot single subjects scanning.
 
 want to make sure you triggers are as they should be before running preprocessing (i.e., triggerCheck), or want to better understand the pipeline without having to run the entire function (i.e., practiceProcess).
 
