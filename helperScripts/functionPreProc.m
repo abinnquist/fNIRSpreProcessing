@@ -12,11 +12,13 @@ function functionPreProc(dataprefix, hyperscan, multiscan, motionCorr, device, n
 %       hyperscan: 0 or 1. 1 if hyperscanning, 0 if single subject.
 %       multiscan: 0 or 1. 1 if multiple scans per person, 0 if single
 %       scan.
-%       motionCorr: 0 = no motion correction (not reccommended)
-%                   1 = baseline volatility
+%       motionCorr: 1 = baseline volatility
 %                   2 = PCFilter (requires mapping toolbox)
-%                   3 = baseline volatility & CBSI
+%                   3 = PCA by channel
 %                   4 = CBSI only
+%                   5 = Wavelet
+%                   6 = Short channel regression
+%                   7 = no motion correction (not reccommended)                
 %       numaux: Number of aux inputs. Currently ONLY works for accelerometers.
 %               Other auxiliary inputs: eeg, pulse, etc.
 %
