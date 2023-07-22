@@ -162,10 +162,12 @@ This folder includes some scripts for checking the data or compiling the data if
 
 # Helper Scripts: learning, preproc options, and post-stand alone 
 This folder contains the second two options for preprocessing, a stand alone compile sript, and a stand alone script to create the mni coordinates
-1. functionPreProc.m: function based version of the preprocessing script, will still have three pop-ups.
-2. manualPreProc.m: input only version of the preprocessing script.
-3. mniTableMaker.m: creates a .csv of the probe coordinates in MNI space (done in preprocessing but here for any reason you may need to make this at another time).
-4. practiceProcess.m: to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
+1. channelLoss.m: standalone script you can use after preprocessing to make four .csv files based on channels NOT lost due to oversaturation (i.e., no noisy) and not lost due to oversaturation & uncertainty (i.e., nouncertain).
+2. compileOnly.m: standalone script you can use after preprocessing to mcompile all the data into one .mat file if you did not during preprocessing. Will also create a mask for lost channels.
+3. functionPreProc.m: function based version of the preprocessing script, will still have three pop-ups.
+4. manualPreProc.m: input only version of the preprocessing script.
+5. mniTableMaker.m: creates a .csv of the probe coordinates in MNI space (done in preprocessing but here for any reason you may need to make this at another time).
+6. practiceProcess.m: to get a better understanding of how the script is running through preprocessing. Do not use this if you are batch processing. The script is there for learning our pipeline.
    
 # Known Difficulties
 1. Since this is still being worked on, here are some known issues that might pop up and how to fix them right now:
