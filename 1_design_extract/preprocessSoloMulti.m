@@ -168,15 +168,15 @@ if compInfo{1,1}=='1' || compInfo{3,1}=='1'
     if compInfo{3,1}=='1'
         zdim=str2num(compInfo{5,1});
         ch_reject=str2num(compInfo{6,1});
-        [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,0,ch_reject,numscans,zdim,snames);
-    
-        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
+        [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,0,ch_reject,numscans,zdim,snames);  
 
         %6.2) Check lost channels, writes two csvs and add to compiled
         if compInfo{1,1}=='1'
             hyperscan=0;
             qualityRep;
         end
+
+        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
     end
 end
 

@@ -33,21 +33,28 @@ clc; clear
 
 % OUTPUTS: 
 % In 'PreProcessedFiles' created by the script:
-    % 4 .csv's (2 for each removal) with # of subjects and # of channels
-    % 3 .mat files of the data for choice  of channel removal, exp. below
+    % Three .mat files of the data for choice  of channel removal, exp. below
         % '_preprocessed'= no removal
         % '_preprocessed_nonoisy'= oversaturated channels removed
         % '_preprocessed_nouncertain'= Unreliable channels removed (step 5)
     % A 'channel_mnicoords.csv' if applicable
     % Compile chosen: a 'dataprefix_compile.mat' will be created with
-    % all subjects & scan compiled into one .mat structure
+    % all subjects & scan compiled into one .mat structure and lost
+    % channels (if quality check was chosen)
+    % If quality check: 2 .csv's with # of subjects and # of channels
   
 % To compare different correction pipeline use 'preprocessingVisualize' in
 % the 'helperScripts' folder
 
 %% INPUTS: 
 % To make all folders active in your path
-addpath(genpath('fNIRSpreProcessing'))
+%Adding folders to directory if not already
+addpath(genpath("fNIRSpreProcessing/")); %OR depending on you cd
+addpath(genpath("0_prePreProcessing/"));addpath(genpath("1_design_extract/")); 
+addpath(genpath("2_trimming/"));addpath(genpath("3_removeNoisy/"));
+addpath(genpath("4_filtering/"));addpath(genpath("5_qualityControl/"));
+addpath(genpath("6_compileData/"));addpath(genpath("7_postPreProcessing/"));
+addpath(genpath("helperScripts/"));
 
 %Study specifics: dataprefix, hyper, multi, etc.
 definput = {' ','0','0','0'};
@@ -84,22 +91,6 @@ trimTypes = {'No trim','Beginning with 1st trigger','Beginning with last trigger
 %Directory selection
 rawdir=uigetdir('','Choose Data Directory');
 
-%% Start manual input here (OPTIONAL)
-% dataprefix='IPC'; % (character) Prefix of folders for all data. E.g., 'ST' for ST_101, ST_102, etc. 
-% hyperscan=1;      % 0 or 1. 1 if hyperscanning, 0 if single subject.
-% multiscan=1;      % 0 or 1. 1 if multiple scans per person, 0 if single scan
-% numaux=2;         % Number of aux inputs. Currently ONLY works for accelerometers.
-%                   % Other auxiliary inputs: eeg, pulse, etc.
-% motionCorr=1;     %0 = no motion correction (not reccommended)
-%                   %1 = baseline volatility
-%                   %2 = PCFilter (requires mapping toolbox)
-%                   %3 = baseline volatility & CBSI
-%                   %4 = CBSI only
-% device=1;         %1 = NIRScout, 2 = NIRSport or .nirs,  3 = .snirf
-% trim=1;           %1 = no trim, 2 = w/ 1st trigger, 3 = w/ last trigger,
-%                   %4 = w/ .mat file, 5 = w/ spreadsheet
-% rawdir='';        %Folder path with all the data to be processed
-
 %select location of trim times (if applicable)
 if trim == 4 
     [trimTs, trimPath] = uigetfile('*.mat','Choose trim time .mat');
@@ -122,15 +113,15 @@ end
 %Will select correct script for study design (i.e., hyperscan? multiscan?)
 if hyperscan
     if multiscan
-        preprocessHyperMultiN;
+        preprocessHyperMulti;
     else
-        preprocessHyperSingleN;
+        preprocessHyperSingle;
     end
 else
     if multiscan
-        preprocessSoloMultiN;
+        preprocessSoloMulti;
     else
-        preprocessSoloSingleN;
+        preprocessSoloSingle;
     end
 end
 

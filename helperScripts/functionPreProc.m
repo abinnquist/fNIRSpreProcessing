@@ -2,7 +2,7 @@
 %If using snirf file pwd must contain Homer3 
 %required inpaint_nans, homer2 scripts for non-snirf processing
 
-function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
+function functionPreProc(dataprefix, hyperscan, multiscan, motionCorr, device, numaux)
 % To run script without using command line function OR for more information  
 % see 'runNIRSPreproc' script in the main folder
 
@@ -24,15 +24,12 @@ function preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux
 %           'PreProcessedFiles', sorted by subject. 
 
 %Adding folders to directory if not already
-addpath(genpath("0_designOptions/")); addpath(genpath("1_extractFuncs/")); 
-addpath(genpath("3_removeNoisy/")); addpath(genpath("4_filtering/"));
-addpath(genpath("5_qualityControl/")); addpath(genpath("6_compileData/"));
+addpath(genpath("fNIRSpreProcessing/")); %OR
+addpath(genpath("0_prePreProcessing/"));addpath(genpath("1_design_extract/")); 
+addpath(genpath("2_trimming/"));addpath(genpath("3_removeNoisy/"));
+addpath(genpath("4_filtering/"));addpath(genpath("5_qualityControl/"));
+addpath(genpath("6_compileData/"));addpath(genpath("7_postPreProcessing/"));
 addpath(genpath("helperScripts/"));
-
-%What device was used, NIRScout, NIRSport, or if you have SNIRF file
-supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file (must have Homer3)'};
-[device,~] = listdlg('PromptString', 'Select acquisition device:',...
-    'SelectionMode', 'single', 'ListString', supported_devices);
 
 %Directory selection
 rawdir=uigetdir('','Choose Data Directory');
@@ -42,7 +39,7 @@ if length(currdir)<1
 end
 
 %Compile data info
-compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=4; CF005_rest=3; SNV_rest=0)?',...
+compInfo = inputdlg({'Run Quality Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=5; CF005_rest=4; SNV_rest=1)?',...
     'Compile  data? (0=no, 1=yes)','Number of Scans (1-n)','Compile Z-score? (0=no, 1=yes)',...
     'Channel rejection? (1=none, 2=noisy, or 3=noisy & uncertain)'},...
               'Compile data info', [1 75]); 
@@ -67,15 +64,15 @@ clear trimPath trimTs trimTypes
 %Will select correct script for study design (i.e., hyperscan? multiscan?)
 if hyperscan
     if multiscan
-        preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
+        preprocessHyperMulti;
     else
-        preprocessHyperSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
+        preprocessHyperSingle;
     end
 else
     if multiscan
-        preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
+        preprocessSoloMulti;
     else
-        preprocessSoloSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo);
+        preprocessSoloSingle;
     end
 end
 

@@ -1,4 +1,4 @@
-function preprocessHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo)
+function preprocHyperMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';

@@ -1,33 +1,31 @@
-function preprocessSoloMulti(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo)
+function preprocHyperSingle(dataprefix, currdir, rawdir, motionCorr, device, numaux, trim, trimTimes, compInfo)
 
 fprintf('\n\t Preprocessing ...\n')
 reverseStr = '';
 Elapsedtime = tic;
 
 for i=1:length(currdir)
-    subjname=currdir(i).name;  
-    subjdir=dir(strcat(rawdir,filesep,subjname,filesep,dataprefix,'*'));
-    scannames = {};
+    group=currdir(i).name; 
+    groupdir=dir(strcat(rawdir,filesep,group,filesep,dataprefix,'*'));
 
-    for k=1:length(subjdir)
-        scanname = subjdir(k).name;
-        scannames = [scannames,scanname];
+    for j=1:length(groupdir)
+        subjname = groupdir(j).name;
 
-        msg = sprintf('\n\t subj %d/%d, scan %d/%d ...',i,length(currdir),k,length(subjdir));
+        msg = sprintf('\n\t group %d/%d, subj %d/%d...',i,length(currdir),j,length(groupdir));
         fprintf([reverseStr,msg]);
-        reverseStr = repmat(sprintf('\b'),1,length(msg));
+        reverseStr = repmat(sprintf('\b'),1,length(msg)); 
         
-        scanfolder = strcat(rawdir,filesep,subjname,filesep,scanname);
-        outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,subjname,filesep,scanname);
+        subjfolder = strcat(rawdir,filesep,group,filesep,subjname);
+        outpath = strcat(rawdir,filesep,'PreProcessedFiles',filesep,group,filesep,subjname);
 
         if ~exist(outpath,'dir')
-
-        scdir=dir(scanfolder);
+        
+        scdir=dir(subjfolder);
         scdir=scdir(~startsWith({scdir.name},'.'));
         if ~isempty(scdir)
 
-            %1) extract data values
-            pp=dir(strcat(scanfolder,filesep,'*_probeInfo.mat'));
+        %1) extract data values
+            pp=dir(strcat(subjfolder,filesep,'*_probeInfo.mat'));
             if isempty(pp) && device==1
                 error('ERROR: Scan  does not contain a probeInfo object');
             elseif isempty(pp) && device~=1
@@ -36,9 +34,9 @@ for i=1:length(currdir)
                 load(fullfile(pp.folder,filesep,pp.name));
                 coords=probeInfo.probes.coords_c3;
             end
-    
+            
             if device==1
-                [d, ~, samprate, wavelengths, s] = extractNIRxData(scanfolder);
+                [d, ~, samprate, wavelengths, s] = extractNIRxData(subjfolder);
                 probenumchannels = probeInfo.probes.nChannel0;
                 datanumchannels = size(d,2)/2;
                 if probenumchannels~=datanumchannels
@@ -46,16 +44,16 @@ for i=1:length(currdir)
                 end
                 [SD, aux, t] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
             elseif device==2
-                [d, samprate, s, SD, aux, t] = extractTechEnData(scanfolder);
+                [d, samprate, s, SD, aux, t] = extractTechEnData(subjfolder);
             elseif device==3
-                [d, samprate, t, SD, aux, trigInfo] = snirfExtract(scanfolder,numaux);
+                [d, samprate, t, SD, aux, trigInfo] = snirfExtract(subjfolder,numaux);
                 s = zeros(length(d),1);
                 if ~isempty(trigInfo)
                     onset = trigInfo.Onset;
                     s(find(t==onset(1)),1) = 1;
                 end
             end
-            
+
             if all(all(SD.SrcPos==0)) && isempty(pp)
                 load(strcat(rawdir,filesep,'SD_fix.mat'))
                 digfile = strcat(rawdir,filesep,'digpts.txt');
@@ -64,31 +62,31 @@ for i=1:length(currdir)
                 load(fullfile(pp.folder,filesep,pp.name));
                 wavelengths=SD.Lambda;
                 [SD, ~, ~] = getMiscNirsVars(d, samprate, wavelengths, probeInfo);
-                digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+                digloc = dir(strcat(subjfolder,filesep,'*digpts.txt'));
                 mni_ch_table = getMNIcoords(digfile, SD);
             else
-                digloc = dir(strcat(scanfolder,filesep,'*digpts.txt'));
+                digloc = dir(strcat(subjfolder,filesep,'*digpts.txt'));
                 if ~isempty(digloc) && device > 1
                     digfile=strcat(digloc.folder,filesep,digloc.name);
                     mni_ch_table = getMNIcoords(digfile, SD);
                 end
             end
-    
+
             % 2) Trim scans
-            sInfo(1,1)=i; sInfo(2,1)=1; sInfo(3,1)=k; sInfo(4,1)=length(subjdir);
+            sInfo(1,1)=i; sInfo(2,1)=j; sInfo(3,1)=1; sInfo(4,1)=length(scdir);
             [d,s,t,aux] = trimData(trim, d, s, t, trimTimes, samprate, device, aux, numaux, sInfo);
-    
+
             %3) identify noisy channels
             satlength = 2; %in seconds
             QCoDthresh = 0.6 - 0.03*samprate;
             [d, channelmask] = removeBadChannels(d, samprate, satlength, QCoDthresh);
-          
+            
             SD.MeasListAct = [channelmask'; channelmask'];
             SD.MeasListVis = SD.MeasListAct;
             
             %4) motion filter, convert to hemodynamic changes
             [dconverted, dnormed] = fNIRSFilterPipeline(d, SD, samprate, motionCorr, coords, t);
-    
+
             %5) final data quality assessment, remove uncertain channels
             % default is to use Pearson's correlation to check how impactful
             % remaining spikes are - can change to "ps" as well if you're
@@ -110,7 +108,7 @@ for i=1:length(currdir)
             totalmask(~qamask) = 0;
             z_totalmask = channelmask;
             z_totalmask(~z_qamask) = 0;
-    
+
             numchannels = size(dconverted,3);
             oxy = zeros(size(dconverted,1), numchannels);
             deoxy = zeros(size(dconverted,1), numchannels);
@@ -129,7 +127,7 @@ for i=1:length(currdir)
                 new_d(:,(c*2)-1) = oxy(:,c);
                 new_d(:,c*2) = deoxy(:,c);
             end
-            save(strcat(outpath,filesep,scanname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
+            save(strcat(outpath,filesep,group,'_',subjname,'_preprocessed.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
             
             oxy(:,~channelmask) = NaN;
             deoxy(:,~channelmask) = NaN;
@@ -137,7 +135,7 @@ for i=1:length(currdir)
             z_oxy(:,~channelmask) = NaN;
             z_deoxy(:,~channelmask) = NaN;
             z_totaloxy(:,~channelmask) = NaN;
-            save(strcat(outpath,filesep,scanname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
+            save(strcat(outpath,filesep,group,'_',subjname,'_preprocessed_nonoisych.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
             
             oxy(:,~totalmask) = NaN;
             deoxy(:,~totalmask) = NaN;
@@ -145,7 +143,7 @@ for i=1:length(currdir)
             z_oxy(:,~z_totalmask) = NaN;
             z_deoxy(:,~z_totalmask) = NaN;
             z_totaloxy(:,~z_totalmask) = NaN;
-            save(strcat(outpath,filesep,scanname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
+            save(strcat(outpath,filesep,group,'_',subjname,'_preprocessed_nouncertainch.mat'),'oxy', 'deoxy', 'totaloxy','z_oxy', 'z_deoxy', 'z_totaloxy','s','samprate','t','SD','aux');
             if exist('mni_ch_table','var')
                 writetable(mni_ch_table,strcat(outpath,filesep,'channel_mnicoords.csv'),'Delimiter',',');
             end
@@ -155,32 +153,32 @@ for i=1:length(currdir)
         end
         end
     end
+
 end
- 
-%6) Compile lost channels & data
+
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 if compInfo{1,1}=='1' || compInfo{3,1}=='1'
     IDlength=str2num(compInfo{2,1});
-    numscans=str2num(compInfo{4,1});
     %Gets the scan names for all subjects
-    [~, ~, snames] = countScans(currdir, dataprefix, 0, numscans, IDlength);   
+    [~, ~, snames] = countScans(currdir, dataprefix, 1, 1,IDlength);   
 
     %6.1) Compile data into one .mat file
     if compInfo{3,1}=='1'
         zdim=str2num(compInfo{5,1});
         ch_reject=str2num(compInfo{6,1});
-        [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,0,ch_reject,numscans,zdim,snames);
+        [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,1,ch_reject,1,zdim,snames);
     
-        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
-
         %6.2) Check lost channels, writes two csvs and add to compiled
         if compInfo{1,1}=='1'
-            hyperscan=0;
+            hyperscan=1;
             qualityRep;
         end
+
+        save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');
     end
 end
-
+    
 Elapsedtime = toc(Elapsedtime);
 fprintf('\n\t Elapsed time: %g seconds\n', Elapsedtime);
+clear
 end

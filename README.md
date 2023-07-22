@@ -69,7 +69,21 @@ To download: clone or pull repo to your desired local directory. After unzipping
 
 Pre-preprocessing: See next section below for how to make sure your data is ready for preprocessing.
 
-OPTION 1: With GUI pop-ups 
+For every option of preprocessing the output will be the same, no outputs in the command window or workspace except elapsed time. 
+A new folder created in the data directory called PreProcessedFiles that includes:
+- Three .mat files for every individual scan (no channel rejection, noisy channel rejection, noisy & uncertain channels rejected)
+	- z-scored and non z-scored 
+		- oxy, deoxy, and totaloxy (timepoint x channel) 
+		- t (time in seconds)
+		- s (triggers) matrices 
+	- mni coordinates as a .csv
+- If you chose to compile the data it will also create a compile .mat of all the data named dataprefix_compile.mat (e.g., IPC_compile.mat). This compile will include the following:
+	- Two 3D structures, oxy3D and deoxy3D, which include
+		- Scan names, subject's NIRS data, t (time in seconds), triggers, aux, samprate, lost channels by subject (and scan if applicable)
+			- If hyperscan, same structure but subject specific variables are doubled.
+	- See below photo for examples of each type of 3D structure.
+
+OPTION 1: With GUI 6 pop-ups (no inputs)
 - Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
 - Hit Run (big green triangle) on runNIRSPreproc.m script, the script will add the paths for you. 
 - You will get a series of pop-ups described below
@@ -107,20 +121,23 @@ OPTION 1: With GUI pop-ups
 			- Single subjects: sub x scan1, ... scanN
 			- Hyperscan: dyad x scan1_sub1, ... scanNsubN
 				
-OPTION 2: as a function
-- In the command window: addpath(genpath('fNIRSpreProcessing')) 
-- Run the function preprocessingfNIRS from the command window
-- Takes 5 arguments: preprocessingfNIRS(dataprefix, hyperscan, multiscan, motionCorr, numaux)
-     - Example: preprocessingfNIRS('IPC', 1, 1, 3, 2) <- for a dyadic study, with multiple scans, PCA selected as motion correction, and 2 accelerometers.
+OPTION 2: Manual inputs (No pop-ups)
+- Open manualPreProc.m from fNIRSPreProcessing/helperScripts folder 
+- Change all the inputs that are specific to the data and what type of preprocessing you want to run. 
+- Hit Run (big green triangle) on manualPreProc.m script, the script will add the paths for you. 
 
-1. Dataprefix string: prefix of every folder name that should be considered a data folder (e.g., MIN for MIN_101, MIN_102, etc.) 
+OPTION 3: As a function (3 pop-ups)
+- In the command window: addpath(genpath('fNIRSpreProcessing')) 
+- In the command window run the functionPreProc(dataprefix, hyperscan, multiscan, motionCorr, device, numaux) 
+- The function takes 5 arguments and will also have 3 pop-ups: data directory, compile info, and trim info.
+     - Example: preprocessingfNIRS('IPC', 1, 1, 3, 2, 2) <- for a dyadic study, with multiple scans, PCA selected as motion correction, collected with NIRSport2 (or .nirs file), and 2 accelerometers.
+
+1. Dataprefix: prefix of every folder name that should be considered a data folder.Must be string or character format, even if it's a number ('0' or "0"; 'IPC' or "IPC"). 
 2. Hyperscan: 1=hyperscanning, 0=single subject 
 3. Multiscan: 1=multiple scans per participant, 0=single scan
 4. Preferred Motion correction: 1=baseline volatility, 1=baseline volatility, 2=PCFilter, 3=PCA by channel, 4=CBSI, 5=Wavelet, 6=Short channel regression, 7=none 
-5. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
-
-- No output arguments, but saves a .mat file of z-scored and non z-scored oxy, deoxy, and totaloxy matrices into a new folder called PreProcessedFiles 
-(timepoint x channel). Also saves variables that would go into the .nirs format like t (time in seconds) and s (triggers). 
+5. Device: 1=NIRScout, 2=NIRSport2 or .nirs file, 3=.Snirf file (must have Homer3)
+6. Number of Auxiliary: If you have 2 acceleromters or 1 pulse oximeter
 
 # Pre-preprocessing: Data structure, triggers, and more
 There is now a folder to check for the following before you start preprocessing. You can run these scripts seperately or use the prePREprocessing.m script to choose which functions you would like to run.
