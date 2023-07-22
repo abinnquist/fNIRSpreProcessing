@@ -62,7 +62,8 @@ Once downloaded:
 3. You can use post-preprocessing to compare motion correction or ensure you don't have wonky data.
 
 # Pre-preprocessing: Data structure, triggers, and more
-There is now a folder to check for the following before you start preprocessing. You can run these scripts seperately or use the prePREprocessing.m script to choose which functions you would like to run.
+There is now a folder to check for the following before you start preprocessing. You can run these scripts seperately or use the prePREprocessing.m script to choose which functions you would like to run. 
+- How-to Youtube video for Pre-prepocessing: https://youtu.be/bCs8rlV6O3U
 
 0. prePREprocessing.m: Turn on/off the below functions to ensure good data organization before running preprocessing.
 1. folderRename.m: Your folders are missing the study prefix. This can be for some of the or all of them. It will only add the study prefix for the ones that are missing.
@@ -79,8 +80,10 @@ want to make sure you triggers are as they should be before running preprocessin
 # Preprocessing: from raw data to Hb change
 For the main preprocesing I have created three options for how you prefer to run. If you are running into a lot of errors the second option may be best so you don't have to continually deal with pop-ups. 
 1. runNIRSpreproc.mat is a script you can run with Gui pop-ups
-2. manualPreProc.m is input only with no pop-ups
-3. functionPreProc.mat as a function
+   - How-to Youtube video for runNIRSpreproc.m: https://youtu.be/8MvKSTW6_X8
+3. manualPreProc.m is input only with no pop-ups
+4. functionPreProc.mat as a function
+   - How-to Youtube video for manual and as a function: https://youtu.be/yyvdTRTtfoA
 
 For all three options of preprocessing the output will be the same, no outputs in the command window or workspace except elapsed time. 
 A new folder will be created in the data directory called PreProcessedFiles that includes:
@@ -162,6 +165,7 @@ This folder includes some scripts for checking the data or compiling the data if
 
 # Helper Scripts: learning, preproc options, and post-stand alone 
 This folder contains the second two options for preprocessing, a stand alone compile sript, and a stand alone script to create the mni coordinates
+- How-to Youtube video for some of the helper scripts: https://youtu.be/e1zOgSnOA2Q 
 1. channelLoss.m: standalone script you can use after preprocessing to make four .csv files based on channels NOT lost due to oversaturation (i.e., no noisy) and not lost due to oversaturation & uncertainty (i.e., nouncertain).
 2. compileOnly.m: standalone script you can use after preprocessing to mcompile all the data into one .mat file if you did not during preprocessing. Will also create a mask for lost channels.
 3. functionPreProc.m: function based version of the preprocessing script, will still have three pop-ups.
@@ -186,7 +190,7 @@ This folder contains the second two options for preprocessing, a stand alone com
 		- IP_scan1, IP_scan2
 
 # How-to Videos
-I will have more video(s) soon but for trigger and visualization: https://www.youtube.com/@AshleyBinnquist
+For all how-to videos relating to the pipeline and other NIRS related: https://www.youtube.com/@AshleyBinnquist
 
 # FAQ Not Covered Above
 - The "testQCoD.m" helper function. This tells you which channels are being marked as good and bad, and also visualizes the power spectral density of the raw signal in each 
