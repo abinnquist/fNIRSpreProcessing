@@ -1,30 +1,36 @@
-function qualityReport(dataprefix,hyperscan,multiscan,channelnum,preprocdir,snames)
+%% Set properties
+dataprefix='HM';
+hyperscan=1; %0=no, 1=yes
+multiscan=1; %0=no, 1=yes
+IDlength=5;
+numscans=3;
+channelnum=42;
 
-%inputs: 
-%       dataprefix: string. Prefix of every folder name that should be considered a
-%           data folder. E.g., ST for ST_101, ST_102, etc.  
-%       hyperscan: 0 or 1. 1 if hyperscanning, 0 if single subject.
-%       multiscan: 0 or 1. If the experiment has multiple scans per person
-%       channelnum: integer. Number of channels in the montage
-%       samprate: double. Sampling rate in experiment
-%       thresh: double, multiple of 0.05. Max amount you want to allow a 
-%          synchrony estimate to vary by (measurement error allowance).
-%           Default is 0.1 
-%       preprocdir: string. Path to PreProcessedFiles directory
-%
-%outputs: csv data quality reports, per subject and whole dataset, reporting
-%           which channels had poor data quality.
-
-if ~exist('preprocdir','var')
-    preprocdir=uigetdir('','Choose Preprocessed Data Directory');
-    currdir=dir(strcat(preprocdir,filesep,dataprefix,'*'));
-else
-    currdir=dir(strcat(preprocdir,filesep,dataprefix,'*'));
-end
+%% Select your data storage location
+preprocdir=uigetdir('','Choose Preprocessed Data Directory');
+currdir=dir(strcat(preprocdir,filesep,dataprefix,'*'));
 if length(currdir)<1
     error(['ERROR: No data files found with ',dataprefix,' prefix']);
 end
 
+%% Make all folders active in your path
+addpath(genpath('fNIRSpreProcessing'))
+
+addpath(genpath("0_designOptions\")); addpath(genpath("1_extractFuncs\")); 
+addpath(genpath("3_removeNoisy\")); addpath(genpath("4_filtering\"));
+addpath(genpath("5_qualityControl\")); addpath(genpath("6_imagingORcomparisons\"));
+addpath(genpath("helperScripts\"));
+
+%% Get scan names
+[~, ~,snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);  
+
+%% Check for compile file and mask
+dn=struct2cell(currdir(:,1));
+nams=dn(1,:);
+compExist=~strcmp(nams,strcat(dataprefix,'_compile.mat'));
+numSubs=sum(compExist);
+
+%% Run channnel loss check
 if hyperscan
     qatable1a = array2table(cell(1,2));
     qatable1a.Properties.VariableNames={'Dyad','subjname'};
@@ -48,7 +54,7 @@ chtable2 = chtable1;
 fprintf('\n\t Generating data quality reports ...\n')
     reverseStr = '';
 if hyperscan
-    for i=1:length(currdir)
+    for i=1:numSubs
         msg = sprintf('\n\t group number %d/%d ...',i,length(currdir));
         fprintf([reverseStr,msg]);
         reverseStr = repmat(sprintf('\b'),1,length(msg));
@@ -109,7 +115,7 @@ if hyperscan
         end
     end
 else
-    for i=1:length(currdir)
+    for i=1:numSubs
         msg = sprintf('\n\t subject number %d/%d ...',i,length(currdir));
         fprintf([reverseStr,msg]);
         reverseStr = repmat(sprintf('\b'),1,length(msg));
@@ -174,4 +180,4 @@ choutpath_uncertain=strcat(preprocdir,filesep,'QAreport_allch_cleanandcertaincha
 writetable(chtable1,choutpath_noisy,'Delimiter',',');
 writetable(chtable1,choutpath_uncertain,'Delimiter',',');
 
-end
+clear

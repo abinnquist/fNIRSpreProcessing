@@ -326,12 +326,14 @@ end
 preprocdir = strcat(rawdir,filesep,'PreProcessedFiles');
 [~, ~,snames] = countScans(currdir, dataprefix, hyperscan, numscans, IDlength);  
 
-%6.1) Compile number of lost channels
-qualityReport(dataprefix,hyperscan,multiscan,numchannels,preprocdir,snames);
-
-%6.2) Compile data into one .mat file
+%6.1) Compile data into one .mat file
 %Note that for numscans I have it equal to 1 because this is a practice
 %script in which we have only processed one scan.
 [deoxy3D,oxy3D]= compileNIRSdata(preprocdir,dataprefix,hyperscan,ch_reject,numscans,zdim,snames);
+
+%6.1) Compile number of lost channels
+if chanCheck
+    qualityRep;
+end
 
 save(strcat(preprocdir,filesep,dataprefix,'_compile.mat'),'oxy3D', 'deoxy3D');

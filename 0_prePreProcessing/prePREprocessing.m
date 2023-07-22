@@ -43,8 +43,8 @@ trigCheck=1; %0=no, 1=yes (will make new/overwrite trigInfo)
 dupTrigs=0; %0=no, 1=yes (only for hyperscanning)
 
 %% INPUTS:  
-dataprefix='IPC'; %Character prefix of folders that contains data. E.g., 'ST' for ST_101
-hyperscan=0; %0=no, 1=yes
+dataprefix='HM'; %Character prefix of folders that contains data. E.g., 'ST' for ST_101
+hyperscan=1; %0=no, 1=yes
 multiscan=1; %0=no, 1=yes
 
 %Below inputs only used if re-organizing folders, set to anything if not re-organizing
@@ -54,7 +54,7 @@ snames={'bonding','opposition','rest'}; %Name of scans (i.e., SD_001_bonding)
 
 %Below inputs only used for countScans, triggerCheck, & triggerDuplicate
 IDlength=5; % e.g. 'CC_4900_rest' IDlength=6 vs. 'CC_4900rest' IDlength=5;
-numscans=5; %number of scans per subject
+numscans=3; %number of scans per subject
 
 %% Make all folders active in your path
 addpath(genpath('fNIRSpreProcessing'))
