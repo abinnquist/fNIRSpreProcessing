@@ -82,6 +82,7 @@ A new folder created in the data directory called PreProcessedFiles that include
 		- Scan names, subject's NIRS data, t (time in seconds), triggers, aux, samprate, lost channels by subject (and scan if applicable)
 			- If hyperscan, same structure but subject specific variables are doubled.
 	- See below photo for examples of each type of 3D structure.
+ ![compileStructure](https://github.com/abinnquist/fNIRSpreProcessing/assets/57020313/f44af584-f70b-43a2-a808-7013d9f48700)
 
 OPTION 1: With GUI 6 pop-ups (no inputs)
 - Open runNIRSPreproc.m from main fNIRSPreProcessing folder 
