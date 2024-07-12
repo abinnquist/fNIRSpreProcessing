@@ -7,7 +7,7 @@ samprate = 1/mean(diff(snirf.data.time(:)));
 
 d = snirf.data.dataTimeSeries; % raw data
 t = snirf.data.time; % Time series in seconds per frame
-if numaux>0
+if numaux>0 && ~isempty(snirf.aux)
     auxS = snirf.aux;
     [auxData, auxTime, auxNames, auxSampRate] = formataux(auxS,numaux,t);
     aux.names=auxNames;
