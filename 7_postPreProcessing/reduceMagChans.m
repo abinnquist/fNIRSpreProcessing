@@ -1,10 +1,11 @@
 %% Properties to change
 hyper=1; % 1=hyperscanned, 0=single subject
-convoLen=[3051,4577,4577,1525,2893]; %IN: 3000, OUT&NEU: 4500, REST: 1800, VIDS: 2893
+convoLen=[3014,6100,4822,2753]; %IN: 3000, OUT&NEU: 4500, REST: 1800, VIDS: 2893
+% convoLen=[3051,4577,4577,1525,2893]; %IN: 3000, OUT&NEU: 4500, REST: 1800, VIDS: 2893
 %convoLen=[4500,4500,1100]; %BOND&OUT: 4500, REST: 1100
 %convoLen=[2440,6100,2440,1500]; %BOND&OUT: 4500, REST: 1100
-datapath='C:\Users\Mike\Desktop\IPC_nirs';
-dataprefix='IPC';
+datapath=uigetdir('','Choose Data Directory');
+dataprefix='CC';
 
 %% Load in compiled data. Make sure to change this to your data location
 load(strcat(datapath,filesep,dataprefix,'_compile.mat'),'oxy3D','deoxy3D')
@@ -22,7 +23,7 @@ end
 for sc=1:numscans
     for sb=1:nsubs
         if hyper
-            sb1=oxy3D(sc).sub1(:,:,sb);
+            sb1=oxy3D(sc).sub1(:,1:nchans,sb);
             for ch=1:nchans
                 if ~isnan(sb1(1,ch))
                     endZ=find(sb1(:,ch)==0);
@@ -33,7 +34,7 @@ for sc=1:numscans
                 end
             end
 
-            sb2=oxy3D(sc).sub2(:,:,sb);
+            sb2=oxy3D(sc).sub2(:,1:nchans,sb);
             for ch=1:nchans
                 if ~isnan(sb2(1,ch))
                     endZ=find(sb2(:,ch)==0);
@@ -44,7 +45,7 @@ for sc=1:numscans
                 end
             end
         else
-            sb1=oxy3D(sc).subdata(:,:,sb);
+            sb1=oxy3D(sc).subdata(:,nchans,sb);
             for ch=1:nchans
                 if ~isnan(sb1(1,ch))
                     endZ=find(sb1(:,ch)==0);
@@ -146,12 +147,12 @@ for scn2vis=1:numscans
     if hyper
         scanRed2=nan(max(lenConvo(:,2)),nchans,nsubs);
         for sb=1:nsubs
-            scanRed1(1:lenConvo(sb,1),:,sb)=oxy3D(scn2vis).sub1(1:lenConvo(sb,1),:,sb); 
-            scanRed2(1:lenConvo(sb,2),:,sb)=oxy3D(scn2vis).sub2(1:lenConvo(sb,2),:,sb);
+            scanRed1(1:lenConvo(sb,1),:,sb)=oxy3D(scn2vis).sub1(1:lenConvo(sb,1),1:nchans,sb); 
+            scanRed2(1:lenConvo(sb,2),:,sb)=oxy3D(scn2vis).sub2(1:lenConvo(sb,2),1:nchans,sb);
         end
     else
         for sb=1:nsubs
-            scanRed1(1:lenConvo(sb,1),:,sb)=oxy3D(scn2vis).subdata(1:lenConvo(sb,1),:,sb); 
+            scanRed1(1:lenConvo(sb,1),:,sb)=oxy3D(scn2vis).subdata(1:lenConvo(sb,1),1:nchans,sb); 
         end
     end
     
@@ -197,5 +198,5 @@ for scn2vis=1:numscans
         oxy3D(scn2vis).subR=scanRed1;
     end
 end
-save(strcat(datapath,filesep,dataprefix,'_compileR.mat'),'oxy3D','deoxy3D')
+save(strcat(datapath,filesep,dataprefix,'_compile.mat'),'oxy3D','deoxy3D')
 
