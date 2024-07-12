@@ -50,12 +50,25 @@ if hyperscan
                     end
 
                     if exist('aux','var')
-                        auxC(1:length(aux),1:width(aux),i)=aux;
+                        if ~sum(aux)==0
+                            if numel(size(aux))>=3
+                                [~,~,d]=size(aux);
+                                newAux=[];
+                                for ax=1:d
+                                    newAux=[newAux,aux(:,:,ax)];
+                                end
+                                auxC(1:length(aux),1:width(newAux),i)=newAux;
+                            else
+                                auxC(1:length(aux),1:width(aux),i)=aux;
+                            end
+                        end
                     end
 
                     tC(1:length(t),1,i)=t;
-                    if ~isempty(s)
-                        sC(1:length(s),1,i)=s(:,1);
+                    if exist('s','var') 
+                        if ~isempty(s)
+                            sC(1:length(s),1,i)=s(:,1);
+                        end
                     end
                 end
             end  
