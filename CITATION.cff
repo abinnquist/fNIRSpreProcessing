@@ -1,0 +1,24 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: SCN fNIRS preprocessing pipeline
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Ashley
+    family-names: Binnquist
+    affiliation: UCLA
+    email: abinnquist@ucla.edu
+    orcid: 'https://orcid.org/0000-0001-7993-943X'
+  - given-names: Shannon
+    family-names: Burns
+    orcid: 'https://orcid.org/0000-0001-8953-2406'
+    email: smburns47@ucla.edu
+repository-code: 'https://github.com/abinnquist/fNIRSpreProcessing/tree/main'
+license: MIT
+commit: 9d2ca95
+version: 2.0.0
+date-released: '2021-10-22'
