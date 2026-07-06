@@ -3,7 +3,7 @@ clc; clear
 % folder 'fNIRSpreProcessing' OR make sure all sub-folders are active. 
 %
 % NOTE 1: If using snirf file pwd must contain Homer3 
-% NOTE 2: Wavelet correct will take the longest
+% NOTE 2: Wavelet correction will take the longest
 % NOTE 3: If you prefer to manually input study info uncomment below the section
 %         labelled "Start manual input here (OPTIONAL)" or else the script 
 %         will use a GUI pop-up to ask for inputs.
@@ -69,12 +69,12 @@ numaux=str2num(cell2mat(studyInfo(4)));
 mcorrTypes = {'Baseline volatility','PCFilter (MUST have mapping toolbox)',...
     'PCA by channel','CBSI','Wavelet (uses db2)','Short channel regression','None'};
 [motionCorr,~] = listdlg('PromptString', 'What kind of motion correction do you want to do?',...
-'SelectionMode', 'single', 'ListSize',[250,150], 'ListString', mcorrTypes);
+'SelectionMode', 'multiple', 'ListSize',[250,150], 'ListString', mcorrTypes);
 
 %What device was used, NIRScout, NIRSport, or if you have SNIRF file
 supported_devices = {'NIRx-NirScout or NirSport1','NIRx-NirSport2 or .nirs file','.Snirf file (must have Homer3)'};
 [device,~] = listdlg('PromptString', 'Select acquisition device:',...
-    'SelectionMode', 'single', 'ListString', supported_devices);
+    'SelectionMode', 'multiple', 'ListString', supported_devices);
 
 %Compile data info
 compInfo = inputdlg({'Run Channel loss Check? (0=no, 1=yes)','ID length in scan name (e.g., IPC_103_rest=5; CF005_rest=4; SNV_rest=1)?',...
