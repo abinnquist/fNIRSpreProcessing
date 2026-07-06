@@ -109,7 +109,7 @@ OPTION 1: With GUI 6 pop-ups (no inputs)
 		- Hyperscan: 0=no, 1=yes 
 		- Multiple scans per subject/dyad: 0=no, 1=yes
 		- Number of auxiliaries: 0-n (n=however many you have)
-	2. Pop-up (select one): What type of motion correction do you want to use?
+	2. Pop-up (select one or more): What type of motion correction do you want to use? To select multiple types of correction: ctrl + click
 	3. Pop-up (select one): What machine collected the data? 
 		- NIRScout 
 		- NIRSport2 or .nirs file 
