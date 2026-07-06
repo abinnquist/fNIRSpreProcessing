@@ -12,7 +12,8 @@ clc; clear
 % The script has 6 pop-ups or 8 inputs before pre processing in the below order:
 % 1. Pop-up (4 inputs): dataprefix for all folders of interest, if hyperscanned, if
 % multiple scans per subject/dyad/triad/quad, if/how many auxiliaries
-% 2. Pop-up (select one): What type of motion correction do you want to use?
+% 2. Pop-up (Can select more than one): What type of motion correction do
+% you want to use? Shift + Click to select multiple corrections.
 % 3. Pop-up: Where is the folder that contains all your NIRS data?
 % 4. Pop-up: What machine collected the data: NIRScout, NIRSport or a .snirf file
 % 5. Pop-up: If you want to compile the preprocessed data into one .mat file. 
